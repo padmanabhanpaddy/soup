@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Optimization Practicals</title>
+<style>
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    padding: 30px; 
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); 
+    color: #eee; 
+    line-height: 1.6;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(15, 15, 35, 0.8);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+h1 { 
+    color: #00d4ff; 
+    text-align: center; 
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+h2 { 
+    color: #ff6b6b; 
+    border-bottom: 2px solid #ff6b6b;
+    padding-bottom: 10px;
+    margin-top: 40px;
+    font-size: 1.8em;
+}
+h3 {
+    color: #ffd93d;
+    margin-top: 30px;
+}
+.aim {
+    background: rgba(255, 107, 107, 0.1);
+    padding: 15px;
+    border-left: 4px solid #ff6b6b;
+    margin: 20px 0;
+    border-radius: 5px;
+}
+.practical-code { 
+    background: #0d1117; 
+    padding: 20px; 
+    border-radius: 10px; 
+    margin: 20px 0;
+    white-space: pre-wrap;
+    font-family: 'Courier New', monospace;
+    border: 1px solid #30363d;
+    overflow-x: auto;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>🎯 Advanced Optimization Practicals</h1>
+
+<!-- Practical 1 -->
+<h2>Practical 1: Contour Plots</h2>
+<div class="aim">
+    <strong>Aim:</strong> Implement Contour Plots to visualize optimization landscapes.
+</div>
+<div id="practical1" class="practical-code">using PyPlot
+
+function obj(x)
+    return x[1]^2 - x[2]^2
+end
+
+nx = 190
+ny = 200
+x = range(-5, 5, length = nx)
+y = range(-5, 5, length = ny)
+f = zeros(nx, ny)
+
+for i = 1:nx
+    for j = 1:ny
+        f[i, j] = obj([x[i], y[j]])
+    end
+end
+
+figure()
+contour(x, y, f', 50)
+colorbar()</div>
+
+<!-- Practical 2 -->
+<h2>Practical 2: Fibonacci & Golden Section Search</h2>
+<div class="aim">
+    <strong>Aim:</strong> Implement Fibonacci and Golden Section Search for 1D optimization.
+</div>
+<div id="practical2" class="practical-code">using MathConstants: ϕ
+
+# Fibonacci Search
+function fibonacci_search(g, a, b, n, ϵ = 0.01)
+    s = (1 - √5) / (1 + √5)
+    p = 1 / (ϕ * (1 - s^(n + 1)) / (1 - s^n))
+    d = p * b + (1 - p) * a
+    yd = g(d)
+    for i in 1:n-1
+        if i == n - 1
+            c = ϵ * a + (1 - ϵ) * d
+        else
+            c = p * a + (1 - p) * b
+        end
+        yc = g(c)
+        if yc < yd
+            b, d, yd = d, c, yc
+        else
+            a, b = b, c
+        end
+        p = 1 / (ϕ * (1 - s^(n - i + 1)) / (1 - s^(n - i)))
+    end
+    return a < b ? (a, b) : (b, a)
+end
+
+# Golden Section Search
+function golden_section_search(f, a, b, n)
+    p = ϕ - 1
+    d = p * b + (1 - p) * a
+    fd = f(d)
+    for i in 1:n-1
+        c = p * a + (1 - p) * b
+        fc = f(c)
+        if fc < fd
+            b, d, fd = d, c, fc
+        else
+            a, b = b, c
+        end
+    end
+    return a < b ? (a, b) : (b, a)
+end</div>
+
+<!-- Practical 3 -->
+<h2>Practical 3: Quadratic Fit Search</h2>
+<div class="aim">
+    <strong>Aim:</strong> Implement Quadratic Fit Search for function minimization.
+</div>
+<div id="practical3" class="practical-code">function quadratic_fit_search(f, a, b, c, n)
+    ya, yb, yc = f(a), f(b), f(c)
+    for i in 1:n-3
+        x = 0.5 * (ya*(b^2 - c^2) + yb*(c^2 - a^2) + yc*(a^2 - b^2)) /
+                 (ya*(b - c) + yb*(c - a) + yc*(a - b))
+        yx = f(x)
+        if x > b
+            if yx > yb
+                c, yc = x, yx
+            else
+                a, ya, b, yb = b, yb, x, yx
+            end
+        elseif x < b
+            if yx > yb
+                a, ya = x, yx
+            else
+                c, yc, b, yb = b, yb, x, yx
+            end
+        end
+    end
+    return (a, b, c)
+end</div>
+
+<!-- Practical 4 -->
+<h2>Practical 4: Gradient Descent</h2>
+<div class="aim">
+    <strong>Aim:</strong> Implement Gradient Descent optimization algorithm.
+</div>
+<div id="practical4" class="practical-code">function gradient_descent(x_guess, max_iter, alpha)
+    fd = 2 * x_guess - 2
+    converged = false
+    iter = 0
+    while converged == false
+        x_optimum = x_guess - alpha * fd
+        x_guess = x_optimum
+        fd = 2 * x_guess - 2
+        println("Iteration: $iter, Current Guess: $x_guess")
+        if abs(x_guess - 1) < 0.01
+            converged = true
+        end
+        if iter > max_iter
+            converged = true
+        end
+        iter = iter + 1
+    end
+    return x_guess
+end</div>
+
+<!-- Practical 5 -->
+<h2>Practical 5: Quasi-Newton Methods</h2>
+<div class="aim">
+    <strong>Aim:</strong> Implement Quasi-Newton methods (BFGS) to find local maxima/minima.
+</div>
+<div id="practical5" class="practical-code">using LinearAlgebra
+
+function bfgs(f, grad_f, x0, tol=1e-6, max_iter=100)
+    n = length(x0)
+    H = Matrix(1.0I, n, n)  # Initial Hessian approximation
+    x = copy(x0)
+    
+    for iter in 1:max_iter
+        g = grad_f(x)
+        
+        if norm(g) < tol
+            println("Converged in $iter iterations")
+            return x
+        end
+        
+        # Search direction
+        d = -H * g
+        
+        # Line search (simple backtracking)
+        alpha = 1.0
+        while f(x + alpha * d) > f(x) + 0.0001 * alpha * dot(g, d)
+            alpha *= 0.5
+        end
+        
+        # Update
+        s = alpha * d
+        x_new = x + s
+        g_new = grad_f(x_new)
+        y = g_new - g
+        
+        # BFGS update
+        rho = 1.0 / dot(y, s)
+        I_mat = Matrix(1.0I, n, n)
+        H = (I_mat - rho * s * y') * H * (I_mat - rho * y * s') + rho * s * s'
+        
+        x = x_new
+    end
+    
+    return x
+end</div>
+
+<!-- Practical 6 -->
+<h2>Practical 6: Adaptive Learning Rate Methods</h2>
+<div class="aim">
+    <strong>Aim:</strong> Implement AdaGrad, RMSprop, and AdaDelta optimization algorithms.
+</div>
+
+<h3>AdaGrad</h3>
+<div id="practical6a" class="practical-code">function adagrad(grad_fn, x0, learning_rate=0.01, epsilon=1e-8, max_iter=1000)
+    x = copy(x0)
+    G = zeros(length(x))  # Accumulated squared gradients
+    
+    for iter in 1:max_iter
+        grad = grad_fn(x)
+        G += grad .^ 2
+        x = x - learning_rate * grad ./ (sqrt.(G) .+ epsilon)
+        
+        if iter % 100 == 0
+            println("Iteration $iter: x = $x")
+        end
+    end
+    
+    return x
+end</div>
+
+<h3>RMSprop</h3>
+<div id="practical6b" class="practical-code">function rmsprop(grad_fn, x0, learning_rate=0.01, beta=0.9, epsilon=1e-8, max_iter=1000)
+    x = copy(x0)
+    v = zeros(length(x))  # Exponentially weighted average of squared gradients
+    
+    for iter in 1:max_iter
+        grad = grad_fn(x)
+        v = beta * v + (1 - beta) * grad .^ 2
+        x = x - learning_rate * grad ./ (sqrt.(v) .+ epsilon)
+        
+        if iter % 100 == 0
+            println("Iteration $iter: x = $x")
+        end
+    end
+    
+    return x
+end</div>
+
+<h3>AdaDelta</h3>
+<div id="practical6c" class="practical-code">function adadelta(grad_fn, x0, rho=0.95, epsilon=1e-6, max_iter=1000)
+    x = copy(x0)
+    E_g2 = zeros(length(x))  # Running average of squared gradients
+    E_dx2 = zeros(length(x))  # Running average of squared updates
+    
+    for iter in 1:max_iter
+        grad = grad_fn(x)
+        E_g2 = rho * E_g2 + (1 - rho) * grad .^ 2
+        
+        dx = -sqrt.(E_dx2 .+ epsilon) ./ sqrt.(E_g2 .+ epsilon) .* grad
+        E_dx2 = rho * E_dx2 + (1 - rho) * dx .^ 2
+        
+        x = x + dx
+        
+        if iter % 100 == 0
+            println("Iteration $iter: x = $x")
+        end
+    end
+    
+    return x
+end</div>
+
+<!-- Practical 7 -->
+<h2>Practical 7: Radial Basis Functions (RBF) in Surrogate Modeling</h2>
+<div class="aim">
+    <strong>Aim:</strong> Implement Radial Basis Functions for surrogate modeling.
+</div>
+<div id="practical7" class="practical-code">using LinearAlgebra
+
+function gaussian_rbf(r, epsilon=1.0)
+    return exp(-(epsilon * r)^2)
+end
+
+function multiquadric_rbf(r, epsilon=1.0)
+    return sqrt(1 + (epsilon * r)^2)
+end
+
+function inverse_multiquadric_rbf(r, epsilon=1.0)
+    return 1 / sqrt(1 + (epsilon * r)^2)
+end
+
+function rbf_surrogate(X_train, y_train, rbf_func=gaussian_rbf, epsilon=1.0)
+    n = size(X_train, 1)
+    Phi = zeros(n, n)
+    
+    # Build interpolation matrix
+    for i in 1:n
+        for j in 1:n
+            r = norm(X_train[i, :] - X_train[j, :])
+            Phi[i, j] = rbf_func(r, epsilon)
+        end
+    end
+    
+    # Solve for weights
+    weights = Phi \ y_train
+    
+    # Return prediction function
+    function predict(x)
+        result = 0.0
+        for i in 1:n
+            r = norm(x - X_train[i, :])
+            result += weights[i] * rbf_func(r, epsilon)
+        end
+        return result
+    end
+    
+    return predict
+end
+
+# Example usage:
+# X = [1.0 2.0; 3.0 4.0; 5.0 6.0]
+# y = [1.0, 2.0, 3.0]
+# model = rbf_surrogate(X, y)
+# prediction = model([2.5, 3.5])</div>
+
+<!-- Practical 8 -->
+<h2>Practical 8: Random Forest in Surrogate Modeling</h2>
+<div class="aim">
+    <strong>Aim:</strong> Apply Random Forest algorithm in surrogate modeling.
+</div>
+<div id="practical8" class="practical-code">using DecisionTree
+
+function random_forest_surrogate(X_train, y_train, n_trees=100, max_depth=10)
+    # Train Random Forest model
+    model = build_forest(y_train, X_train, 
+                        n_trees, 
+                        2,  # number of features to consider at each split
+                        max_depth)
+    
+    # Return prediction function
+    function predict(X_test)
+        return apply_forest(model, X_test)
+    end
+    
+    return predict, model
+end
+
+# Example with synthetic data generation
+function test_rf_surrogate()
+    # Generate training data
+    n_samples = 100
+    X_train = rand(n_samples, 2) * 10
+    y_train = [sin(x[1]) * cos(x[2]) for x in eachrow(X_train)]
+    
+    # Build surrogate model
+    predict_fn, model = random_forest_surrogate(X_train, y_train)
+    
+    # Test prediction
+    X_test = rand(10, 2) * 10
+    predictions = predict_fn(X_test)
+    
+    println("Predictions: ", predictions)
+    return model
+end</div>
+
+<!-- Practical 9 -->
+<h2>Practical 9: Gaussian Process and Applications</h2>
+<div class="aim">
+    <strong>Aim:</strong> Implement Gaussian Process for regression and optimization.
+</div>
+<div id="practical9" class="practical-code">using LinearAlgebra
+using Distributions
+
+# Squared Exponential (RBF) Kernel
+function se_kernel(x1, x2, length_scale=1.0, sigma_f=1.0)
+    r = norm(x1 - x2)
+    return sigma_f^2 * exp(-r^2 / (2 * length_scale^2))
+end
+
+# Build covariance matrix
+function build_covariance_matrix(X, kernel_func, noise=1e-8)
+    n = size(X, 1)
+    K = zeros(n, n)
+    
+    for i in 1:n
+        for j in 1:n
+            K[i, j] = kernel_func(X[i, :], X[j, :])
+        end
+        K[i, i] += noise  # Add noise to diagonal
+    end
+    
+    return K
+end
+
+# Gaussian Process Regression
+function gp_regression(X_train, y_train, X_test, kernel_func=se_kernel, noise=1e-8)
+    # Build training covariance matrix
+    K = build_covariance_matrix(X_train, kernel_func, noise)
+    
+    # Compute K_inv * y
+    K_inv_y = K \ y_train
+    
+    n_test = size(X_test, 1)
+    n_train = size(X_train, 1)
+    
+    # Predictions
+    mu = zeros(n_test)
+    sigma = zeros(n_test)
+    
+    for i in 1:n_test
+        # Compute k_star (covariance between test and training points)
+        k_star = [kernel_func(X_test[i, :], X_train[j, :]) for j in 1:n_train]
+        
+        # Mean prediction
+        mu[i] = dot(k_star, K_inv_y)
+        
+        # Variance prediction
+        k_star_star = kernel_func(X_test[i, :], X_test[i, :])
+        v = K \ k_star
+        sigma[i] = sqrt(k_star_star - dot(k_star, v))
+    end
+    
+    return mu, sigma
+end
+
+# Bayesian Optimization using GP
+function expected_improvement(mu, sigma, f_best, xi=0.01)
+    if sigma == 0
+        return 0
+    end
+    
+    Z = (mu - f_best - xi) / sigma
+    ei = (mu - f_best - xi) * cdf(Normal(), Z) + sigma * pdf(Normal(), Z)
+    return ei
+end
+
+# Example usage
+function test_gp()
+    # Training data
+    X_train = reshape([0.0, 1.0, 2.0, 3.0, 4.0], :, 1)
+    y_train = sin.(X_train[:, 1])
+    
+    # Test data
+    X_test = reshape(range(0, 4, length=50), :, 1)
+    
+    # Make predictions
+    mu, sigma = gp_regression(X_train, y_train, X_test)
+    
+    println("Mean predictions: ", mu[1:5])
+    println("Uncertainties: ", sigma[1:5])
+    
+    return mu, sigma
+end</div>
+
+<div style="margin-top: 50px; padding: 30px; background: rgba(0, 212, 255, 0.1); border-radius: 10px; border-left: 5px solid #00d4ff;">
+    <h3 style="color: #00d4ff; margin-top: 0;">📚 Summary</h3>
+    <p>This practical guide covers 9 essential optimization algorithms:</p>
+    <ul style="line-height: 2;">
+        <li><strong>Practical 1:</strong> Contour Plots - Visualization of optimization landscapes</li>
+        <li><strong>Practical 2:</strong> Fibonacci & Golden Section - Line search methods</li>
+        <li><strong>Practical 3:</strong> Quadratic Fit - Polynomial approximation search</li>
+        <li><strong>Practical 4:</strong> Gradient Descent - First-order optimization</li>
+        <li><strong>Practical 5:</strong> Quasi-Newton (BFGS) - Second-order optimization</li>
+        <li><strong>Practical 6:</strong> AdaGrad, RMSprop, AdaDelta - Adaptive learning rates</li>
+        <li><strong>Practical 7:</strong> RBF Surrogate - Radial basis function approximation</li>
+        <li><strong>Practical 8:</strong> Random Forest - Ensemble learning for surrogate modeling</li>
+        <li><strong>Practical 9:</strong> Gaussian Process - Probabilistic regression</li>
+    </ul>
+    <p style="margin-top: 20px;"><strong>IDs for scraping:</strong> practical1, practical2, practical3, practical4, practical5, practical6a, practical6b, practical6c, practical7, practical8, practical9</p>
+</div>
+
+<div style="text-align: center; margin-top: 40px; padding: 20px; color: #8b949e;">
+    <p>💡 <em>All implementations are in Julia programming language</em></p>
+    <p style="margin-top: 10px;">🎓 Advanced Optimization Practicals - Complete Collection</p>
+</div>
+
+</div>
+</body>
+</html>
