@@ -481,21 +481,29 @@ function test_gp()
     return mu, sigma
 end</div>
 
-<div style="margin-top: 50px; padding: 30px; background: rgba(0, 212, 255, 0.1); border-radius: 10px; border-left: 5px solid #00d4ff;">
-    <h3 style="color: #00d4ff; margin-top: 0;">📚 Summary</h3>
-    <p>This practical guide covers 9 essential optimization algorithms:</p>
-    <ul style="line-height: 2;">
-        <li><strong>Practical 1:</strong> Contour Plots - Visualization of optimization landscapes</li>
-        <li><strong>Practical 2:</strong> Fibonacci & Golden Section - Line search methods</li>
-        <li><strong>Practical 3:</strong> Quadratic Fit - Polynomial approximation search</li>
-        <li><strong>Practical 4:</strong> Gradient Descent - First-order optimization</li>
-        <li><strong>Practical 5:</strong> Quasi-Newton (BFGS) - Second-order optimization</li>
-        <li><strong>Practical 6:</strong> AdaGrad, RMSprop, AdaDelta - Adaptive learning rates</li>
-        <li><strong>Practical 7:</strong> RBF Surrogate - Radial basis function approximation</li>
-        <li><strong>Practical 8:</strong> Random Forest - Ensemble learning for surrogate modeling</li>
-        <li><strong>Practical 9:</strong> Gaussian Process - Probabilistic regression</li>
+<div id="info" style="margin-top: 50px; padding: 30px; background: rgba(0, 212, 255, 0.1); border-radius: 10px; border-left: 5px solid #00d4ff;">
+    <h3 style="color: #00d4ff; margin-top: 0;">📚 Practical IDs for Scraping</h3>
+    <p>Use these IDs to scrape individual practicals:</p>
+    <ul style="line-height: 2; font-family: 'Courier New', monospace;">
+        <li><strong>practical1</strong> - Contour Plots</li>
+        <li><strong>practical2</strong> - Fibonacci & Golden Section Search</li>
+        <li><strong>practical3</strong> - Quadratic Fit Search</li>
+        <li><strong>practical4</strong> - Gradient Descent</li>
+        <li><strong>practical5</strong> - Quasi-Newton (BFGS)</li>
+        <li><strong>practical6a</strong> - AdaGrad</li>
+        <li><strong>practical6b</strong> - RMSprop</li>
+        <li><strong>practical6c</strong> - AdaDelta</li>
+        <li><strong>practical7</strong> - RBF Surrogate Modeling</li>
+        <li><strong>practical8</strong> - Random Forest</li>
+        <li><strong>practical9</strong> - Gaussian Process</li>
     </ul>
-    <p style="margin-top: 20px;"><strong>IDs for scraping:</strong> practical1, practical2, practical3, practical4, practical5, practical6a, practical6b, practical6c, practical7, practical8, practical9</p>
+    <p style="margin-top: 20px; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 5px;">
+        <strong>📝 Example Python scraping code:</strong><br>
+        <code style="color: #a5d6ff;">import requests<br>
+        from bs4 import BeautifulSoup<br><br>
+        response = requests.get('YOUR_URL')<br>
+        code = BeautifulSoup(response.text, 'html.parser').find('div', id='practical1').text</code>
+    </p>
 </div>
 
 <div style="text-align: center; margin-top: 40px; padding: 20px; color: #8b949e;">
