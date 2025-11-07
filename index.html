@@ -1,516 +1,1945 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Optimization Practicals</title>
-<style>
-body { 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    padding: 30px; 
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); 
-    color: #eee; 
-    line-height: 1.6;
-}
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: rgba(15, 15, 35, 0.8);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-h1 { 
-    color: #00d4ff; 
-    text-align: center; 
-    font-size: 2.5em;
-    margin-bottom: 40px;
-    text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-}
-h2 { 
-    color: #ff6b6b; 
-    border-bottom: 2px solid #ff6b6b;
-    padding-bottom: 10px;
-    margin-top: 40px;
-    font-size: 1.8em;
-}
-h3 {
-    color: #ffd93d;
-    margin-top: 30px;
-}
-.aim {
-    background: rgba(255, 107, 107, 0.1);
-    padding: 15px;
-    border-left: 4px solid #ff6b6b;
-    margin: 20px 0;
-    border-radius: 5px;
-}
-.practical-code { 
-    background: #0d1117; 
-    padding: 20px; 
-    border-radius: 10px; 
-    margin: 20px 0;
-    white-space: pre-wrap;
-    font-family: 'Courier New', monospace;
-    border: 1px solid #30363d;
-    overflow-x: auto;
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-</style>
+<title>Software Defined Network Practicals</title>
 </head>
 <body>
 
-<div class="container">
-<h1>🎯 Advanced Optimization Practicals</h1>
+<h1>Software Defined Network Practicals</h1>
+<h3>MSc Computer Science - Cisco Packet Tracer Lab Manual</h3>
+<p><strong>Submitted by:</strong> Darshan Jadhav | <strong>Roll No:</strong> MCS.25.06</p>
+<p><strong>Guide:</strong> Ms. Flosia Moses | <strong>Academic Year:</strong> 2025-2026</p>
 
-<!-- Practical 1 -->
-<h2>Practical 1: Contour Plots</h2>
-<div class="aim">
-    <strong>Aim:</strong> Implement Contour Plots to visualize optimization landscapes.
-</div>
-<div id="practical1" class="practical-code">using PyPlot
-
-function obj(x)
-    return x[1]^2 - x[2]^2
-end
-
-nx = 190
-ny = 200
-x = range(-5, 5, length = nx)
-y = range(-5, 5, length = ny)
-f = zeros(nx, ny)
-
-for i = 1:nx
-    for j = 1:ny
-        f[i, j] = obj([x[i], y[j]])
-    end
-end
-
-figure()
-contour(x, y, f', 50)
-colorbar()</div>
-
-<!-- Practical 2 -->
-<h2>Practical 2: Fibonacci & Golden Section Search</h2>
-<div class="aim">
-    <strong>Aim:</strong> Implement Fibonacci and Golden Section Search for 1D optimization.
-</div>
-<div id="practical2" class="practical-code">using MathConstants: ϕ
-
-# Fibonacci Search
-function fibonacci_search(g, a, b, n, ϵ = 0.01)
-    s = (1 - √5) / (1 + √5)
-    p = 1 / (ϕ * (1 - s^(n + 1)) / (1 - s^n))
-    d = p * b + (1 - p) * a
-    yd = g(d)
-    for i in 1:n-1
-        if i == n - 1
-            c = ϵ * a + (1 - ϵ) * d
-        else
-            c = p * a + (1 - p) * b
-        end
-        yc = g(c)
-        if yc < yd
-            b, d, yd = d, c, yc
-        else
-            a, b = b, c
-        end
-        p = 1 / (ϕ * (1 - s^(n - i + 1)) / (1 - s^(n - i)))
-    end
-    return a < b ? (a, b) : (b, a)
-end
-
-# Golden Section Search
-function golden_section_search(f, a, b, n)
-    p = ϕ - 1
-    d = p * b + (1 - p) * a
-    fd = f(d)
-    for i in 1:n-1
-        c = p * a + (1 - p) * b
-        fc = f(c)
-        if fc < fd
-            b, d, fd = d, c, fc
-        else
-            a, b = b, c
-        end
-    end
-    return a < b ? (a, b) : (b, a)
-end</div>
-
-<!-- Practical 3 -->
-<h2>Practical 3: Quadratic Fit Search</h2>
-<div class="aim">
-    <strong>Aim:</strong> Implement Quadratic Fit Search for function minimization.
-</div>
-<div id="practical3" class="practical-code">function quadratic_fit_search(f, a, b, c, n)
-    ya, yb, yc = f(a), f(b), f(c)
-    for i in 1:n-3
-        x = 0.5 * (ya*(b^2 - c^2) + yb*(c^2 - a^2) + yc*(a^2 - b^2)) /
-                 (ya*(b - c) + yb*(c - a) + yc*(a - b))
-        yx = f(x)
-        if x > b
-            if yx > yb
-                c, yc = x, yx
-            else
-                a, ya, b, yb = b, yb, x, yx
-            end
-        elseif x < b
-            if yx > yb
-                a, ya = x, yx
-            else
-                c, yc, b, yb = b, yb, x, yx
-            end
-        end
-    end
-    return (a, b, c)
-end</div>
-
-<!-- Practical 4 -->
-<h2>Practical 4: Gradient Descent</h2>
-<div class="aim">
-    <strong>Aim:</strong> Implement Gradient Descent optimization algorithm.
-</div>
-<div id="practical4" class="practical-code">function gradient_descent(x_guess, max_iter, alpha)
-    fd = 2 * x_guess - 2
-    converged = false
-    iter = 0
-    while converged == false
-        x_optimum = x_guess - alpha * fd
-        x_guess = x_optimum
-        fd = 2 * x_guess - 2
-        println("Iteration: $iter, Current Guess: $x_guess")
-        if abs(x_guess - 1) < 0.01
-            converged = true
-        end
-        if iter > max_iter
-            converged = true
-        end
-        iter = iter + 1
-    end
-    return x_guess
-end</div>
-
-<!-- Practical 5 -->
-<h2>Practical 5: Quasi-Newton Methods</h2>
-<div class="aim">
-    <strong>Aim:</strong> Implement Quasi-Newton methods (BFGS) to find local maxima/minima.
-</div>
-<div id="practical5" class="practical-code">using LinearAlgebra
-
-function bfgs(f, grad_f, x0, tol=1e-6, max_iter=100)
-    n = length(x0)
-    H = Matrix(1.0I, n, n)  # Initial Hessian approximation
-    x = copy(x0)
-    
-    for iter in 1:max_iter
-        g = grad_f(x)
-        
-        if norm(g) < tol
-            println("Converged in $iter iterations")
-            return x
-        end
-        
-        # Search direction
-        d = -H * g
-        
-        # Line search (simple backtracking)
-        alpha = 1.0
-        while f(x + alpha * d) > f(x) + 0.0001 * alpha * dot(g, d)
-            alpha *= 0.5
-        end
-        
-        # Update
-        s = alpha * d
-        x_new = x + s
-        g_new = grad_f(x_new)
-        y = g_new - g
-        
-        # BFGS update
-        rho = 1.0 / dot(y, s)
-        I_mat = Matrix(1.0I, n, n)
-        H = (I_mat - rho * s * y') * H * (I_mat - rho * y * s') + rho * s * s'
-        
-        x = x_new
-    end
-    
-    return x
-end</div>
-
-<!-- Practical 6 -->
-<h2>Practical 6: Adaptive Learning Rate Methods</h2>
-<div class="aim">
-    <strong>Aim:</strong> Implement AdaGrad, RMSprop, and AdaDelta optimization algorithms.
-</div>
-
-<h3>AdaGrad</h3>
-<div id="practical6a" class="practical-code">function adagrad(grad_fn, x0, learning_rate=0.01, epsilon=1e-8, max_iter=1000)
-    x = copy(x0)
-    G = zeros(length(x))  # Accumulated squared gradients
-    
-    for iter in 1:max_iter
-        grad = grad_fn(x)
-        G += grad .^ 2
-        x = x - learning_rate * grad ./ (sqrt.(G) .+ epsilon)
-        
-        if iter % 100 == 0
-            println("Iteration $iter: x = $x")
-        end
-    end
-    
-    return x
-end</div>
-
-<h3>RMSprop</h3>
-<div id="practical6b" class="practical-code">function rmsprop(grad_fn, x0, learning_rate=0.01, beta=0.9, epsilon=1e-8, max_iter=1000)
-    x = copy(x0)
-    v = zeros(length(x))  # Exponentially weighted average of squared gradients
-    
-    for iter in 1:max_iter
-        grad = grad_fn(x)
-        v = beta * v + (1 - beta) * grad .^ 2
-        x = x - learning_rate * grad ./ (sqrt.(v) .+ epsilon)
-        
-        if iter % 100 == 0
-            println("Iteration $iter: x = $x")
-        end
-    end
-    
-    return x
-end</div>
-
-<h3>AdaDelta</h3>
-<div id="practical6c" class="practical-code">function adadelta(grad_fn, x0, rho=0.95, epsilon=1e-6, max_iter=1000)
-    x = copy(x0)
-    E_g2 = zeros(length(x))  # Running average of squared gradients
-    E_dx2 = zeros(length(x))  # Running average of squared updates
-    
-    for iter in 1:max_iter
-        grad = grad_fn(x)
-        E_g2 = rho * E_g2 + (1 - rho) * grad .^ 2
-        
-        dx = -sqrt.(E_dx2 .+ epsilon) ./ sqrt.(E_g2 .+ epsilon) .* grad
-        E_dx2 = rho * E_dx2 + (1 - rho) * dx .^ 2
-        
-        x = x + dx
-        
-        if iter % 100 == 0
-            println("Iteration $iter: x = $x")
-        end
-    end
-    
-    return x
-end</div>
-
-<!-- Practical 7 -->
-<h2>Practical 7: Radial Basis Functions (RBF) in Surrogate Modeling</h2>
-<div class="aim">
-    <strong>Aim:</strong> Implement Radial Basis Functions for surrogate modeling.
-</div>
-<div id="practical7" class="practical-code">using LinearAlgebra
-
-function gaussian_rbf(r, epsilon=1.0)
-    return exp(-(epsilon * r)^2)
-end
-
-function multiquadric_rbf(r, epsilon=1.0)
-    return sqrt(1 + (epsilon * r)^2)
-end
-
-function inverse_multiquadric_rbf(r, epsilon=1.0)
-    return 1 / sqrt(1 + (epsilon * r)^2)
-end
-
-function rbf_surrogate(X_train, y_train, rbf_func=gaussian_rbf, epsilon=1.0)
-    n = size(X_train, 1)
-    Phi = zeros(n, n)
-    
-    # Build interpolation matrix
-    for i in 1:n
-        for j in 1:n
-            r = norm(X_train[i, :] - X_train[j, :])
-            Phi[i, j] = rbf_func(r, epsilon)
-        end
-    end
-    
-    # Solve for weights
-    weights = Phi \ y_train
-    
-    # Return prediction function
-    function predict(x)
-        result = 0.0
-        for i in 1:n
-            r = norm(x - X_train[i, :])
-            result += weights[i] * rbf_func(r, epsilon)
-        end
-        return result
-    end
-    
-    return predict
-end
-
-# Example usage:
-# X = [1.0 2.0; 3.0 4.0; 5.0 6.0]
-# y = [1.0, 2.0, 3.0]
-# model = rbf_surrogate(X, y)
-# prediction = model([2.5, 3.5])</div>
-
-<!-- Practical 8 -->
-<h2>Practical 8: Random Forest in Surrogate Modeling</h2>
-<div class="aim">
-    <strong>Aim:</strong> Apply Random Forest algorithm in surrogate modeling.
-</div>
-<div id="practical8" class="practical-code">using DecisionTree
-
-function random_forest_surrogate(X_train, y_train, n_trees=100, max_depth=10)
-    # Train Random Forest model
-    model = build_forest(y_train, X_train, 
-                        n_trees, 
-                        2,  # number of features to consider at each split
-                        max_depth)
-    
-    # Return prediction function
-    function predict(X_test)
-        return apply_forest(model, X_test)
-    end
-    
-    return predict, model
-end
-
-# Example with synthetic data generation
-function test_rf_surrogate()
-    # Generate training data
-    n_samples = 100
-    X_train = rand(n_samples, 2) * 10
-    y_train = [sin(x[1]) * cos(x[2]) for x in eachrow(X_train)]
-    
-    # Build surrogate model
-    predict_fn, model = random_forest_surrogate(X_train, y_train)
-    
-    # Test prediction
-    X_test = rand(10, 2) * 10
-    predictions = predict_fn(X_test)
-    
-    println("Predictions: ", predictions)
-    return model
-end</div>
-
-<!-- Practical 9 -->
-<h2>Practical 9: Gaussian Process and Applications</h2>
-<div class="aim">
-    <strong>Aim:</strong> Implement Gaussian Process for regression and optimization.
-</div>
-<div id="practical9" class="practical-code">using LinearAlgebra
-using Distributions
-
-# Squared Exponential (RBF) Kernel
-function se_kernel(x1, x2, length_scale=1.0, sigma_f=1.0)
-    r = norm(x1 - x2)
-    return sigma_f^2 * exp(-r^2 / (2 * length_scale^2))
-end
-
-# Build covariance matrix
-function build_covariance_matrix(X, kernel_func, noise=1e-8)
-    n = size(X, 1)
-    K = zeros(n, n)
-    
-    for i in 1:n
-        for j in 1:n
-            K[i, j] = kernel_func(X[i, :], X[j, :])
-        end
-        K[i, i] += noise  # Add noise to diagonal
-    end
-    
-    return K
-end
-
-# Gaussian Process Regression
-function gp_regression(X_train, y_train, X_test, kernel_func=se_kernel, noise=1e-8)
-    # Build training covariance matrix
-    K = build_covariance_matrix(X_train, kernel_func, noise)
-    
-    # Compute K_inv * y
-    K_inv_y = K \ y_train
-    
-    n_test = size(X_test, 1)
-    n_train = size(X_train, 1)
-    
-    # Predictions
-    mu = zeros(n_test)
-    sigma = zeros(n_test)
-    
-    for i in 1:n_test
-        # Compute k_star (covariance between test and training points)
-        k_star = [kernel_func(X_test[i, :], X_train[j, :]) for j in 1:n_train]
-        
-        # Mean prediction
-        mu[i] = dot(k_star, K_inv_y)
-        
-        # Variance prediction
-        k_star_star = kernel_func(X_test[i, :], X_test[i, :])
-        v = K \ k_star
-        sigma[i] = sqrt(k_star_star - dot(k_star, v))
-    end
-    
-    return mu, sigma
-end
-
-# Bayesian Optimization using GP
-function expected_improvement(mu, sigma, f_best, xi=0.01)
-    if sigma == 0
-        return 0
-    end
-    
-    Z = (mu - f_best - xi) / sigma
-    ei = (mu - f_best - xi) * cdf(Normal(), Z) + sigma * pdf(Normal(), Z)
-    return ei
-end
-
-# Example usage
-function test_gp()
-    # Training data
-    X_train = reshape([0.0, 1.0, 2.0, 3.0, 4.0], :, 1)
-    y_train = sin.(X_train[:, 1])
-    
-    # Test data
-    X_test = reshape(range(0, 4, length=50), :, 1)
-    
-    # Make predictions
-    mu, sigma = gp_regression(X_train, y_train, X_test)
-    
-    println("Mean predictions: ", mu[1:5])
-    println("Uncertainties: ", sigma[1:5])
-    
-    return mu, sigma
-end</div>
-
-<div id="info" style="margin-top: 50px; padding: 30px; background: rgba(0, 212, 255, 0.1); border-radius: 10px; border-left: 5px solid #00d4ff;">
-    <h3 style="color: #00d4ff; margin-top: 0;">📚 Practical IDs for Scraping</h3>
+<div id="info">
+    <h3>📚 Practical IDs for Scraping</h3>
     <p>Use these IDs to scrape individual practicals:</p>
-    <ul style="line-height: 2; font-family: 'Courier New', monospace;">
-        <li><strong>practical1</strong> - Contour Plots</li>
-        <li><strong>practical2</strong> - Fibonacci & Golden Section Search</li>
-        <li><strong>practical3</strong> - Quadratic Fit Search</li>
-        <li><strong>practical4</strong> - Gradient Descent</li>
-        <li><strong>practical5</strong> - Quasi-Newton (BFGS)</li>
-        <li><strong>practical6a</strong> - AdaGrad</li>
-        <li><strong>practical6b</strong> - RMSprop</li>
-        <li><strong>practical6c</strong> - AdaDelta</li>
-        <li><strong>practical7</strong> - RBF Surrogate Modeling</li>
-        <li><strong>practical8</strong> - Random Forest</li>
-        <li><strong>practical9</strong> - Gaussian Process</li>
+    <ul>
+        <li><strong>practical1a</strong> - SPAN Technologies (Switch Port Analyzer)</li>
+        <li><strong>practical1b</strong> - SNMP Implementation</li>
+        <li><strong>practical1c</strong> - Syslog Implementation</li>
+        <li><strong>practical1d</strong> - Flexible NetFlow</li>
+        <li><strong>practical2a</strong> - GRE Tunnel Implementation</li>
+        <li><strong>practical2b</strong> - VTP (VLAN Trunking Protocol)</li>
+        <li><strong>practical2c</strong> - NAT (Network Address Translation)</li>
+        <li><strong>practical3</strong> - Inter-VLAN Routing</li>
+        <li><strong>practical4a</strong> - STP and RSTP</li>
+        <li><strong>practical4b</strong> - MST (Multiple Spanning Tree)</li>
+        <li><strong>practical5</strong> - EtherChannel (PAgP and LACP)</li>
+        <li><strong>practical6a</strong> - Single-Area OSPFv2</li>
+        <li><strong>practical6b</strong> - Multi-Area OSPFv2</li>
+        <li><strong>practical6c</strong> - OSPFv2 Route Summarization</li>
+        <li><strong>practical6d</strong> - Multiarea OSPFv3</li>
+        <li><strong>practical7a</strong> - BGP Communities</li>
+        <li><strong>practical7b</strong> - MP-BGP</li>
+        <li><strong>practical7c</strong> - eBGP for IPv4</li>
+        <li><strong>practical8a</strong> - IPsec Site-to-Site VPNs</li>
+        <li><strong>practical8b</strong> - GRE over IPsec VPNs</li>
+        <li><strong>practical8c</strong> - VRF Lite</li>
+        <li><strong>practical9a</strong> - OpenDaylight SDN Controller</li>
+        <li><strong>practical9b</strong> - OFNet SDN Emulator</li>
+        <li><strong>practical10</strong> - OpenFlow Using Mininet</li>
     </ul>
-    <p style="margin-top: 20px; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 5px;">
+    <p>
         <strong>📝 Example Python scraping code:</strong><br>
-        <code style="color: #a5d6ff;">import requests<br>
+        <code>import requests<br>
         from bs4 import BeautifulSoup<br><br>
         response = requests.get('YOUR_URL')<br>
-        code = BeautifulSoup(response.text, 'html.parser').find('div', id='practical1').text</code>
+        soup = BeautifulSoup(response.text, 'html.parser')<br>
+        practical_code = soup.find('div', id='practical1a').find('pre').text</code>
     </p>
 </div>
 
-<div style="text-align: center; margin-top: 40px; padding: 20px; color: #8b949e;">
-    <p>💡 <em>All implementations are in Julia programming language</em></p>
-    <p style="margin-top: 10px;">🎓 Advanced Optimization Practicals - Complete Collection</p>
+<hr>
+
+<!-- Practical 1 -->
+<h2>Practical 1: Network Monitoring Technologies</h2>
+
+<h3>1A. SPAN Technologies (Switch Port Analyzer)</h3>
+<div class="aim">
+    <strong>Aim:</strong> Implement SPAN Technologies to monitor switch port traffic.
 </div>
 
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag and drop 1 Router (2911), 1 Switch (2960), and 1 PC from the device panel</li>
+    <li>Connect PC0 to Switch0 Fa0/1 using copper straight-through cable</li>
+    <li>Connect Switch0 Fa0/2 to Router R1 Fa0/0 using copper straight-through cable</li>
+    <li>Configure IP addresses as per addressing table</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device    Interface    IP Address    Subnet Mask    Default Gateway
+R1        Fa0/0        10.0.0.3      255.0.0.0      N/A
+PC0       Fa0          10.0.0.2      255.0.0.0      10.0.0.1
+Switch0   Fa0/1        N/A           N/A            N/A
+Switch0   Fa0/2        N/A           N/A            N/A
+</pre>
+
+<div class="practical-code">
+<pre>
+Switch>enable
+Switch#config terminal
+Switch(config)# monitor session 1 source int fa0/1
+Switch(config)# monitor session 1 destination int fa0/2
+Switch(config)#end
+</pre>
 </div>
+
+<h3>1B. SNMP Implementation</h3>
+<div class="aim">
+    <strong>Aim:</strong> Implement SNMP (Simple Network Management Protocol) for network monitoring.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 2 Routers (2911), 1 Switch (2960), and 1 PC</li>
+    <li>Connect devices: PC0-Switch-R1 and R1-R2 via serial cables</li>
+    <li>Assign IP addresses as per table</li>
+    <li>On PC, go to Desktop > MIB Browser for SNMP monitoring</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device    Interface    IP Address      Subnet Mask     Default Gateway
+R1        Fa0/0        172.168.1.1     255.255.0.0     N/A
+R2        Fa0/0        172.168.2.1     255.255.0.0     N/A
+PC0       Fa0          172.168.1.2     255.255.0.0     172.168.1.1
+</pre>
+
+<div class="practical-code">
+<pre>
+R1>enable
+R1#config terminal
+Enter configuration commands, one per line. End with CNTL/Z.
+R1(config)#int fa0/0
+R1(config-if)#ip address 172.168.1.1 255.255.0.0
+R1(config-if)#no shut
+R1(config-if)#exit
+R1(config)#snmp-server community read ro
+R1(config)#snmp-server community write rw
+</pre>
+</div>
+
+<h3>1C. Syslog Implementation</h3>
+<div class="aim">
+    <strong>Aim:</strong> Configure Syslog server for logging router events.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 1 Router, 1 Switch, 1 PC, and 1 Server from device panel</li>
+    <li>Connect PC to Switch Fa0/1, Switch Fa0/2 to Router Fa0/1</li>
+    <li>Connect Server to Router Fa0/0</li>
+    <li>On Server: Go to Services > Syslog and turn it ON</li>
+    <li>Configure IP addresses as per table</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device    Interface    IP Address    Subnet Mask    Default Gateway
+R1        Fa0/0        10.0.0.1      255.0.0.0      N/A
+R1        Fa0/1        30.0.0.1      255.0.0.0      N/A
+PC0       Fa0          30.0.0.2      255.0.0.0      30.0.0.1
+Server    Fa0          10.0.0.2      255.0.0.0      10.0.0.1
+</pre>
+
+<div class="practical-code">
+<pre>
+R1>enable
+R1#config terminal
+R1(config)#int fa0/0
+R1(config-if)#ip address 10.0.0.1 255.0.0.0
+R1(config-if)#no shut
+R1(config-if)#exit
+R1(config)#int fa0/1
+R1(config-if)#ip address 30.0.0.1 255.0.0.0
+R1(config-if)#no shut
+R1(config-if)#exit
+R1(config)#logging 10.0.0.2
+</pre>
+</div>
+
+<h3>1D. Flexible NetFlow</h3>
+<div class="aim">
+    <strong>Aim:</strong> Implement Flexible NetFlow for traffic analysis.
+</div>
+
+<div class="practical-code">
+<pre>
+R1>enable
+R1#config terminal
+Enter configuration commands, one per line. End with CNTL/Z.
+R1(config)#int fa0/0
+R1(config-if)#ip flow ingress
+R1(config-if)#ip flow egress
+R1(config-if)#ip flow-export source fa0/0
+R1(config-if)#end
+R1#show ip cache flow
+</pre>
+</div>
+
+<hr>
+
+<!-- Practical 2 -->
+<h2>Practical 2: Tunneling and VLAN Technologies</h2>
+
+<h3>2A. GRE Tunnel Implementation</h3>
+<div class="aim">
+    <strong>Aim:</strong> Configure GRE (Generic Routing Encapsulation) Tunnel between routers.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 3 Routers (RA, RB, RC) and 2 PCs (PC-A, PC-C)</li>
+    <li>Connect PC-A to RA via Gigabit Ethernet</li>
+    <li>Connect RA to RC via Serial (DCE on RA side)</li>
+    <li>Connect RB to RC via Serial (DCE on RB side)</li>
+    <li>Connect PC-C to RB via Gigabit Ethernet</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device  Interface   IP Address       Subnet Mask        Default Gateway
+RA      G0/0        192.168.1.1      255.255.255.0      N/A
+RA      S0/0/0      20.0.0.2         255.255.255.252    N/A
+RA      Tunnel0     10.10.10.1       255.255.255.252    N/A
+RB      G0/0        192.168.2.1      255.255.255.0      N/A
+RB      S0/0/0      30.0.0.2         255.255.255.252    N/A
+RB      Tunnel0     10.10.10.2       255.255.255.252    N/A
+PC-A    NIC         192.168.1.2      255.255.255.0      192.168.1.1
+PC-C    NIC         192.168.2.2      255.255.255.0      192.168.2.1
+</pre>
+
+<h4>RA Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#interface GigabitEthernet0/1
+Router(config-if)#ip address 192.168.1.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface Serial0/0/0
+Router(config-if)#ip address 20.0.0.2 255.255.255.252
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#router rip
+Router(config-router)#network 20.0.0.0
+Router(config-router)#exit
+
+Router(config)#int tunnel 0
+Router(config-if)#ip address 10.10.10.1 255.255.255.252
+Router(config-if)#tunnel source s0/0/0
+Router(config-if)#tunnel destination 30.0.0.2
+Router(config-if)#tunnel mode gre ip
+Router(config-if)#no shut
+Router(config-if)#exit
+Router(config)#ip route 192.168.2.0 255.255.255.0 10.10.10.2
+</pre>
+</div>
+
+<h4>RB Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#interface GigabitEthernet0/1
+Router(config-if)#ip address 192.168.2.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface Serial0/0/1
+Router(config-if)#ip address 30.0.0.2 255.255.255.252
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#router rip
+Router(config-router)#network 192.168.2.0
+Router(config-router)#network 30.0.0.0
+Router(config-router)#exit
+
+Router(config)#int tunnel 0
+Router(config-if)#ip address 10.10.10.2 255.255.255.252
+Router(config-if)#tunnel source s0/0/1
+Router(config-if)#tunnel destination 20.0.0.2
+Router(config-if)#tunnel mode gre ip
+Router(config-if)#no shut
+Router(config-if)#exit
+Router(config)#ip route 192.168.1.0 255.255.255.0 10.10.10.1
+</pre>
+</div>
+
+<h4>RC Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#interface Serial0/0/0
+Router(config-if)#ip address 20.0.0.1 255.255.255.252
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface Serial0/0/1
+Router(config-if)#ip address 30.0.0.1 255.255.255.252
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#router rip
+Router(config-router)#network 20.0.0.0
+Router(config-router)#network 30.0.0.0
+</pre>
+</div>
+
+<h3>2B. VTP (VLAN Trunking Protocol)</h3>
+<div class="aim">
+    <strong>Aim:</strong> Implement VTP for VLAN management across switches.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 4 Switches (2960) - Switch0, Switch1, Switch2, Switch3</li>
+    <li>Connect switches in a topology where Switch1 is central (server mode)</li>
+    <li>Connect: Switch0-Switch1, Switch1-Switch2, Switch1-Switch3</li>
+    <li>Use trunk links between all switches</li>
+</ol>
+
+<h4>Switch Trunk Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch0:
+Switch>en
+Switch#conf t
+Switch(config)#int fa0/1
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#exit
+
+Switch1:
+Switch>EN
+Switch#conf t
+Switch(config)#int fa0/1
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#int fa0/2
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#exit
+
+Switch2:
+Switch>en
+Switch#conf t
+Switch(config)#int fa0/1
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#int fa0/2
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#exit
+
+Switch3:
+Switch>en
+Switch#conf t
+Switch(config)#int fa0/1
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#exit
+</pre>
+</div>
+
+<h4>VTP Mode Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch0 (Client):
+Switch(config)#vtp mode client
+Setting device to VTP CLIENT mode.
+
+Switch1 (Server - Default):
+No configuration needed
+
+Switch2 (Transparent):
+Switch(config)#vtp mode transparent
+Setting device to VTP TRANSPARENT mode.
+
+Switch3 (Client):
+Switch(config)#vtp mode client
+Setting device to VTP CLIENT mode.
+
+Check VTP Status:
+Switch#show vtp status
+</pre>
+</div>
+
+<h3>2C. NAT (Network Address Translation)</h3>
+<div class="aim">
+    <strong>Aim:</strong> Implement NAT for translating private to public IP addresses.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 2 Routers (R1, R2), 2 PCs (PC-A, PC-C), and 1 Server</li>
+    <li>Connect PC-A and PC-C to R1 Fa0/0 via a switch</li>
+    <li>Connect R1 S0/0/0 to R2 S0/0/0 (serial DCE on R1)</li>
+    <li>Connect Server to R2 Fa0/0</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device  Interface   IP Address       Subnet Mask        Default Gateway
+R1      F0/0        192.168.1.1      255.255.255.0      N/A
+R1      S0/0/0      10.0.0.1         255.0.0.0          N/A
+R2      F0/0        172.16.1.1       255.255.0.0        N/A
+R2      S0/0/0      10.0.0.2         255.0.0.0          N/A
+PC-A    NIC         192.168.1.2      255.255.255.0      192.168.1.1
+PC-C    NIC         192.168.1.3      255.255.255.0      192.168.1.1
+SERVER  Fa0         172.16.1.2       255.255.0.0        172.16.1.1
+</pre>
+
+<h4>R1 NAT Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#interface FastEthernet0/0
+Router(config-if)#ip address 192.168.1.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface Serial0/0/0
+Router(config-if)#ip address 10.0.0.1 255.0.0.0
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+Router(config)#router rip
+Router(config-router)#network 192.168.1.0
+Router(config-router)#network 10.0.0.0
+Router(config-router)#exit
+
+Router(config)#int fa0/0
+Router(config-if)#ip nat inside
+Router(config-if)#exit
+Router(config)#int s0/0/0
+Router(config-if)#ip nat outside
+Router(config-if)#exit
+
+Router(config)#ip nat inside source static 192.168.1.2 10.0.0.1
+Router(config)#ip nat inside source static 192.168.1.3 10.0.0.1
+Router(config)#ip route 0.0.0.0 0.0.0.0 s0/0/0
+Router(config)#exit
+
+Router#show ip nat statistics
+Router#show ip nat translations
+</pre>
+</div>
+
+<h4>R2 Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#interface Serial0/0/0
+Router(config-if)#ip address 10.0.0.2 255.0.0.0
+Router(config-if)#clock rate 64000
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface FastEthernet0/0
+Router(config-if)#ip address 172.16.1.1 255.255.0.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+Router(config)#router rip
+Router(config-router)#network 172.16.0.0
+Router(config-router)#network 10.0.0.0
+Router(config-router)#exit
+</pre>
+</div>
+
+<hr>
+
+<!-- Practical 3 -->
+<h2>Practical 3: Inter-VLAN Routing</h2>
+
+<div class="aim">
+    <strong>Aim:</strong> Implement Inter-VLAN Routing using Router-on-a-Stick configuration.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 1 Router (R1), 2 Switches (S1, S2), and 2 PCs (PC-A, PC-B)</li>
+    <li>Connect S1 Fa0/5 to R1 G0/0/1</li>
+    <li>Connect S1 Fa0/1 to S2 Fa0/1 (trunk link)</li>
+    <li>Connect PC-A to S1 Fa0/6</li>
+    <li>Connect PC-B to S2 Fa0/18</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device  Interface      IP Address       Subnet Mask        Default Gateway
+R1      G0/0/1.10      192.168.10.1     255.255.255.0      N/A
+R1      G0/0/1.20      192.168.20.1     255.255.255.0      N/A
+R1      G0/0/1.30      192.168.30.1     255.255.255.0      N/A
+R1      G0/0/1.1000    N/A              N/A                N/A
+S1      VLAN 10        192.168.10.11    255.255.255.0      192.168.10.1
+S2      VLAN 10        192.168.10.12    255.255.255.0      192.168.10.1
+PC-A    NIC            192.168.20.3     255.255.255.0      192.168.20.1
+PC-B    NIC            192.168.30.3     255.255.255.0      192.168.30.1
+</pre>
+
+<p><strong>VLAN Table:</strong></p>
+<pre>
+VLAN    Name           Interface Assigned
+10      Management     S1: VLAN 10, S2: VLAN 10
+20      Sales          S1: F0/6
+30      Operations     S2: F0/18
+999     Parking_Lot    S1: F0/2-4, F0/7-24, G0/1-2
+                       S2: F0/2-17, F0/19-24, G0/1-2
+1000    Native         N/A
+</pre>
+
+<h4>Router R1 Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#config terminal
+Router(config)#hostname R1
+R1(config)#no ip domain-lookup
+R1(config)#enable secret class
+R1(config)#line console 0
+R1(config-line)#password cisco
+R1(config-line)#login
+R1(config-line)#exit
+R1(config)#line vty 0 4
+R1(config-line)#password cisco
+R1(config-line)#login
+R1(config-line)#exit
+R1(config)#service password-encryption
+R1(config)#banner motd $ Authorized Users Only! $
+
+R1(config)#interface g0/0/1
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#interface g0/0/1.10
+R1(config-subif)#description Management Network
+R1(config-subif)#encapsulation dot1q 10
+R1(config-subif)#ip address 192.168.10.1 255.255.255.0
+R1(config-subif)#exit
+
+R1(config)#interface g0/0/1.20
+R1(config-subif)#encapsulation dot1q 20
+R1(config-subif)#description Sales Network
+R1(config-subif)#ip address 192.168.20.1 255.255.255.0
+R1(config-subif)#exit
+
+R1(config)#interface g0/0/1.30
+R1(config-subif)#encapsulation dot1q 30
+R1(config-subif)#description Operations Network
+R1(config-subif)#ip address 192.168.30.1 255.255.255.0
+R1(config-subif)#exit
+
+R1(config)#interface g0/0/1.1000
+R1(config-subif)#encapsulation dot1q 1000 native
+R1(config-subif)#description Native VLAN
+R1(config-subif)#exit
+
+R1#copy running-config startup-config
+</pre>
+</div>
+
+<h4>Switch S1 Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch>enable
+Switch#config terminal
+Switch(config)#hostname S1
+S1(config)#no ip domain-lookup
+S1(config)#enable secret class
+S1(config)#line console 0
+S1(config-line)#password cisco
+S1(config-line)#login
+S1(config-line)#exit
+S1(config)#line vty 0 4
+S1(config-line)#password cisco
+S1(config-line)#login
+S1(config-line)#exit
+S1(config)#service password-encryption
+S1(config)#banner motd $ Authorized Users Only! $
+
+S1(config)#vlan 10
+S1(config-vlan)#name Management
+S1(config-vlan)#vlan 20
+S1(config-vlan)#name Sales
+S1(config-vlan)#vlan 30
+S1(config-vlan)#name Operations
+S1(config-vlan)#vlan 999
+S1(config-vlan)#name Parking_Lot
+S1(config-vlan)#vlan 1000
+S1(config-vlan)#name Native
+S1(config-vlan)#exit
+
+S1(config)#interface vlan 10
+S1(config-if)#ip address 192.168.10.11 255.255.255.0
+S1(config-if)#no shutdown
+S1(config-if)#exit
+S1(config)#ip default-gateway 192.168.10.1
+
+S1(config)#interface range f0/2-4, f0/7-24, g0/1-2
+S1(config-if-range)#switchport mode access
+S1(config-if-range)#switchport access vlan 999
+S1(config-if-range)#shutdown
+S1(config-if-range)#exit
+
+S1(config)#interface f0/6
+S1(config-if)#switchport mode access
+S1(config-if)#switchport access vlan 20
+S1(config-if)#exit
+
+S1(config)#interface f0/1
+S1(config-if)#switchport mode trunk
+S1(config-if)#switchport trunk native vlan 1000
+S1(config-if)#switchport trunk allowed vlan 10,20,30,1000
+S1(config-if)#exit
+
+S1(config)#interface f0/5
+S1(config-if)#switchport mode trunk
+S1(config-if)#switchport trunk native vlan 1000
+S1(config-if)#switchport trunk allowed vlan 10,20,30,1000
+S1(config-if)#exit
+
+S1#copy running-config startup-config
+</pre>
+</div>
+
+<h4>Switch S2 Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch>enable
+Switch#config terminal
+Switch(config)#hostname S2
+S2(config)#no ip domain-lookup
+S2(config)#enable secret class
+S2(config)#line console 0
+S2(config-line)#password cisco
+S2(config-line)#login
+S2(config-line)#exit
+S2(config)#line vty 0 4
+S2(config-line)#password cisco
+S2(config-line)#login
+S2(config-line)#exit
+S2(config)#service password-encryption
+S2(config)#banner motd $ Authorized Users Only! $
+
+S2(config)#vlan 10
+S2(config-vlan)#name Management
+S2(config-vlan)#vlan 20
+S2(config-vlan)#name Sales
+S2(config-vlan)#vlan 30
+S2(config-vlan)#name Operations
+S2(config-vlan)#vlan 999
+S2(config-vlan)#name Parking_Lot
+S2(config-vlan)#vlan 1000
+S2(config-vlan)#name Native
+S2(config-vlan)#exit
+
+S2(config)#interface vlan 10
+S2(config-if)#ip address 192.168.10.12 255.255.255.0
+S2(config-if)#no shutdown
+S2(config-if)#exit
+S2(config)#ip default-gateway 192.168.10.1
+
+S2(config)#interface range f0/2-17, f0/19-24, g0/1-2
+S2(config-if-range)#switchport mode access
+S2(config-if-range)#switchport access vlan 999
+S2(config-if-range)#shutdown
+S2(config-if-range)#exit
+
+S2(config)#interface f0/18
+S2(config-if)#switchport mode access
+S2(config-if)#switchport access vlan 30
+S2(config-if)#exit
+
+S2(config)#interface f0/1
+S2(config-if)#switchport mode trunk
+S2(config-if)#switchport trunk native vlan 1000
+S2(config-if)#switchport trunk allowed vlan 10,20,30,1000
+S2(config-if)#exit
+
+S2#copy running-config startup-config
+</pre>
+</div>
+
+<hr>
+
+<!-- Practical 4 -->
+<h2>Practical 4: Spanning Tree Protocol (STP)</h2>
+
+<h3>4A. Observe STP Topology Changes and Implement RSTP</h3>
+<div class="aim">
+    <strong>Aim:</strong> Implement Advanced STP Modifications and Mechanisms, observe topology changes, and configure Rapid Spanning Tree Protocol (RSTP).
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 3 Multilayer Switches (D1, D2, A1)</li>
+    <li>Connect D1 G1/0/1 to D2 G1/0/1</li>
+    <li>Connect D1 G1/0/5 to A1 F0/1</li>
+    <li>Connect D1 G1/0/6 to A1 F0/2</li>
+    <li>Connect D2 G1/0/5 to A1 F0/3</li>
+    <li>Connect D2 G1/0/6 to A1 F0/4</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device  Interface  IPv4 Address
+D1      VLAN1      10.0.0.1/8
+D2      VLAN1      10.0.0.2/8
+A1      VLAN1      10.0.0.3/8
+</pre>
+
+<h4>Switch D1 Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch>enable
+Switch#config terminal
+Switch(config)#hostname D1
+D1(config)#spanning-tree mode pvst
+D1(config)#line con 0
+D1(config-line)#exec-timeout 0 0
+D1(config-line)#logging synchronous
+D1(config-line)#exit
+
+D1(config)#interface range g1/0/1-24
+D1(config-if-range)#shutdown
+D1(config-if-range)#exit
+
+D1(config)#interface range g1/0/1, g1/0/5-6
+D1(config-if-range)#switchport mode trunk
+D1(config-if-range)#no shutdown
+D1(config-if-range)#exit
+
+D1(config)#vlan 2
+D1(config-vlan)#name SecondVLAN
+D1(config-vlan)#exit
+
+D1(config)#interface vlan 1
+D1(config-if)#ip address 10.0.0.1 255.0.0.0
+D1(config-if)#no shut
+D1(config-if)#exit
+</pre>
+</div>
+
+<h4>Switch D2 Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch>enable
+Switch#config terminal
+Switch(config)#hostname D2
+D2(config)#spanning-tree mode pvst
+D2(config)#line con 0
+D2(config-line)#exec-timeout 0 0
+D2(config-line)#logging synchronous
+D2(config-line)#exit
+
+D2(config)#interface range g1/0/1-24
+D2(config-if-range)#shutdown
+D2(config-if-range)#exit
+
+D2(config)#interface range g1/0/1, g1/0/5-6
+D2(config-if-range)#switchport mode trunk
+D2(config-if-range)#no shutdown
+D2(config-if-range)#exit
+
+D2(config)#vlan 2
+D2(config-vlan)#name SecondVLAN
+D2(config-vlan)#exit
+
+D2(config)#interface vlan 1
+D2(config-if)#ip address 10.0.0.2 255.0.0.0
+D2(config-if)#no shut
+D2(config-if)#exit
+</pre>
+</div>
+
+<h4>Switch A1 Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch>enable
+Switch#config terminal
+Switch(config)#hostname A1
+A1(config)#spanning-tree mode pvst
+A1(config)#line con 0
+A1(config-line)#exec-timeout 0 0
+A1(config-line)#logging synchronous
+A1(config-line)#exit
+
+A1(config)#interface range f0/1-24, g0/1-2
+A1(config-if-range)#shutdown
+A1(config-if-range)#exit
+
+A1(config)#interface range f0/1-4
+A1(config-if-range)#switchport mode trunk
+A1(config-if-range)#no shutdown
+A1(config-if-range)#exit
+
+A1(config)#vlan 2
+A1(config-vlan)#name SecondVLAN
+A1(config-vlan)#exit
+
+A1(config)#interface vlan 1
+A1(config-if)#ip address 10.0.0.3 255.0.0.0
+A1(config-if)#no shut
+A1(config-if)#exit
+</pre>
+</div>
+
+<h4>Verify Spanning Tree</h4>
+<div class="practical-code">
+<pre>
+D1#show spanning-tree
+D2#show spanning-tree
+A1#show spanning-tree
+</pre>
+</div>
+
+<h4>Configure Rapid Spanning Tree (RSTP)</h4>
+<div class="practical-code">
+<pre>
+D1(config)#spanning-tree mode rapid-pvst
+D2(config)#spanning-tree mode rapid-pvst
+A1(config)#spanning-tree mode rapid-pvst
+</pre>
+</div>
+
+<h4>Observe Convergence Time</h4>
+<div class="practical-code">
+<pre>
+D1#debug spanning-tree events
+D1#config t
+D1(config)#interface g1/0/1
+D1(config-if)#shutdown
+D1(config-if)#no shutdown
+</pre>
+</div>
+
+<h3>4B. Implement MST (Multiple Spanning Tree)</h3>
+<div class="aim">
+    <strong>Aim:</strong> Configure Multiple Spanning Tree (MST) for efficient VLAN grouping and spanning tree optimization.
+</div>
+
+<div class="practical-code">
+<pre>
+D1(config)#spanning-tree mode mst
+D1(config)#spanning-tree mst configuration
+D1(config-mst)#name REGION1
+D1(config-mst)#revision 1
+D1(config-mst)#instance 1 vlan 1-10
+D1(config-mst)#instance 2 vlan 11-20
+D1(config-mst)#exit
+D1(config)#spanning-tree mst 1 priority 4096
+</pre>
+</div>
+
+<hr>
+
+<!-- Practical 5 -->
+<h2>Practical 5: EtherChannel Implementation</h2>
+
+<div class="aim">
+    <strong>Aim:</strong> Implement EtherChannel using PAgP and LACP protocols to aggregate multiple physical links into a single logical link.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 3 Switches (2960) - name them SWA, SWB, SWC</li>
+    <li>Connect switches according to Port Channel table below</li>
+    <li>Use multiple links between switches as specified</li>
+</ol>
+
+<p><strong>Port Channel Connections:</strong></p>
+<pre>
+Port Channel  Devices      Port Connections        Type
+1             SWA to SWB   G0/1 to G0/1           PAgP
+1             SWA to SWB   G0/2 to G0/2           PAgP
+2             SWA to SWC   F0/21 to F0/21         LACP
+2             SWA to SWC   F0/22 to F0/22         LACP
+3             SWB to SWC   F0/23 to F0/23         LACP
+3             SWB to SWC   F0/24 to F0/24         LACP
+</pre>
+
+<h4>Switch SWA Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch>enable
+Switch#config terminal
+Switch(config)#hostname SWA
+
+SWA(config)#interface FastEthernet0/21
+SWA(config-if)#switchport mode trunk
+SWA(config-if)#channel-group 2 mode active
+SWA(config-if)#exit
+
+SWA(config)#interface FastEthernet0/22
+SWA(config-if)#switchport mode trunk
+SWA(config-if)#channel-group 2 mode active
+SWA(config-if)#exit
+
+SWA(config)#interface GigabitEthernet0/1
+SWA(config-if)#switchport mode trunk
+SWA(config-if)#channel-group 1 mode desirable
+SWA(config-if)#exit
+
+SWA(config)#interface GigabitEthernet0/2
+SWA(config-if)#switchport mode trunk
+SWA(config-if)#channel-group 1 mode desirable
+SWA(config-if)#exit
+
+SWA#show etherchannel summary
+</pre>
+</div>
+
+<h4>Switch SWB Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch>enable
+Switch#config terminal
+Switch(config)#hostname SWB
+
+SWB(config)#interface FastEthernet0/23
+SWB(config-if)#switchport mode trunk
+SWB(config-if)#channel-group 3 mode passive
+SWB(config-if)#exit
+
+SWB(config)#interface FastEthernet0/24
+SWB(config-if)#switchport mode trunk
+SWB(config-if)#channel-group 3 mode passive
+SWB(config-if)#exit
+
+SWB(config)#interface GigabitEthernet0/1
+SWB(config-if)#switchport mode trunk
+SWB(config-if)#channel-group 1 mode desirable
+SWB(config-if)#exit
+
+SWB(config)#interface GigabitEthernet0/2
+SWB(config-if)#switchport mode trunk
+SWB(config-if)#channel-group 1 mode desirable
+SWB(config-if)#exit
+
+SWB#show etherchannel summary
+</pre>
+</div>
+
+<h4>Switch SWC Configuration</h4>
+<div class="practical-code">
+<pre>
+Switch>enable
+Switch#config terminal
+Switch(config)#hostname SWC
+
+SWC(config)#interface FastEthernet0/21
+SWC(config-if)#switchport mode trunk
+SWC(config-if)#channel-group 2 mode active
+SWC(config-if)#exit
+
+SWC(config)#interface FastEthernet0/22
+SWC(config-if)#switchport mode trunk
+SWC(config-if)#channel-group 2 mode active
+SWC(config-if)#exit
+
+SWC(config)#interface FastEthernet0/23
+SWC(config-if)#switchport mode trunk
+SWC(config-if)#channel-group 3 mode active
+SWC(config-if)#exit
+
+SWC(config)#interface FastEthernet0/24
+SWC(config-if)#switchport mode trunk
+SWC(config-if)#channel-group 3 mode active
+SWC(config-if)#exit
+
+SWC#show etherchannel summary
+</pre>
+</div>
+
+<h4>Verification Commands</h4>
+<div class="practical-code">
+<pre>
+show etherchannel summary
+show etherchannel port-channel
+show interfaces port-channel 1
+show running-config interface port-channel 1
+</pre>
+</div>
+
+<hr>
+
+<!-- Practical 6 -->
+<h2>Practical 6: OSPF Implementation</h2>
+
+<h3>6A. Single-Area OSPFv2</h3>
+<div class="aim">
+    <strong>Aim:</strong> Implement Single-Area OSPFv2 routing protocol for dynamic routing.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 3 Routers (R1, R2, R3) and 3 PCs (PC-A, PC-B, PC-C)</li>
+    <li>Connect PC-A to R1 G0/0</li>
+    <li>Connect PC-B to R2 G0/0</li>
+    <li>Connect PC-C to R3 G0/0</li>
+    <li>Connect R1 S0/0/0 to R2 S0/0/0 (DCE on R1)</li>
+    <li>Connect R1 S0/0/1 to R3 S0/0/0 (DCE on R3)</li>
+    <li>Connect R2 S0/0/1 to R3 S0/0/1 (DCE on R2)</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device  Interface   IP Address       Subnet Mask        Default Gateway
+R1      G0/0        192.168.1.1      255.255.255.0      N/A
+R1      S0/0/0      192.168.12.1     255.255.255.252    N/A
+R1      S0/0/1      192.168.13.1     255.255.255.252    N/A
+R2      G0/0        192.168.2.1      255.255.255.0      N/A
+R2      S0/0/0      192.168.12.2     255.255.255.252    N/A
+R2      S0/0/1      192.168.23.1     255.255.255.252    N/A
+R3      G0/0        192.168.3.1      255.255.255.0      N/A
+R3      S0/0/0      192.168.13.2     255.255.255.252    N/A
+R3      S0/0/1      192.168.23.2     255.255.255.252    N/A
+PC-A    NIC         192.168.1.3      255.255.255.0      192.168.1.1
+PC-B    NIC         192.168.2.3      255.255.255.0      192.168.2.1
+PC-C    NIC         192.168.3.3      255.255.255.0      192.168.3.1
+</pre>
+
+<h4>Router R1 Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#hostname R1
+
+R1(config)#interface GigabitEthernet0/0
+R1(config-if)#ip address 192.168.1.1 255.255.255.0
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#interface Serial0/0/0
+R1(config-if)#ip address 192.168.12.1 255.255.255.252
+R1(config-if)#clock rate 64000
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#interface Serial0/0/1
+R1(config-if)#ip address 192.168.13.1 255.255.255.252
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#router ospf 1
+R1(config-router)#network 192.168.1.0 0.0.0.255 area 0
+R1(config-router)#network 192.168.12.0 0.0.0.3 area 0
+R1(config-router)#network 192.168.13.0 0.0.0.3 area 0
+R1(config-router)#exit
+</pre>
+</div>
+
+<h4>Router R2 Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#hostname R2
+
+R2(config)#interface GigabitEthernet0/0
+R2(config-if)#ip address 192.168.2.1 255.255.255.0
+R2(config-if)#no shutdown
+R2(config-if)#exit
+
+R2(config)#interface Serial0/0/0
+R2(config-if)#ip address 192.168.12.2 255.255.255.252
+R2(config-if)#no shutdown
+R2(config-if)#exit
+
+R2(config)#interface Serial0/0/1
+R2(config-if)#ip address 192.168.23.1 255.255.255.252
+R2(config-if)#clock rate 64000
+R2(config-if)#no shutdown
+R2(config-if)#exit
+
+R2(config)#router ospf 1
+R2(config-router)#network 192.168.2.0 0.0.0.255 area 0
+R2(config-router)#network 192.168.12.0 0.0.0.3 area 0
+R2(config-router)#network 192.168.23.0 0.0.0.3 area 0
+R2(config-router)#exit
+</pre>
+</div>
+
+<h4>Router R3 Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#hostname R3
+
+R3(config)#interface GigabitEthernet0/0
+R3(config-if)#ip address 192.168.3.1 255.255.255.0
+R3(config-if)#no shutdown
+R3(config-if)#exit
+
+R3(config)#interface Serial0/0/0
+R3(config-if)#ip address 192.168.13.2 255.255.255.252
+R3(config-if)#clock rate 64000
+R3(config-if)#no shutdown
+R3(config-if)#exit
+
+R3(config)#interface Serial0/0/1
+R3(config-if)#ip address 192.168.23.2 255.255.255.252
+R3(config-if)#no shutdown
+R3(config-if)#exit
+
+R3(config)#router ospf 1
+R3(config-router)#network 192.168.3.0 0.0.0.255 area 0
+R3(config-router)#network 192.168.13.0 0.0.0.3 area 0
+R3(config-router)#network 192.168.23.0 0.0.0.3 area 0
+R3(config-router)#exit
+</pre>
+</div>
+
+<h4>OSPF Verification Commands</h4>
+<div class="practical-code">
+<pre>
+show ip ospf neighbor
+show ip route
+show ip protocols
+show ip ospf interface brief
+show ip ospf interface
+show ip ospf database
+</pre>
+</div>
+
+<h3>6B. Multi-Area OSPFv2</h3>
+<div class="aim">
+    <strong>Aim:</strong> Implement Multi-Area OSPFv2 with different OSPF areas for scalability.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 4 Routers (R1, R2, R3, R4) and 4 PCs</li>
+    <li>Connect routers in a mesh topology</li>
+    <li>Assign different areas to different router segments</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device  Interface   IP Address       Subnet Mask        Default Gateway
+R1      G0/0        192.168.1.1/24   255.255.255.0      N/A
+R1      S0/0/0      192.168.12.1/30  255.255.255.252    N/A
+R1      S0/0/1      192.168.15.2/30  255.255.255.252    N/A
+R2      G0/0        192.168.2.1/24   255.255.255.0      N/A
+R2      S0/0/0      192.168.12.2/30  255.255.255.252    N/A
+R2      S0/0/1      192.168.13.1/30  255.255.255.252    N/A
+R3      G0/0        192.168.3.1/24   255.255.255.0      N/A
+R3      S0/0/0      192.168.14.1/30  255.255.255.252    N/A
+R3      S0/0/1      192.168.13.2/30  255.255.255.252    N/A
+R4      G0/0        192.168.4.1/24   255.255.255.0      N/A
+R4      S0/0/0      192.168.14.2/30  255.255.255.252    N/A
+R4      S0/0/1      192.168.15.1/30  255.255.255.252    N/A
+</pre>
+
+<h4>Router R1 Configuration (Area 0)</h4>
+<div class="practical-code">
+<pre>
+R1(config)#router ospf 1
+R1(config-router)#network 192.168.1.0 0.0.0.255 area 0
+R1(config-router)#network 192.168.15.0 0.0.0.3 area 0
+R1(config-router)#network 192.168.12.0 0.0.0.3 area 0
+R1(config-router)#exit
+</pre>
+</div>
+
+<h4>Router R2 Configuration (Area 0 and Area 1)</h4>
+<div class="practical-code">
+<pre>
+R2(config)#router ospf 1
+R2(config-router)#network 192.168.2.0 0.0.0.255 area 1
+R2(config-router)#network 192.168.12.0 0.0.0.3 area 0
+R2(config-router)#network 192.168.13.0 0.0.0.3 area 1
+R2(config-router)#exit
+</pre>
+</div>
+
+<h4>Router R3 Configuration (Area 1 and Area 2)</h4>
+<div class="practical-code">
+<pre>
+R3(config)#router ospf 1
+R3(config-router)#network 192.168.3.0 0.0.0.255 area 2
+R3(config-router)#network 192.168.13.0 0.0.0.3 area 1
+R3(config-router)#network 192.168.14.0 0.0.0.3 area 2
+R3(config-router)#exit
+</pre>
+</div>
+
+<h4>Router R4 Configuration (Area 0 and Area 2)</h4>
+<div class="practical-code">
+<pre>
+R4(config)#router ospf 1
+R4(config-router)#network 192.168.4.0 0.0.0.255 area 0
+R4(config-router)#network 192.168.15.0 0.0.0.3 area 0
+R4(config-router)#network 192.168.14.0 0.0.0.3 area 2
+R4(config-router)#exit
+</pre>
+</div>
+
+<h3>6C. OSPFv2 Route Summarization</h3>
+<div class="practical-code">
+<pre>
+R2(config)#router ospf 1
+R2(config-router)#area 1 range 192.168.0.0 255.255.252.0
+R2(config-router)#exit
+</pre>
+</div>
+
+<h3>6D. Implement Multiarea OSPFv3 (IPv6)</h3>
+<div class="practical-code">
+<pre>
+R1(config)#ipv6 unicast-routing
+R1(config)#interface g0/0
+R1(config-if)#ipv6 address 2001:db8:1::1/64
+R1(config-if)#ipv6 ospf 1 area 0
+R1(config-if)#no shutdown
+R1(config-if)#exit
+R1(config)#ipv6 router ospf 1
+R1(config-rtr)#router-id 1.1.1.1
+R1(config-rtr)#exit
+</pre>
+</div>
+
+<hr>
+
+<!-- Practical 7 -->
+<h2>Practical 7: BGP Implementation</h2>
+
+<h3>7A. Implement BGP Communities</h3>
+<div class="aim">
+    <strong>Aim:</strong> Configure BGP (Border Gateway Protocol) for inter-autonomous system routing.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 3 Routers (R1, R2, R3) and 3 PCs</li>
+    <li>Connect PC-A to R1 G0/0</li>
+    <li>Connect PC-B to R2 G0/0</li>
+    <li>Connect PC-C to R3 G0/0</li>
+    <li>Connect R1 S0/0/0 to R2 S0/0/0 (serial DCE on R1)</li>
+    <li>Connect R2 S0/0/1 to R3 S0/0/1 (serial DCE on R2)</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device  Interface   IP Address       Subnet Mask        Default Gateway
+R1      G0/0        192.168.1.1      255.255.255.0      N/A
+R1      S0/0/0      10.1.1.2         255.255.255.252    N/A
+R2      G0/0        192.168.2.1      255.255.255.0      N/A
+R2      S0/0/0      10.1.1.1         255.255.255.252    N/A
+R2      S0/0/1      10.2.2.1         255.255.255.252    N/A
+R3      G0/0        192.168.3.1      255.255.255.0      N/A
+R3      S0/0/1      10.2.2.2         255.255.255.252    N/A
+PC-A    NIC         192.168.1.3      255.255.255.0      192.168.1.1
+PC-B    NIC         192.168.2.3      255.255.255.0      192.168.2.1
+PC-C    NIC         192.168.3.3      255.255.255.0      192.168.3.1
+</pre>
+
+<h4>Router R1 Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#hostname R1
+
+R1(config)#interface GigabitEthernet0/0
+R1(config-if)#ip address 192.168.1.1 255.255.255.0
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#interface Serial0/0/0
+R1(config-if)#ip address 10.1.1.2 255.255.255.252
+R1(config-if)#clock rate 64000
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#router rip
+R1(config-router)#network 10.0.0.0
+R1(config-router)#network 192.168.1.0
+R1(config-router)#exit
+
+R1(config)#license boot module c1900 technology-package securityk9
+
+R1(config)#access-list 110 permit ip 192.168.1.0 0.0.0.255 192.168.3.0 0.0.0.255
+
+R1(config)#crypto isakmp policy 10
+R1(config-isakmp)#encryption aes 256
+R1(config-isakmp)#authentication pre-share
+R1(config-isakmp)#group 5
+R1(config-isakmp)#exit
+
+R1(config)#crypto isakmp key vpnpa55 address 10.2.2.2
+
+R1(config)#crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+
+R1(config)#crypto map VPN-MAP 10 ipsec-isakmp
+R1(config-crypto-map)#description VPN connection to R3
+R1(config-crypto-map)#set peer 10.2.2.2
+R1(config-crypto-map)#set transform-set VPN-SET
+R1(config-crypto-map)#match address 110
+R1(config-crypto-map)#exit
+
+R1(config)#interface s0/0/0
+R1(config-if)#crypto map VPN-MAP
+R1(config-if)#exit
+</pre>
+</div>
+
+<h4>Router R2 Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#hostname R2
+
+R2(config)#interface GigabitEthernet0/0
+R2(config-if)#ip address 192.168.2.1 255.255.255.0
+R2(config-if)#no shutdown
+R2(config-if)#exit
+
+R2(config)#interface Serial0/0/0
+R2(config-if)#ip address 10.1.1.1 255.255.255.252
+R2(config-if)#no shutdown
+R2(config-if)#exit
+
+R2(config)#interface Serial0/0/1
+R2(config-if)#ip address 10.2.2.1 255.255.255.252
+R2(config-if)#clock rate 64000
+R2(config-if)#no shutdown
+R2(config-if)#exit
+
+R2(config)#router rip
+R2(config-router)#network 10.0.0.0
+R2(config-router)#network 192.168.2.0
+R2(config-router)#exit
+</pre>
+</div>
+
+<h4>Router R3 Configuration</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#hostname R3
+
+R3(config)#interface GigabitEthernet0/0
+R3(config-if)#ip address 192.168.3.1 255.255.255.0
+R3(config-if)#no shutdown
+R3(config-if)#exit
+
+R3(config)#interface Serial0/0/1
+R3(config-if)#ip address 10.2.2.2 255.255.255.252
+R3(config-if)#no shutdown
+R3(config-if)#exit
+
+R3(config)#router rip
+R3(config-router)#network 10.0.0.0
+R3(config-router)#network 192.168.3.0
+R3(config-router)#exit
+
+R3(config)#license boot module c1900 technology-package securityk9
+
+R3(config)#access-list 110 permit ip 192.168.3.0 0.0.0.255 192.168.1.0 0.0.0.255
+
+R3(config)#crypto isakmp policy 10
+R3(config-isakmp)#encryption aes 256
+R3(config-isakmp)#authentication pre-share
+R3(config-isakmp)#group 5
+R3(config-isakmp)#exit
+
+R3(config)#crypto isakmp key vpnpa55 address 10.1.1.2
+
+R3(config)#crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+
+R3(config)#crypto map VPN-MAP 10 ipsec-isakmp
+R3(config-crypto-map)#description VPN connection to R1
+R3(config-crypto-map)#set peer 10.1.1.2
+R3(config-crypto-map)#set transform-set VPN-SET
+R3(config-crypto-map)#match address 110
+R3(config-crypto-map)#exit
+
+R3(config)#interface s0/0/1
+R3(config-if)#crypto map VPN-MAP
+R3(config-if)#exit
+</pre>
+</div>
+
+<h4>IPsec Verification Commands</h4>
+<div class="practical-code">
+<pre>
+show crypto isakmp policy
+show crypto isakmp sa
+show crypto ipsec transform-set
+show crypto map
+show crypto ipsec sa
+</pre>
+</div>
+
+<h3>8B. Implement GRE over IPsec Site-to-Site VPNs</h3>
+<div class="aim">
+    <strong>Aim:</strong> Configure GRE tunnel with IPsec encryption for secure multiprotocol routing.
+</div>
+
+<div class="practical-code">
+<pre>
+R1(config)#interface tunnel 0
+R1(config-if)#ip address 172.16.0.1 255.255.255.252
+R1(config-if)#tunnel source serial0/0/0
+R1(config-if)#tunnel destination 10.2.2.2
+R1(config-if)#tunnel mode gre ip
+R1(config-if)#exit
+
+R1(config)#crypto ipsec profile IPSEC-PROFILE
+R1(ipsec-profile)#set transform-set VPN-SET
+R1(ipsec-profile)#exit
+
+R1(config)#interface tunnel 0
+R1(config-if)#tunnel protection ipsec profile IPSEC-PROFILE
+R1(config-if)#exit
+
+R3(config)#interface tunnel 0
+R3(config-if)#ip address 172.16.0.2 255.255.255.252
+R3(config-if)#tunnel source serial0/0/1
+R3(config-if)#tunnel destination 10.1.1.2
+R3(config-if)#tunnel mode gre ip
+R3(config-if)#exit
+
+R3(config)#crypto ipsec profile IPSEC-PROFILE
+R3(ipsec-profile)#set transform-set VPN-SET
+R3(ipsec-profile)#exit
+
+R3(config)#interface tunnel 0
+R3(config-if)#tunnel protection ipsec profile IPSEC-PROFILE
+R3(config-if)#exit
+</pre>
+</div>
+
+<h3>8C. Implement VRF Lite</h3>
+<div class="aim">
+    <strong>Aim:</strong> Configure VRF (Virtual Routing and Forwarding) Lite for network segmentation.
+</div>
+
+<div class="practical-code">
+<pre>
+R1(config)#ip vrf CUSTOMER-A
+R1(config-vrf)#rd 100:1
+R1(config-vrf)#exit
+
+R1(config)#ip vrf CUSTOMER-B
+R1(config-vrf)#rd 100:2
+R1(config-vrf)#exit
+
+R1(config)#interface GigabitEthernet0/0
+R1(config-if)#ip vrf forwarding CUSTOMER-A
+R1(config-if)#ip address 192.168.1.1 255.255.255.0
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#interface GigabitEthernet0/1
+R1(config-if)#ip vrf forwarding CUSTOMER-B
+R1(config-if)#ip address 192.168.2.1 255.255.255.0
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1#show ip vrf
+R1#show ip route vrf CUSTOMER-A
+R1#show ip route vrf CUSTOMER-B
+</pre>
+</div>
+
+<hr>
+
+<!-- Practical 9 -->
+<h2>Practical 9: SDN Simulation with Controllers</h2>
+
+<h3>9A. OpenDaylight SDN Controller with Mininet Network Emulator</h3>
+<div class="aim">
+    <strong>Aim:</strong> Simulate Software Defined Networking using OpenDaylight controller with Mininet emulator.
+</div>
+
+<p><strong>Note:</strong> This practical requires external tools - OpenDaylight and Mininet installed on Linux system.</p>
+
+<h4>Mininet Installation (Linux)</h4>
+<div class="practical-code">
+<pre>
+sudo apt-get update
+sudo apt-get install mininet
+sudo mn --version
+</pre>
+</div>
+
+<h4>OpenDaylight Installation</h4>
+<div class="practical-code">
+<pre>
+wget https://nexus.opendaylight.org/content/repositories/opendaylight.release/org/opendaylight/integration/karaf/0.8.4/karaf-0.8.4.tar.gz
+tar -xvf karaf-0.8.4.tar.gz
+cd karaf-0.8.4
+./bin/karaf
+</pre>
+</div>
+
+<h4>Install ODL Features</h4>
+<div class="practical-code">
+<pre>
+opendaylight-user@root>feature:install odl-restconf
+opendaylight-user@root>feature:install odl-l2switch-switch-ui
+opendaylight-user@root>feature:install odl-mdsal-apidocs
+opendaylight-user@root>feature:install odl-dluxapps-applications
+</pre>
+</div>
+
+<h4>Create Mininet Topology</h4>
+<div class="practical-code">
+<pre>
+sudo mn --controller=remote,ip=127.0.0.1,port=6633 --topo tree,2
+</pre>
+</div>
+
+<h4>Mininet Commands</h4>
+<div class="practical-code">
+<pre>
+mininet> nodes
+mininet> net
+mininet> links
+mininet> h1 ping h2
+mininet> pingall
+mininet> dump
+mininet> exit
+</pre>
+</div>
+
+<h4>Access OpenDaylight DLUX UI</h4>
+<div class="practical-code">
+<pre>
+Open browser: http://localhost:8181/index.html
+Username: admin
+Password: admin
+</pre>
+</div>
+
+<h3>9B. OFNet SDN Network Emulator</h3>
+<div class="aim">
+    <strong>Aim:</strong> Simulate SDN using OFNet network emulator.
+</div>
+
+<h4>OFNet Installation</h4>
+<div class="practical-code">
+<pre>
+git clone https://github.com/onfsdn/OFNet.git
+cd OFNet
+sudo python setup.py install
+</pre>
+</div>
+
+<h4>Create OFNet Topology</h4>
+<div class="practical-code">
+<pre>
+from ofnet.topology import Topology
+from ofnet.node import Controller, Switch, Host
+
+topo = Topology()
+c1 = topo.addController('c1')
+s1 = topo.addSwitch('s1')
+s2 = topo.addSwitch('s2')
+h1 = topo.addHost('h1')
+h2 = topo.addHost('h2')
+
+topo.addLink(h1, s1)
+topo.addLink(h2, s2)
+topo.addLink(s1, s2)
+
+topo.start()
+</pre>
+</div>
+
+<hr>
+
+<!-- Practical 10 -->
+<h2>Practical 10: OpenFlow Using Mininet</h2>
+
+<div class="aim">
+    <strong>Aim:</strong> Simulate OpenFlow protocol using Mininet network emulator for SDN experimentation.
+</div>
+
+<p><strong>Prerequisites:</strong></p>
+<ul>
+    <li>Linux system (Ubuntu/Debian recommended)</li>
+    <li>Mininet installed</li>
+    <li>OpenFlow controller (POX, Ryu, or Floodlight)</li>
+</ul>
+
+<h4>Install POX Controller</h4>
+<div class="practical-code">
+<pre>
+git clone https://github.com/noxrepo/pox
+cd pox
+./pox.py forwarding.l2_learning
+</pre>
+</div>
+
+<h4>Basic Mininet Topology</h4>
+<div class="practical-code">
+<pre>
+sudo mn --topo single,3 --mac --controller remote --switch ovsk
+
+mininet> nodes
+mininet> net
+mininet> dump
+</pre>
+</div>
+
+<h4>Custom Topology Script</h4>
+<div class="practical-code">
+<pre>
+from mininet.topo import Topo
+from mininet.net import Mininet
+from mininet.node import RemoteController
+from mininet.cli import CLI
+from mininet.log import setLogLevel
+
+class CustomTopo(Topo):
+    def build(self):
+        # Add switches
+        s1 = self.addSwitch('s1')
+        s2 = self.addSwitch('s2')
+        s3 = self.addSwitch('s3')
+        
+        # Add hosts
+        h1 = self.addHost('h1', ip='10.0.0.1/24')
+        h2 = self.addHost('h2', ip='10.0.0.2/24')
+        h3 = self.addHost('h3', ip='10.0.0.3/24')
+        h4 = self.addHost('h4', ip='10.0.0.4/24')
+        
+        # Add links
+        self.addLink(h1, s1)
+        self.addLink(h2, s1)
+        self.addLink(h3, s2)
+        self.addLink(h4, s3)
+        self.addLink(s1, s2)
+        self.addLink(s2, s3)
+        self.addLink(s3, s1)
+
+def runCustomTopo():
+    topo = CustomTopo()
+    net = Mininet(topo=topo, controller=RemoteController)
+    net.start()
+    CLI(net)
+    net.stop()
+
+if __name__ == '__main__':
+    setLogLevel('info')
+    runCustomTopo()
+</pre>
+</div>
+
+<h4>Run Custom Topology</h4>
+<div class="practical-code">
+<pre>
+sudo python custom_topo.py
+</pre>
+</div>
+
+<h4>OpenFlow Switch Configuration</h4>
+<div class="practical-code">
+<pre>
+sudo ovs-vsctl show
+sudo ovs-vsctl list-br
+sudo ovs-vsctl list-ports s1
+sudo ovs-ofctl show s1
+sudo ovs-ofctl dump-flows s1
+sudo ovs-ofctl dump-tables s1
+</pre>
+</div>
+
+<h4>Add Flow Entries Manually</h4>
+<div class="practical-code">
+<pre>
+sudo ovs-ofctl add-flow s1 priority=100,in_port=1,actions=output:2
+sudo ovs-ofctl add-flow s1 priority=100,in_port=2,actions=output:1
+sudo ovs-ofctl dump-flows s1
+</pre>
+</div>
+
+<h4>Test Connectivity</h4>
+<div class="practical-code">
+<pre>
+mininet> h1 ping h2
+mininet> h1 ping h3
+mininet> pingall
+mininet> iperf h1 h2
+</pre>
+</div>
+
+<h4>Monitor Traffic</h4>
+<div class="practical-code">
+<pre>
+mininet> h1 ifconfig
+mininet> s1 ifconfig
+mininet> dump
+</pre>
+</div>
+
+<h4>Advanced OpenFlow Commands</h4>
+<div class="practical-code">
+<pre>
+sudo ovs-ofctl add-flow s1 "table=0,priority=100,dl_type=0x0800,nw_dst=10.0.0.2,actions=output:2"
+sudo ovs-ofctl add-flow s1 "table=0,priority=100,dl_type=0x0806,actions=flood"
+sudo ovs-ofctl mod-flows s1 "table=0,priority=100,dl_type=0x0800,nw_dst=10.0.0.2,actions=output:3"
+sudo ovs-ofctl del-flows s1
+</pre>
+</div>
+
+<h4>Create Linear Topology</h4>
+<div class="practical-code">
+<pre>
+sudo mn --topo linear,4 --mac --controller remote --switch ovsk
+</pre>
+</div>
+
+<h4>Create Tree Topology</h4>
+<div class="practical-code">
+<pre>
+sudo mn --topo tree,depth=2,fanout=3 --mac --controller remote --switch ovsk
+</pre>
+</div>
+
+<h4>Performance Testing</h4>
+<div class="practical-code">
+<pre>
+mininet> iperf h1 h2
+mininet> h1 ping -c 10 h2
+mininet> h1 traceroute h3
+</pre>
+</div>
+
+<h4>Clean Up Mininet</h4>
+<div class="practical-code">
+<pre>
+sudo mn -c
+sudo ovs-vsctl show
+</pre>
+</div>
+
+<hr>
+
+<h2>General Verification and Testing Commands</h2>
+
+<h4>Router Commands</h4>
+<div class="practical-code">
+<pre>
+show running-config
+show ip interface brief
+show ip route
+show interfaces
+show version
+show protocols
+ping [ip-address]
+traceroute [ip-address]
+show cdp neighbors
+show clock
+</pre>
+</div>
+
+<h4>Switch Commands</h4>
+<div class="practical-code">
+<pre>
+show running-config
+show vlan brief
+show interfaces status
+show interfaces trunk
+show spanning-tree
+show mac address-table
+show port-channel summary
+show etherchannel summary
+show vtp status
+</pre>
+</div>
+
+<h4>Debugging Commands</h4>
+<div class="practical-code">
+<pre>
+debug ip packet
+debug ip routing
+debug spanning-tree events
+debug etherchannel
+no debug all
+undebug all
+</pre>
+</div>
+
+<hr>
+
+<footer>
+<p><strong>End of SDN Practicals Document</strong></p>
+<p>SIES (Nerul) College of Arts, Science and Commerce (Autonomous)</p>
+<p>Master of Science in Computer Science - Academic Year 2025-2026</p>
+</footer>
+
 </body>
-</html>
+</html>-A to R1 Fa0/0</li>
+    <li>Connect PC-B to R2 Fa0/0</li>
+    <li>Connect PC-C to R3 Fa0/0</li>
+    <li>Connect R1 S0/0/0 to R2 S0/0/0 (serial DCE)</li>
+    <li>Connect R1 S0/0/1 to R3 S0/0/0 (serial DCE)</li>
+    <li>Connect R2 S0/0/1 to R3 S0/0/1 (serial DCE)</li>
+</ol>
+
+<p><strong>Addressing Table:</strong></p>
+<pre>
+Device  Interface  IP Address    Subnet Mask    Default Gateway  AS Number
+R1      Fa0/0      10.0.0.1      255.0.0.0      N/A              100
+R1      S0/0/0     40.0.0.1      255.0.0.0      N/A              100
+R1      S0/0/1     60.0.0.1      255.0.0.0      N/A              100
+R2      Fa0/0      20.0.0.1      255.0.0.0      N/A              200
+R2      S0/0/0     40.0.0.2      255.0.0.0      N/A              200
+R2      S0/0/1     50.0.0.1      255.0.0.0      N/A              200
+R3      Fa0/0      30.0.0.1      255.0.0.0      N/A              300
+R3      S0/0/1     50.0.0.2      255.0.0.0      N/A              300
+R3      S0/0/0     60.0.0.2      255.0.0.0      N/A              300
+PC-A    Fa0/0      10.0.0.2      255.0.0.0      10.0.0.1         -
+PC-B    Fa0/0      20.0.0.2      255.0.0.0      20.0.0.1         -
+PC-C    Fa0/0      30.0.0.2      255.0.0.0      30.0.0.1         -
+</pre>
+
+<h4>Router R1 Configuration (AS 100)</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#hostname R1
+
+R1(config)#interface FastEthernet0/0
+R1(config-if)#ip address 10.0.0.1 255.0.0.0
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#interface Serial0/0/0
+R1(config-if)#ip address 40.0.0.1 255.0.0.0
+R1(config-if)#clock rate 64000
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#interface Serial0/0/1
+R1(config-if)#ip address 60.0.0.1 255.0.0.0
+R1(config-if)#clock rate 64000
+R1(config-if)#no shutdown
+R1(config-if)#exit
+
+R1(config)#router bgp 100
+R1(config-router)#neighbor 40.0.0.2 remote-as 200
+R1(config-router)#neighbor 60.0.0.2 remote-as 300
+R1(config-router)#network 10.0.0.0 mask 255.0.0.0
+R1(config-router)#exit
+</pre>
+</div>
+
+<h4>Router R2 Configuration (AS 200)</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#hostname R2
+
+R2(config)#interface FastEthernet0/0
+R2(config-if)#ip address 20.0.0.1 255.0.0.0
+R2(config-if)#no shutdown
+R2(config-if)#exit
+
+R2(config)#interface Serial0/0/0
+R2(config-if)#ip address 40.0.0.2 255.0.0.0
+R2(config-if)#no shutdown
+R2(config-if)#exit
+
+R2(config)#interface Serial0/0/1
+R2(config-if)#ip address 50.0.0.1 255.0.0.0
+R2(config-if)#clock rate 64000
+R2(config-if)#no shutdown
+R2(config-if)#exit
+
+R2(config)#router bgp 200
+R2(config-router)#neighbor 40.0.0.1 remote-as 100
+R2(config-router)#neighbor 50.0.0.2 remote-as 300
+R2(config-router)#network 20.0.0.0 mask 255.0.0.0
+R2(config-router)#exit
+</pre>
+</div>
+
+<h4>Router R3 Configuration (AS 300)</h4>
+<div class="practical-code">
+<pre>
+Router>enable
+Router#configure terminal
+Router(config)#hostname R3
+
+R3(config)#interface FastEthernet0/0
+R3(config-if)#ip address 30.0.0.1 255.0.0.0
+R3(config-if)#no shutdown
+R3(config-if)#exit
+
+R3(config)#interface Serial0/0/0
+R3(config-if)#ip address 60.0.0.2 255.0.0.0
+R3(config-if)#no shutdown
+R3(config-if)#exit
+
+R3(config)#interface Serial0/0/1
+R3(config-if)#ip address 50.0.0.2 255.0.0.0
+R3(config-if)#no shutdown
+R3(config-if)#exit
+
+R3(config)#router bgp 300
+R3(config-router)#neighbor 60.0.0.1 remote-as 100
+R3(config-router)#neighbor 50.0.0.1 remote-as 200
+R3(config-router)#network 30.0.0.0 mask 255.0.0.0
+R3(config-router)#exit
+</pre>
+</div>
+
+<h4>BGP Verification Commands</h4>
+<div class="practical-code">
+<pre>
+show ip bgp
+show ip bgp summary
+show ip bgp neighbors
+show ip route bgp
+</pre>
+</div>
+
+<h3>7B. Implement MP-BGP (Multiprotocol BGP)</h3>
+<div class="practical-code">
+<pre>
+R1(config)#router bgp 100
+R1(config-router)#address-family ipv4
+R1(config-router-af)#neighbor 40.0.0.2 activate
+R1(config-router-af)#network 10.0.0.0 mask 255.0.0.0
+R1(config-router-af)#exit-address-family
+</pre>
+</div>
+
+<h3>7C. Implement eBGP for IPv4</h3>
+<div class="practical-code">
+<pre>
+R1(config)#router bgp 100
+R1(config-router)#neighbor 40.0.0.2 remote-as 200
+R1(config-router)#neighbor 40.0.0.2 ebgp-multihop 2
+R1(config-router)#neighbor 40.0.0.2 update-source loopback0
+R1(config-router)#exit
+</pre>
+</div>
+
+<hr>
+
+<!-- Practical 8 -->
+<h2>Practical 8: VPN Implementation</h2>
+
+<h3>8A. Implement IPsec Site-to-Site VPNs</h3>
+<div class="aim">
+    <strong>Aim:</strong> Configure IPsec Site-to-Site VPN for secure communication between remote sites.
+</div>
+
+<p><strong>Packet Tracer Setup Instructions:</strong></p>
+<ol>
+    <li>Drag 3 Routers (R1, R2, R3) and 3 PCs</li>
+    <li>Connect PC
