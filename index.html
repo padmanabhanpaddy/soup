@@ -1,1454 +1,903 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Software Defined Network Practicals</title>
+<title>Applied Signal and Image Processing Practicals</title>
 </head>
 <body>
 
-<h1>Software Defined Network Practicals</h1>
-<h3>MSc Computer Science - Cisco Packet Tracer Lab Manual</h3>
-<p><strong>Submitted by:</strong> Darshan Jadhav | <strong>Roll No:</strong> MCS.25.06</p>
-<p><strong>Guide:</strong> Ms. Flosia Moses | <strong>Academic Year:</strong> 2025-2026</p>
+<h1>Applied Signal and Image Processing Practicals</h1>
+<h3>MSc Computer Science - Python Image Processing Lab Manual</h3>
+<p><strong>Submitted by:</strong> Sakshi Sunil Musale | <strong>Seat Number:</strong> MCS.24.09</p>
+<p><strong>Academic Year:</strong> 2024-25</p>
+
+<hr>
+
+<h2>Practical 1: Signal Processing Fundamentals</h2>
+<p><strong>Aim:</strong> Demonstrate upsampling, downsampling, and Fast Fourier Transform on image/speech signals.</p>
+
+<h3>1A. Up-Sampling</h3>
+<div id="practical1a">im = Image.open("../images/clock.jpg")  # the original small clock image
+pylab.imshow(im), pylab.show()
+
+im1 = im.resize((im.width*5, im.height*5), Image.NEAREST)  # nearest neighbor interpolation
+pylab.figure(figsize=(10,10)), pylab.imshow(im1), pylab.show()
+
+im1 = im.resize((im.width*5, im.height*5), Image.BILINEAR)  # up-sample with bi-linear interpolation
+pylab.figure(figsize=(10,10)), pylab.imshow(im1), pylab.show()
+
+im.resize((im.width*10, im.height*10), Image.BICUBIC).show()  # bi-cubic interpolation
+pylab.figure(figsize=(10,10)), pylab.imshow(im1), pylab.show()</div>
+
+<h3>1B. Down-Sampling</h3>
+<div id="practical1b">im = im.resize((im.width//5, im.height//5))
+pylab.figure(figsize=(15,10)), pylab.imshow(im), pylab.show()
+
+im = Image.open("../images/tajmahal.jpg")
+im = im.resize((im.width//5, im.height//5), Image.ANTIALIAS)
+pylab.figure(figsize=(15,10)), pylab.imshow(im), pylab.show()
+
+im = imread('../images/umbc.png')
+im1 = im.copy()
+pylab.figure(figsize=(20,15))
+
+for i in range(4):
+    pylab.subplot(2,2,i+1), pylab.imshow(im1, cmap='gray'), pylab.axis('off')
+    pylab.title('image size = ' + str(im1.shape[1]) + 'x' + str(im1.shape[0]))
+    im1 = rescale(im1, scale = 0.5, multichannel=True, anti_aliasing=False)
+
+pylab.subplots_adjust(wspace=0.1, hspace=0.1)
+pylab.show()</div>
+
+<h3>1C. FFT with numpy.fft module</h3>
+<div id="practical1c">import numpy.fft as fp
+
+im1 = rgb2gray(imread('../images/house.png'))
+pylab.figure(figsize=(12,10))
+
+freq1 = fp.fft2(im1)
+im1_ = fp.ifft2(freq1).real
+
+pylab.subplot(2,2,1), pylab.imshow(im1, cmap='gray'), pylab.title('Original Image', size=20)
+pylab.subplot(2,2,2), pylab.imshow(20*np.log10(0.01 + np.abs(fp.fftshift(freq1))), cmap='gray')
+pylab.title('FFT Spectrum Magnitude', size=20)
+
+pylab.subplot(2,2,3), pylab.imshow(np.angle(fp.fftshift(freq1)), cmap='gray')
+pylab.title('FFT Phase', size=20)
+
+pylab.subplot(2,2,4), pylab.imshow(np.clip(im1_,0,255), cmap='gray')
+pylab.title('Reconstructed Image', size=20)
+
+pylab.show()
+
+# Reconstructed images with mixed frequency components
+pylab.figure(figsize=(20,15))
+
+im1_ = fp.ifft2(np.vectorize(complex)(freq1.real, freq2.imag)).real
+im2_ = fp.ifft2(np.vectorize(complex)(freq2.real, freq1.imag)).real
+pylab.subplot(211), pylab.imshow(np.clip(im1_,0,255), cmap='gray')
+pylab.title('Reconstructed Image (Re(F1) + Im(F2))', size=20)
+pylab.subplot(212), pylab.imshow(np.clip(im2_,0,255), cmap='gray')
+pylab.title('Reconstructed Image (Re(F2) + Im(F1))', size=20)
+pylab.show()</div>
+
+<hr>
+
+<h2>Practical 2: Signal Analysis and Correlation</h2>
+
+<h3>2A. Triangle Signal Generation</h3>
+<p><strong>Aim:</strong> Create a triangle signal and plot a 3-period segment.</p>
+<div id="practical2a">import os
+
+if not os.path.exists('thinkdsp.py'):
+    !wget https://github.com/AllenDowney/ThinkDSP/raw/master/code/thinkdsp.py
+
+import thinkdsp
+
+cos_sig = thinkdsp.CosSignal(freq=440, amp=1.0, offset=0)
+sin_sig = thinkdsp.SinSignal(freq=880, amp=0.5, offset=0)
+mix = cos_sig + sin_sig
+
+wave = mix.make_wave(duration=0.5, start=0, framerate=11025)
+period = mix.period
+segment = wave.segment(start=0, duration=period*3)
+
+spectrum = wave.make_spectrum()
+spectrum.plot()
+
+signal = thinkdsp.TriangleSignal(200)
+signal.plot()
+
+wave = signal.make_wave(framerate=11025)
+spectrum = wave.make_spectrum()
+spectrum.plot()</div>
+
+<h3>2B. Signal Correlation</h3>
+<p><strong>Aim:</strong> Plot signal segments and compute correlation between them.</p>
+<div id="practical2b">start = 0.0
+duration = 0.2
+segment = wave.segment(start, duration)
+segment.plot()
+decorate(xlabel='Time (s)')
+
+import numpy as np
+import matplotlib.pyplot as plt
+from thinkdsp import decorate
+from thinkdsp import SinSignal
+
+def make_sine(offset):
+    signal = SinSignal(freq=440, offset=offset)
+    wave = signal.make_wave(duration=0.5, framerate=10000)
+    return wave
+
+wave1 = make_sine(offset=0)
+wave2 = make_sine(offset=1)
+
+wave1.segment(duration=0.01).plot()
+wave2.segment(duration=0.01).plot()
+decorate(xlabel='Time (s)')
+
+wave1.corr(wave2)
+# Output: 0.5403023058681397
+
+def compute_corr(offset):
+    wave1 = make_sine(offset=0)
+    wave2 = make_sine(offset=-offset)
+    wave1.segment(duration=0.01).plot()
+    wave2.segment(duration=0.01).plot()
+    
+    corr = wave1.corr(wave2)
+    print('corr =', corr)
+    
+    decorate(xlabel='Time (s)')
+
+from ipywidgets import interact, interactive, fixed
+import ipywidgets as widgets
+
+PI2 = np.pi * 2
+slider = widgets.FloatSlider(min=0, max=PI2, value=1)
+interact(compute_corr, offset=slider);</div>
+
+<hr>
+
+<h2>Practical 3: Convolution and Template Matching</h2>
+
+<h3>3A. Convolution on Grayscale Image</h3>
+<p><strong>Aim:</strong> Apply convolution operations on images.</p>
+<div id="practical3a">im = rgb2gray(imread('../images/cameraman.jpg')).astype(float)
+print(np.max(im))
+print(im.shape)
+
+blur_box_kernel = np.ones((3,3)) / 9
+edge_laplace_kernel = np.array([[0,1,0],[1,-4,1],[0,1,0]])
+im_blurred = signal.convolve2d(im, blur_box_kernel)
+im_edges = np.clip(signal.convolve2d(im, edge_laplace_kernel), 0, 1)
+
+fig, axes = pylab.subplots(ncols=3, sharex=True, sharey=True, figsize=(18,6))
+axes[0].imshow(im, cmap=pylab.cm.gray)
+axes[0].set_title('Original Image', size=20)
+axes[1].imshow(im_blurred, cmap=pylab.cm.gray)
+axes[1].set_title('Box Blur', size=20)
+axes[2].imshow(im_edges, cmap=pylab.cm.gray)
+axes[2].set_title('Laplace Edge Detection', size=20)
+
+for ax in axes:
+    ax.axis('off')
+pylab.show()</div>
+
+<h3>3B. Template Matching with Cross-Correlation</h3>
+<div id="practical3b">face_image = misc.face(gray=True) - misc.face(gray=True).mean()
+template_image = np.copy(face_image[300:365, 670:750])  # right eye
+template_image -= template_image.mean()
+
+face_image = face_image + np.random.randn(*face_image.shape) * 50  # add random noise
+
+correlation = signal.correlate2d(face_image, template_image, boundary='symm', mode='same')
+y, x = np.unravel_index(np.argmax(correlation), correlation.shape)  # find the match
+
+fig, (ax_original, ax_template, ax_correlation) = pylab.subplots(3, 1, figsize=(6, 15))
+ax_original.imshow(face_image, cmap='gray')
+ax_original.set_title('Original', size=20)
+ax_original.set_axis_off()
+
+ax_template.imshow(template_image, cmap='gray')
+ax_template.set_title('Template', size=20)
+ax_template.set_axis_off()
+
+ax_correlation.imshow(correlation, cmap='afmhot')
+ax_correlation.set_title('Cross-correlation', size=20)
+ax_correlation.set_axis_off()
+
+ax_original.plot(x, y, 'ro')
+fig.show()</div>
+
+<hr>
+
+<h2>Practical 4: Pixel Intensity Transformations</h2>
+
+<h3>4A. Log Transform</h3>
+<p><strong>Aim:</strong> Implement log and power-law transformations.</p>
+<div id="practical4a">def plot_image(image, title=''):
+    pylab.title(title, size=20), pylab.imshow(image)
+    pylab.axis('off')
+
+def plot_hist(r, g, b, title=''):
+    r, g, b = img_as_ubyte(r), img_as_ubyte(g), img_as_ubyte(b)
+    pylab.hist(np.array(r).ravel(), bins=256, range=(0, 256), color='r', alpha=0.5)
+    pylab.hist(np.array(g).ravel(), bins=256, range=(0, 256), color='g', alpha=0.5)
+    pylab.hist(np.array(b).ravel(), bins=256, range=(0, 256), color='b', alpha=0.5)
+    pylab.xlabel('pixel value', size=20), pylab.ylabel('frequency', size=20)
+    pylab.title(title, size=20)
+
+im = Image.open("../images/parrot.png")
+im_r, im_g, im_b = im.split()
+pylab.style.use('ggplot')
+pylab.figure(figsize=(15,5))
+
+pylab.subplot(121), plot_image(im, 'original image')
+pylab.subplot(122), plot_hist(im_r, im_g, im_b, 'histogram for RGB channels')
+pylab.show()
+
+im = im.point(lambda i: 255*np.log(1+i/255))
+im_r, im_g, im_b = im.split()
+pylab.style.use('ggplot')
+pylab.figure(figsize=(15,5))
+
+pylab.subplot(121), plot_image(im, 'image after log transform')
+pylab.subplot(122), plot_hist(im_r, im_g, im_b, 'histogram of RGB channels log transform')
+pylab.show()</div>
+
+<h3>4B. Power-Law Transform</h3>
+<div id="practical4b">im = img_as_float(imread('../images/earthfromsky.jpg'))
+gamma = 5
+im1 = im**gamma
+
+pylab.style.use('ggplot')
+pylab.figure(figsize=(15,5))
+
+pylab.subplot(121), plot_hist(im[...,0], im[...,1], im[...,2], 'histogram for RGB channels (input)')
+pylab.subplot(122), plot_hist(im1[...,0], im1[...,1], im1[...,2], 'histogram for RGB channels (output)')
+pylab.show()</div>
+
+<h3>4C. Contrast Stretching</h3>
+<div id="practical4c">im = Image.open('../images/cheetah.png')
+im_r, im_g, im_b, _ = im.split()
+pylab.style.use('ggplot')
+pylab.figure(figsize=(15,5))
+pylab.subplot(121)
+plot_image(im)
+pylab.subplot(122)
+plot_hist(im_r, im_g, im_b)
+pylab.show()
+
+def contrast(c):
+    return 0 if c < 70 else (255 if c > 150 else (255*c - 22950) / 48)  # piece-wise linear function
+
+im1 = im.point(contrast)
+im_r, im_g, im_b, _ = im1.split()
+pylab.style.use('ggplot')
+pylab.figure(figsize=(15,5))
+pylab.subplot(121)
+plot_image(im1)
+pylab.subplot(122)
+plot_hist(im_r, im_g, im_b)
+pylab.yscale('log', basey=10)
+pylab.show()</div>
+
+<h3>4D. Thresholding</h3>
+<div id="practical4d">im = Image.open('../images/swans.jpg').convert('L')
+pylab.hist(np.array(im).ravel(), bins=256, range=(0, 256), color='g')
+pylab.xlabel('Pixel values'), pylab.ylabel('Frequency'), pylab.title('Histogram of pixel values')
+pylab.show()
+
+pylab.figure(figsize=(12,18))
+pylab.gray()
+
+pylab.subplot(221), plot_image(im, 'original image'), pylab.axis('off')
+th = [0, 50, 100, 150, 200]
+
+for i in range(2, 5):
+    im1 = im.point(lambda x: x > th[i])
+    pylab.subplot(2,2,i), plot_image(im1, 'binary image with threshold=' + str(th[i]))
+
+pylab.show()</div>
+
+<h3>4E. Half-Toning</h3>
+<div id="practical4e">im = Image.open('../images/swans.jpg').convert('L')
+im = Image.fromarray(np.clip(im + np.random.randint(-128, 128, (im.height, im.width)), 0, 255).astype(np.uint8))
+
+pylab.figure(figsize=(12,18))
+pylab.subplot(221), plot_image(im, 'original image (with noise)')
+th = [0, 50, 100, 150, 200]
+
+for i in range(2, 5):
+    im1 = im.point(lambda x: x > th[i])
+    pylab.subplot(2,2,i), plot_image(im1, 'binary image with threshold=' + str(th[i]))
+
+pylab.show()</div>
+
+<h3>4F. Histogram Equalization</h3>
+<div id="practical4f">img = rgb2gray(imread('../images/earthfromsky.jpg'))
+img_eq = exposure.equalize_hist(img)
+img_adapteq = exposure.equalize_adapthist(img, clip_limit=0.03)
+
+pylab.gray()
+images = [img, img_eq, img_adapteq]
+titles = ['original input (earth from sky)', 'after histogram equalization', 'after adaptive histogram equalization']
+
+for i in range(3):
+    pylab.figure(figsize=(20,10)), plot_image(images[i], titles[i])
+
+pylab.figure(figsize=(15,5))
+
+for i in range(3):
+    pylab.subplot(1,3,i+1), pylab.hist(images[i].ravel(), color='g'), pylab.title(titles[i], size=15)
+
+pylab.show()</div>
+
+<hr>
+
+<h2>Practical 5: Image Enhancement with Gradients</h2>
+<p><strong>Aim:</strong> Apply image enhancements using gradient and Laplacian operations.</p>
+
+<h3>5A. Derivatives and Gradients</h3>
+<div id="practical5a">def plot_image(image, title):
+    pylab.imshow(image), pylab.title(title, size=20), pylab.axis('off')
+
+ker_x = [[-1, 1]]
+ker_y = [[-1], [1]]
+
+im = rgb2gray(imread('../images/chess.png'))
+im_x = signal.convolve2d(im, ker_x, mode='same')
+im_y = signal.convolve2d(im, ker_y, mode='same')
+im_mag = np.sqrt(im_x**2 + im_y**2)
+im_dir = np.arctan(im_y/im_x)
+
+pylab.gray()
+pylab.figure(figsize=(30,20))
+
+pylab.subplot(231), plot_image(im, 'original')
+pylab.subplot(232), plot_image(im_x, 'grad_x')
+pylab.subplot(233), plot_image(im_y, 'grad_y')
+pylab.subplot(234), plot_image(im_mag, '||grad||')
+pylab.subplot(235), plot_image(im_dir, r'$\theta)
+pylab.subplot(236)
+pylab.plot(range(im.shape[1]), im[0,:], 'b-', label=r'$f(x,y)|_{x=0}, linewidth=5)
+pylab.plot(range(im.shape[1]), im_x[0,:], 'r-', label=r'$grad_x (f(x,y))|_{x=0})
+pylab.title(r'$grad_x (f(x,y))|_{x=0}, size=30)
+pylab.legend(prop={'size': 20})
+
+pylab.show()</div>
+
+<h3>5B. Laplacian</h3>
+<div id="practical5b">ker_laplacian = [[0,-1,0],[-1, 4, -1],[0,-1,0]]
+
+im = rgb2gray(imread('../images/chess.png'))
+im1 = np.clip(signal.convolve2d(im, ker_laplacian, mode='same'),0,1)
+
+pylab.gray()
+pylab.figure(figsize=(20,10))
+pylab.subplot(121), plot_image(im, 'original')
+pylab.subplot(122), plot_image(im1, 'laplacian convolved')
+pylab.show()</div>
+
+<hr>
+
+<h2>Practical 6: Noise Smoothing</h2>
+<p><strong>Aim:</strong> Implement linear and nonlinear noise smoothing techniques.</p>
+
+<h3>6A. Linear Smoothing - Box Blur</h3>
+<div id="practical6a">i = 1
+pylab.figure(figsize=(10,25))
+
+for prop_noise in np.linspace(0.05,0.3,3):
+    im = Image.open('../images/mandrill.jpg')
+    n = int(im.width * im.height * prop_noise)
+    x, y = np.random.randint(0, im.width, n), np.random.randint(0, im.height, n)
+    
+    for (x,y) in zip(x,y):
+        im.putpixel((x, y), ((0,0,0) if np.random.rand() < 0.5 else (255,255,255)))
+    
+    im.save('../images/mandrill_spnoise_' + str(prop_noise) + '.jpg')
+    pylab.subplot(6,2,i), plot_image(im, 'Original Image with ' + str(int(100*prop_noise)) + '% added noise')
+    i += 1
+    
+    im1 = im.filter(ImageFilter.BLUR)
+    pylab.subplot(6,2,i), plot_image(im1, 'Blurred Image')
+    i += 1
+
+pylab.show()</div>
+
+<h3>6B. Gaussian Blur</h3>
+<div id="practical6b">im = Image.open('../images/mandrill_spnoise_0.2.jpg')
+pylab.figure(figsize=(20,6))
+i = 1
+
+for radius in range(1, 4):
+    im1 = im.filter(ImageFilter.GaussianBlur(radius))
+    pylab.subplot(1,3,i), plot_image(im1, 'radius = ' + str(round(radius,2)))
+    i += 1
+
+pylab.suptitle('PIL Gaussian Blur with different Radius', size=20)
+pylab.show()</div>
+
+<h3>6C. Nonlinear Smoothing - Median Filter</h3>
+<div id="practical6c">i = 1
+pylab.figure(figsize=(25,35))
+
+for prop_noise in np.linspace(0.05,0.3,3):
+    im = Image.open('../images/mandrill.jpg')
+    n = int(im.width * im.height * prop_noise)
+    x, y = np.random.randint(0, im.width, n), np.random.randint(0, im.height, n)
+    
+    for (x,y) in zip(x,y):
+        im.putpixel((x, y), ((0,0,0) if np.random.rand() < 0.5 else (255,255,255)))
+    
+    im.save('../images/mandrill_spnoise_' + str(prop_noise) + '.jpg')
+    pylab.subplot(6,4,i)
+    plot_image(im, 'Original Image with ' + str(int(100*prop_noise)) + '%added noise')
+    i += 1
+    
+    for sz in [3,7,11]:
+        im1 = im.filter(ImageFilter.MedianFilter(size=sz))
+        pylab.subplot(6,4,i), plot_image(im1, 'Output (Median Filter size=' + str(sz) + ')')
+        i += 1
+
+pylab.show()</div>
+
+<hr>
+
+<h2>Practical 7: Image Sharpening</h2>
+<p><strong>Aim:</strong> Apply smoothing, sharpening, and unsharp masking filters.</p>
+
+<h3>7A. Sharpening with Laplacian</h3>
+<div id="practical7a">from skimage.filters import laplace
+
+im = rgb2gray(imread('../images/me8.jpg'))
+im1 = np.clip(laplace(im) + im, 0, 1)
+
+pylab.figure(figsize=(10,15))
+
+pylab.subplot(211), plot_image(im, 'original image')
+pylab.subplot(212), plot_image(im1, 'sharpened image')
+pylab.tight_layout()
+
+pylab.show()</div>
+
+<h3>7B. Unsharp Masking</h3>
+<div id="practical7b">def rgb2gray(im):
+    return np.clip(0.2989 * im[...,0] + 0.5870 * im[...,1] + 0.1140 * im[...,2], 0, 1)
+
+im = rgb2gray(img_as_float(misc.imread('../images/me4.jpg')))
+im_blurred = ndimage.gaussian_filter(im, 5)
+im_detail = np.clip(im - im_blurred, 0, 1)
+
+pylab.gray()
+
+fig, axes = pylab.subplots(nrows=2, ncols=3, sharex=True, sharey=True, figsize=(15, 15))
+axes = axes.ravel()
+
+axes[0].set_title('Original image', size=15), axes[0].imshow(im)
+axes[1].set_title('Blurred image, sigma=5', size=15), axes[1].imshow(im_blurred)
+axes[2].set_title('Detail image', size=15), axes[2].imshow(im_detail)
+
+alpha = [1, 5, 10]
+
+for i in range(3):
+    im_sharp = np.clip(im + alpha[i]*im_detail, 0, 1)
+    axes[3+i].imshow(im_sharp), axes[3+i].set_title('Sharpened image, alpha=' + str(alpha[i]), size=15)
+
+for ax in axes:
+    ax.axis('off')
+
+fig.tight_layout()
+pylab.show()</div>
+
+<hr>
+
+<h2>Practical 8: Edge Detection</h2>
+<p><strong>Aim:</strong> Apply Sobel and Canny edge detection techniques.</p>
+
+<h3>8A. Sobel Edge Detector</h3>
+<div id="practical8a">im = rgb2gray(imread('../images/tajmahal1.jpg'))
+
+pylab.gray()
+pylab.figure(figsize=(20,18))
+pylab.subplot(2,2,1)
+plot_image(im, 'original')
+
+pylab.subplot(2,2,2)
+edges_x = filters.sobel_h(im)
+plot_image(np.clip(edges_x,0,1), 'sobel_x')
+
+pylab.subplot(2,2,3)
+edges_y = filters.sobel_v(im)
+plot_image(np.clip(edges_y,0,1), 'sobel_y')
+
+pylab.subplot(2,2,4)
+edges = filters.sobel(im)
+plot_image(np.clip(edges,0,1), 'sobel')
+
+pylab.subplots_adjust(wspace=0.1, hspace=0.1)
+pylab.show()</div>
+
+<h3>8B. Canny Edge Detector</h3>
+<div id="practical8b">im = rgb2gray(imread('../images/tiger3.jpg'))
+im = ndimage.gaussian_filter(im, 4)
+im += 0.05 * np.random.random(im.shape)
+
+edges1 = feature.canny(im)
+edges2 = feature.canny(im, sigma=2)
+
+fig, (axes1, axes2, axes3) = pylab.subplots(nrows=1, ncols=3, figsize=(30, 12), sharex=True, sharey=True)
+
+axes1.imshow(im, cmap=pylab.cm.gray), axes1.axis('off'), axes1.set_title('noisy image', fontsize=50)
+axes2.imshow(edges1, cmap=pylab.cm.gray), axes2.axis('off')
+axes2.set_title('Canny filter, $\\sigma=1, fontsize=50)
+axes3.imshow(edges2, cmap=pylab.cm.gray), axes3.axis('off')
+axes3.set_title('Canny filter, $\\sigma=3, fontsize=50)
+
+fig.tight_layout()
+pylab.show()</div>
+
+<hr>
+
+<h2>Practical 9: Morphological Operations</h2>
+<p><strong>Aim:</strong> Implement morphological image processing techniques.</p>
+
+<h3>9A. Erosion</h3>
+<div id="practical9a">from skimage.morphology import binary_erosion, rectangle
+
+def plot_image(image, title=''):
+    pylab.title(title, size=20), pylab.imshow(image)
+    pylab.axis('off')
+
+im = rgb2gray(imread('../images/clock2.jpg'))
+im[im <= 0.5] = 0
+im[im > 0.5] = 1
+
+pylab.gray()
+pylab.figure(figsize=(20,10))
+
+pylab.subplot(1,3,1), plot_image(im, 'original')
+im1 = binary_erosion(im, rectangle(1,5))
+pylab.subplot(1,3,2), plot_image(im1, 'erosion with rectangle size (1,5)')
+im1 = binary_erosion(im, rectangle(1,15))
+pylab.subplot(1,3,3), plot_image(im1, 'erosion with rectangle size (1,15)')
+
+pylab.show()</div>
+
+<h3>9B. Dilation</h3>
+<div id="practical9b">from skimage.morphology import binary_dilation, disk
+from skimage import img_as_float
+
+im = img_as_float(imread('../images/tagore.png'))
+im = 1 - im[...,3]
+im[im <= 0.5] = 0
+im[im > 0.5] = 1
+
+pylab.gray()
+pylab.figure(figsize=(18,9))
+pylab.subplot(131)
+pylab.imshow(im)
+pylab.title('original', size=20)
+pylab.axis('off')
+
+for d in range(1,3):
+    pylab.subplot(1,3,d+1)
+    im1 = binary_dilation(im, disk(2*d))
+    pylab.imshow(im1)
+    pylab.title('dilation with disk size ' + str(2*d), size=20)
+    pylab.axis('off')
+
+pylab.show()</div>
+
+<h3>9C. Opening and Closing</h3>
+<div id="practical9c">from skimage.morphology import binary_opening, binary_closing, binary_erosion, binary_dilation, disk
+
+im = rgb2gray(imread('../images/circles.jpg'))
+im[im <= 0.5] = 0
+im[im > 0.5] = 1
+
+pylab.gray()
+pylab.figure(figsize=(20,10))
+
+pylab.subplot(1,3,1), plot_image(im, 'original')
+im1 = binary_opening(im, disk(12))
+pylab.subplot(1,3,2), plot_image(im1, 'opening with disk size ' + str(12))
+im1 = binary_closing(im, disk(6))
+pylab.subplot(1,3,3), plot_image(im1, 'closing with disk size ' + str(6))
+
+pylab.show()</div>
+
+<h3>9D. Skeletonizing</h3>
+<div id="practical9d">def plot_images_horizontally(original, filtered, filter_name, sz=(18,7)):
+    pylab.gray()
+    pylab.figure(figsize = sz)
+    pylab.subplot(1,2,1), plot_image(original, 'original')
+    pylab.subplot(1,2,2), plot_image(filtered, filter_name)
+    pylab.show()
+
+from skimage.morphology import skeletonize
+
+im = img_as_float(imread('../images/dynasaur.png')[...,3])
+threshold = 0.5
+im[im <= threshold] = 0
+im[im > threshold] = 1
+skeleton = skeletonize(im)
+
+plot_images_horizontally(im, skeleton, 'skeleton', sz=(18,9))</div>
+
+<h3>9E. Convex Hull</h3>
+<div id="practical9e">from skimage.morphology import convex_hull_image
+
+im = rgb2gray(imread('../images/horse-dog.jpg'))
+threshold = 0.5
+im[im < threshold] = 0
+im[im >= threshold] = 1
+
+chull = convex_hull_image(im)
+plot_images_horizontally(im, chull, 'convex hull', sz=(18,9))
+
+im = im.astype(np.bool)
+chull_diff = img_as_float(chull.copy())
+chull_diff[im] = 2
+
+pylab.figure(figsize=(20,10))
+pylab.imshow(chull_diff, cmap=pylab.cm.gray, interpolation='nearest')
+pylab.title('Difference Image', size=20)
+pylab.show()</div>
+
+<h3>9F. Removing Small Objects</h3>
+<div id="practical9f">from skimage.morphology import remove_small_objects
+
+im = rgb2gray(imread('../images/circles.jpg'))
+im[im > 0.5] = 1
+im[im <= 0.5] = 0
+im = im.astype(np.bool)
+
+pylab.figure(figsize=(20,20))
+pylab.subplot(2,2,1), plot_image(im, 'original')
+i = 2
+
+for osz in [50, 200, 500]:
+    im1 = remove_small_objects(im, osz, connectivity=1)
+    pylab.subplot(2,2,i), plot_image(im1, 'removing small objects below size ' + str(osz))
+    i += 1
+
+pylab.show()</div>
+
+<hr>
+
+<h2>Practical 10: Feature Extraction</h2>
+<p><strong>Aim:</strong> Extract image features using corner detectors, blob detectors, HoG, and Haar features.</p>
+
+<h3>10A. Harris Corner Detector</h3>
+<div id="practical10a">image = imread('../images/chess_football.png')
+image_gray = rgb2gray(image)
+
+coordinates = corner_harris(image_gray, k=0.001)
+image[coordinates>0.01*coordinates.max()]=[255,0,0,255]
+
+pylab.figure(figsize=(20,10))
+pylab.imshow(image), pylab.axis('off'), pylab.show()</div>
+
+<h3>10B. Blob Detectors (LoG, DoG, DoH)</h3>
+<div id="practical10b">from numpy import sqrt
+from skimage.feature import blob_dog, blob_log, blob_doh
+
+im = imread('../images/butterfly.png')
+im_gray = rgb2gray(im)
+
+log_blobs = blob_log(im_gray, max_sigma=30, num_sigma=10, threshold=.1)
+log_blobs[:, 2] = sqrt(2) * log_blobs[:, 2]
+
+dog_blobs = blob_dog(im_gray, max_sigma=30, threshold=0.1)
+dog_blobs[:, 2] = sqrt(2) * dog_blobs[:, 2]
+
+doh_blobs = blob_doh(im_gray, max_sigma=30, threshold=0.005)
+list_blobs = [log_blobs, dog_blobs, doh_blobs]
+
+colors, titles = ['yellow', 'lime', 'red'], ['Laplacian of Gaussian', 'Difference of Gaussian', 'Determinant of Hessian']
+sequence = zip(list_blobs, colors, titles)
+
+fig, axes = pylab.subplots(2, 2, figsize=(20, 20), sharex=True, sharey=True)
+axes = axes.ravel()
+
+axes[0].imshow(im, interpolation='nearest')
+axes[0].set_title('original image', size=30), axes[0].set_axis_off()
+
+for idx, (blobs, color, title) in enumerate(sequence):
+    axes[idx+1].imshow(im, interpolation='nearest')
+    axes[idx+1].set_title('Blobs with ' + title, size=30)
+    for blob in blobs:
+        y, x, row = blob
+        col = pylab.Circle((x, y), row, color=color, linewidth=2, fill=False)
+        axes[idx+1].add_patch(col), axes[idx+1].set_axis_off()
+
+pylab.tight_layout(), pylab.show()</div>
+
+<h3>10C. HOG (Histogram of Oriented Gradients)</h3>
+<div id="practical10c">from skimage.feature import hog
+from skimage import exposure
+
+image = rgb2gray(imread('../images/cameraman.jpg'))
+
+fd, hog_image = hog(image, orientations=8, pixels_per_cell=(16, 16),
+                    cells_per_block=(1, 1), visualize=True)
+print(image.shape, len(fd))
+
+fig, (axes1, axes2) = pylab.subplots(1, 2, figsize=(15, 10), sharex=True, sharey=True)
+axes1.axis('off'), axes1.imshow(image, cmap=pylab.cm.gray), axes1.set_title('Input image')
+
+hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
+axes2.axis('off'), axes2.imshow(hog_image_rescaled, cmap=pylab.cm.gray), axes2.set_title('Histogram of Oriented Gradients')
+
+pylab.show()</div>
+
+<h3>10D. Haar-like Features</h3>
+<div id="practical10d">from skimage.feature import haar_like_feature_coord
+from skimage.feature import draw_haar_like_feature
+
+images = [np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((3, 3)),
+          np.zeros((3, 3)), np.zeros((2, 2))]
+
+feature_types = ['type-2-x', 'type-2-y', 'type-3-x', 'type-3-y', 'type-4']
+fig, axes = pylab.subplots(3, 2, figsize=(5,7))
+
+for axes, img, feat_t in zip(np.ravel(axes), images, feature_types):
+    coordinates, _ = haar_like_feature_coord(img.shape[0], img.shape[1], feat_t)
+    
+    haar_feature = draw_haar_like_feature(img, 0, 0, img.shape[0], img.shape[1], coordinates,
+                                         max_n_features=1, random_state=0,
+                                         color_positive_block=(1.0, 0.0, 0.0),
+                                         color_negative_block=(0.0, 0.0, 1.0), alpha=0.8)
+    
+    axes.imshow(haar_feature), axes.set_title(feat_t), axes.set_axis_off()
+
+pylab.axis('off'), pylab.tight_layout(), pylab.show()</div>
+
+<hr>
+
+<h2>Practical 11: Image Segmentation</h2>
+<p><strong>Aim:</strong> Apply segmentation for detecting lines, circles using Hough transform and edge/region-based methods.</p>
+
+<h3>11A. Hough Transform - Lines and Circles</h3>
+<div id="practical11a">image = rgb2gray(imread('../images/triangle_circle.png'))
+
+h, theta, d = hough_line(image)
+
+fig, axes = plt.subplots(2, 2, figsize=(20, 20))
+ax = axes.ravel()
+
+ax[0].imshow(image, cmap=cm.gray)
+ax[0].set_title('Input image', size=20)
+ax[0].set_axis_off()
+
+ax[1].imshow(np.log(1 + h),
+            extent=[10*np.rad2deg(theta[-1]), np.rad2deg(theta[0]), d[-1], d[0]],
+            cmap=cm.hot, aspect=1/1.5)
+
+ax[1].set_title('Hough transform', size=20)
+ax[1].set_xlabel('Angles (degrees)', size=20)
+ax[1].set_ylabel('Distance (pixels)', size=20)
+ax[1].axis('image')
+
+ax[2].imshow(image, cmap=cm.gray)
+
+for _, angle, dist in zip(*hough_line_peaks(h, theta, d)):
+    y0 = (dist - 0 * np.cos(angle)) / np.sin(angle)
+    y1 = (dist - image.shape[1] * np.cos(angle)) / np.sin(angle)
+    ax[2].plot((0, image.shape[1]), (y0, y1), '-r')
+
+ax[2].set_xlim((0, image.shape[1]))
+ax[2].set_ylim((image.shape[0], 0))
+ax[2].set_axis_off()
+ax[2].set_title('Detected lines', size=20)
+
+hough_radii = np.arange(50, 100, 2)
+hough_res = hough_circle(image, hough_radii)
+
+accums, cx, cy, radii = hough_circle_peaks(hough_res, hough_radii, total_num_peaks=6)
+
+image = gray2rgb(image)
+
+for center_y, center_x, radius in zip(cy, cx, radii):
+    circy, circx = circle_perimeter(center_y, center_x, radius)
+    image[circy, circx] = (0.9, 0.2, 0.2)
+
+ax[3].imshow(image, cmap=plt.cm.gray)
+ax[3].set_axis_off()
+ax[3].set_title('Detected Circles', size=20)
+
+plt.tight_layout()
+plt.show()</div>
+
+<h3>11B. Edge-Based and Region-Based Segmentation</h3>
+<div id="practical11b">coins = data.coins()
+
+hist = np.histogram(coins, bins=np.arange(0, 256), normed=True)
+
+fig, axes = plt.subplots(1, 2, figsize=(20, 10))
+axes[0].imshow(coins, cmap=plt.cm.gray, interpolation='nearest')
+axes[0].axis('off')
+
+axes[1].plot(hist[1][:-1], hist[0], lw=2)
+axes[1].set_title('histogram of gray values')
+plt.show()
+
+edges = canny(coins, sigma=2)
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.imshow(edges, cmap=plt.cm.gray, interpolation='nearest')
+ax.set_title('Canny detector')
+ax.axis('off')
+plt.show()
+
+from scipy import ndimage as ndi
+
+fill_coins = ndi.binary_fill_holes(edges)
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.imshow(fill_coins, cmap=plt.cm.gray, interpolation='nearest')
+ax.set_title('filling the holes')
+ax.axis('off')
+plt.show()
+
+segmentation = morphology.watershed(elevation_map, markers)
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.imshow(segmentation, cmap=plt.cm.gray, interpolation='nearest')
+ax.set_title('segmentation')
+ax.axis('off')
+plt.show()</div>
+
+<hr>
 
 <div id="info">
-    <h3>📚 Practical IDs for Scraping</h3>
-    <p>Use these IDs to scrape individual practicals:</p>
-    <ul>
-        <li><strong>practical1a</strong> - SPAN Technologies (Switch Port Analyzer)</li>
-        <li><strong>practical1b</strong> - SNMP Implementation</li>
-        <li><strong>practical1c</strong> - Syslog Implementation</li>
-        <li><strong>practical1d</strong> - Flexible NetFlow</li>
-        <li><strong>practical2a_ra</strong> - GRE Tunnel - Router RA Configuration</li>
-        <li><strong>practical2a_rb</strong> - GRE Tunnel - Router RB Configuration</li>
-        <li><strong>practical2a_rc</strong> - GRE Tunnel - Router RC Configuration</li>
-        <li><strong>practical2b</strong> - VTP Configuration</li>
-        <li><strong>practical2c_r1</strong> - NAT - Router R1 Configuration</li>
-        <li><strong>practical2c_r2</strong> - NAT - Router R2 Configuration</li>
-        <li><strong>practical3_router</strong> - Inter-VLAN Routing - Router Configuration</li>
-        <li><strong>practical3_s1</strong> - Inter-VLAN Routing - Switch S1 Configuration</li>
-        <li><strong>practical3_s2</strong> - Inter-VLAN Routing - Switch S2 Configuration</li>
-        <li><strong>practical4_d1</strong> - STP/RSTP - Switch D1 Configuration</li>
-        <li><strong>practical4_d2</strong> - STP/RSTP - Switch D2 Configuration</li>
-        <li><strong>practical4_a1</strong> - STP/RSTP - Switch A1 Configuration</li>
-        <li><strong>practical4_rstp</strong> - RSTP Configuration and Testing</li>
-        <li><strong>practical4_mst</strong> - MST Configuration</li>
-        <li><strong>practical5_swa</strong> - EtherChannel - Switch SWA Configuration</li>
-        <li><strong>practical5_swb</strong> - EtherChannel - Switch SWB Configuration</li>
-        <li><strong>practical5_swc</strong> - EtherChannel - Switch SWC Configuration</li>
-        <li><strong>practical6a_r1</strong> - Single-Area OSPF - Router R1</li>
-        <li><strong>practical6a_r2</strong> - Single-Area OSPF - Router R2</li>
-        <li><strong>practical6a_r3</strong> - Single-Area OSPF - Router R3</li>
-        <li><strong>practical6b</strong> - Multi-Area OSPF Configuration</li>
-        <li><strong>practical6c</strong> - OSPF Route Summarization</li>
-        <li><strong>practical6d</strong> - OSPFv3 Configuration</li>
-        <li><strong>practical7_r1</strong> - BGP - Router R1 Configuration</li>
-        <li><strong>practical7_r2</strong> - BGP - Router R2 Configuration</li>
-        <li><strong>practical7_r3</strong> - BGP - Router R3 Configuration</li>
-        <li><strong>practical8_r1</strong> - IPsec VPN - Router R1 Configuration</li>
-        <li><strong>practical8_r2</strong> - IPsec VPN - Router R2 Configuration</li>
-        <li><strong>practical8_r3</strong> - IPsec VPN - Router R3 Configuration</li>
-        <li><strong>practical8_gre</strong> - GRE over IPsec Configuration</li>
-        <li><strong>practical8_vrf</strong> - VRF Lite Configuration</li>
-        <li><strong>practical9_mininet</strong> - OpenDaylight with Mininet</li>
-        <li><strong>practical9_ofnet</strong> - OFNet SDN Emulator</li>
-        <li><strong>practical10</strong> - OpenFlow Using Mininet</li>
-    </ul>
-    <p><strong>📝 Example Python scraping code:</strong></p>
-    <pre>
-import requests
-from bs4 import BeautifulSoup
+<h2>Practical IDs for Scraping</h2>
+<p>Use these IDs to scrape individual practicals:</p>
+<ul>
+<li><strong>practical1a</strong> - Up-Sampling</li>
+<li><strong>practical1b</strong> - Down-Sampling</li>
+<li><strong>practical1c</strong> - FFT with numpy.fft</li>
+<li><strong>practical2a</strong> - Triangle Signal Generation</li>
+<li><strong>practical2b</strong> - Signal Correlation</li>
+<li><strong>practical3a</strong> - Convolution on Grayscale Image</li>
+<li><strong>practical3b</strong> - Template Matching</li>
+<li><strong>practical4a</strong> - Log Transform</li>
+<li><strong>practical4b</strong> - Power-Law Transform</li>
+<li><strong>practical4c</strong> - Contrast Stretching</li>
+<li><strong>practical4d</strong> - Thresholding</li>
+<li><strong>practical4e</strong> - Half-Toning</li>
+<li><strong>practical4f</strong> - Histogram Equalization</li>
+<li><strong>practical5a</strong> - Derivatives and Gradients</li>
+<li><strong>practical5b</strong> - Laplacian</li>
+<li><strong>practical6a</strong> - Linear Smoothing - Box Blur</li>
+<li><strong>practical6b</strong> - Gaussian Blur</li>
+<li><strong>practical6c</strong> - Nonlinear Smoothing - Median Filter</li>
+<li><strong>practical7a</strong> - Sharpening with Laplacian</li>
+<li><strong>practical7b</strong> - Unsharp Masking</li>
+<li><strong>practical8a</strong> - Sobel Edge Detector</li>
+<li><strong>practical8b</strong> - Canny Edge Detector</li>
+<li><strong>practical9a</strong> - Erosion</li>
+<li><strong>practical9b</strong> - Dilation</li>
+<li><strong>practical9c</strong> - Opening and Closing</li>
+<li><strong>practical9d</strong> - Skeletonizing</li>
+<li><strong>practical9e</strong> - Convex Hull</li>
+<li><strong>practical9f</strong> - Removing Small Objects</li>
+<li><strong>practical10a</strong> - Harris Corner Detector</li>
+<li><strong>practical10b</strong> - Blob Detectors (LoG, DoG, DoH)</li>
+<li><strong>practical10c</strong> - HOG Features</li>
+<li><strong>practical10d</strong> - Haar-like Features</li>
+<li><strong>practical11a</strong> - Hough Transform</li>
+<li><strong>
 
-response = requests.get('YOUR_URL')
-code = BeautifulSoup(response.text, 'html.parser').find('div', id='practical1a').text
-print(code)
-    </pre>
+</strong>
+</li>
+</ul>
 </div>
 
-<hr>
-
-<h2>Practical 1: Network Monitoring Technologies</h2>
-
-<h3>1A. SPAN Technologies (Switch Port Analyzer)</h3>
-<p><strong>Aim:</strong> Implement SPAN Technologies to monitor switch port traffic.</p>
-<p><strong>Packet Tracer Setup:</strong> 1 Router (2911), 1 Switch (2960), 1 PC. Connect PC0-Switch Fa0/1, Switch Fa0/2-Router Fa0/0.</p>
-
-<div id="practical1a">
-<pre>
-Switch>enable
-Switch#config terminal
-Switch(config)# monitor session 1 source int fa0/1
-Switch(config)# monitor session 1 destination int fa0/2
-Switch(config)#end
-</pre>
 </div>
-
-<h3>1B. SNMP Implementation</h3>
-<p><strong>Aim:</strong> Implement SNMP for network monitoring.</p>
-<p><strong>Packet Tracer Setup:</strong> 2 Routers, 1 Switch, 1 PC. On PC go to Desktop > MIB Browser.</p>
-
-<div id="practical1b">
-<pre>
-R1>enable
-R1#config terminal
-R1(config)#int fa0/0
-R1(config-if)#ip address 172.168.1.1 255.255.0.0
-R1(config-if)#no shut
-R1(config-if)#exit
-R1(config)#snmp-server community read ro
-R1(config)#snmp-server community write rw
-</pre>
-</div>
-
-<h3>1C. Syslog Implementation</h3>
-<p><strong>Aim:</strong> Configure Syslog server for logging router events.</p>
-<p><strong>Packet Tracer Setup:</strong> 1 Router, 1 Switch, 1 PC, 1 Server. On Server go to Services > Syslog and turn ON.</p>
-
-<div id="practical1c">
-<pre>
-R1>enable
-R1#config terminal
-R1(config)#int fa0/0
-R1(config-if)#ip address 10.0.0.1 255.0.0.0
-R1(config-if)#no shut
-R1(config-if)#exit
-R1(config)#int fa0/1
-R1(config-if)#ip address 30.0.0.1 255.0.0.0
-R1(config-if)#no shut
-R1(config-if)#exit
-R1(config)#logging 10.0.0.2
-</pre>
-</div>
-
-<h3>1D. Flexible NetFlow</h3>
-<p><strong>Aim:</strong> Implement Flexible NetFlow for traffic analysis.</p>
-
-<div id="practical1d">
-<pre>
-R1>enable
-R1#config terminal
-R1(config)#int fa0/0
-R1(config-if)#ip flow ingress
-R1(config-if)#ip flow egress
-R1(config-if)#ip flow-export source fa0/0
-R1(config-if)#end
-R1#show ip cache flow
-</pre>
-</div>
-
-<hr>
-
-<h2>Practical 2: Tunneling and VLAN Technologies</h2>
-
-<h3>2A. GRE Tunnel Implementation</h3>
-<p><strong>Aim:</strong> Configure GRE Tunnel between routers.</p>
-<p><strong>Packet Tracer Setup:</strong> 3 Routers (RA, RB, RC), 2 PCs. Connect PC-A to RA G0/0, PC-C to RB G0/0. Serial connections: RA-RC and RB-RC.</p>
-
-<h4>Router RA Configuration</h4>
-<div id="practical2a_ra">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#interface GigabitEthernet0/1
-Router(config-if)#ip address 192.168.1.1 255.255.255.0
-Router(config-if)#no shutdown
-Router(config-if)#exit
-Router(config)#interface Serial0/0/0
-Router(config-if)#ip address 20.0.0.2 255.255.255.252
-Router(config-if)#clock rate 64000
-Router(config-if)#no shutdown
-Router(config-if)#exit
-Router(config)#router rip
-Router(config-router)#network 20.0.0.0
-Router(config-router)#exit
-
-Router(config)#int tunnel 0
-Router(config-if)#ip address 10.10.10.1 255.255.255.252
-Router(config-if)#tunnel source s0/0/0
-Router(config-if)#tunnel destination 30.0.0.2
-Router(config-if)#tunnel mode gre ip
-Router(config-if)#no shut
-Router(config-if)#exit
-Router(config)#ip route 192.168.2.0 255.255.255.0 10.10.10.2
-</pre>
-</div>
-
-<h4>Router RB Configuration</h4>
-<div id="practical2a_rb">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#interface GigabitEthernet0/1
-Router(config-if)#ip address 192.168.2.1 255.255.255.0
-Router(config-if)#no shutdown
-Router(config-if)#exit
-Router(config)#interface Serial0/0/1
-Router(config-if)#ip address 30.0.0.2 255.255.255.252
-Router(config-if)#clock rate 64000
-Router(config-if)#no shutdown
-Router(config-if)#exit
-Router(config)#router rip
-Router(config-router)#network 192.168.2.0
-Router(config-router)#network 30.0.0.0
-Router(config-router)#exit
-
-Router(config)#int tunnel 0
-Router(config-if)#ip address 10.10.10.2 255.255.255.252
-Router(config-if)#tunnel source s0/0/1
-Router(config-if)#tunnel destination 20.0.0.2
-Router(config-if)#tunnel mode gre ip
-Router(config-if)#no shut
-Router(config-if)#exit
-Router(config)#ip route 192.168.1.0 255.255.255.0 10.10.10.1
-</pre>
-</div>
-
-<h4>Router RC Configuration</h4>
-<div id="practical2a_rc">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#interface Serial0/0/0
-Router(config-if)#ip address 20.0.0.1 255.255.255.252
-Router(config-if)#clock rate 64000
-Router(config-if)#no shutdown
-Router(config-if)#exit
-Router(config)#interface Serial0/0/1
-Router(config-if)#ip address 30.0.0.1 255.255.255.252
-Router(config-if)#clock rate 64000
-Router(config-if)#no shutdown
-Router(config-if)#exit
-Router(config)#router rip
-Router(config-router)#network 20.0.0.0
-Router(config-router)#network 30.0.0.0
-</pre>
-</div>
-
-<h3>2B. VTP (VLAN Trunking Protocol)</h3>
-<p><strong>Aim:</strong> Implement VTP for VLAN management.</p>
-<p><strong>Packet Tracer Setup:</strong> 4 Switches (2960). Switch1 is server (central), others connect to it. Use trunk links.</p>
-
-<div id="practical2b">
-<pre>
-Switch0 (Client):
-Switch>en
-Switch#conf t
-Switch(config)#int fa0/1
-Switch(config-if)#switchport mode trunk
-Switch(config-if)#exit
-Switch(config)#vtp mode client
-
-Switch1 (Server - Default):
-Switch#conf t
-Switch(config)#int fa0/1
-Switch(config-if)#switchport mode trunk
-Switch(config-if)#int fa0/2
-Switch(config-if)#switchport mode trunk
-Switch(config-if)#exit
-
-Switch2 (Transparent):
-Switch#conf t
-Switch(config)#int fa0/1
-Switch(config-if)#switchport mode trunk
-Switch(config-if)#int fa0/2
-Switch(config-if)#switchport mode trunk
-Switch(config-if)#exit
-Switch(config)#vtp mode transparent
-
-Switch3 (Client):
-Switch#conf t
-Switch(config)#int fa0/1
-Switch(config-if)#switchport mode trunk
-Switch(config-if)#exit
-Switch(config)#vtp mode client
-
-Verify: show vtp status
-</pre>
-</div>
-
-<h3>2C. NAT (Network Address Translation)</h3>
-<p><strong>Aim:</strong> Implement NAT for private to public IP translation.</p>
-<p><strong>Packet Tracer Setup:</strong> 2 Routers, 2 PCs, 1 Server. Connect PCs to R1 Fa0/0 via switch, R1 S0/0/0 to R2 S0/0/0, Server to R2 Fa0/0.</p>
-
-<h4>Router R1 NAT Configuration</h4>
-<div id="practical2c_r1">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#interface FastEthernet0/0
-Router(config-if)#ip address 192.168.1.1 255.255.255.0
-Router(config-if)#no shutdown
-Router(config-if)#exit
-Router(config)#interface Serial0/0/0
-Router(config-if)#ip address 10.0.0.1 255.0.0.0
-Router(config-if)#clock rate 64000
-Router(config-if)#no shutdown
-Router(config-if)#exit
-
-Router(config)#router rip
-Router(config-router)#network 192.168.1.0
-Router(config-router)#network 10.0.0.0
-Router(config-router)#exit
-
-Router(config)#int fa0/0
-Router(config-if)#ip nat inside
-Router(config-if)#exit
-Router(config)#int s0/0/0
-Router(config-if)#ip nat outside
-Router(config-if)#exit
-
-Router(config)#ip nat inside source static 192.168.1.2 10.0.0.1
-Router(config)#ip nat inside source static 192.168.1.3 10.0.0.1
-Router(config)#ip route 0.0.0.0 0.0.0.0 s0/0/0
-Router(config)#exit
-
-Router#show ip nat statistics
-Router#show ip nat translations
-</pre>
-</div>
-
-<h4>Router R2 Configuration</h4>
-<div id="practical2c_r2">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#interface Serial0/0/0
-Router(config-if)#ip address 10.0.0.2 255.0.0.0
-Router(config-if)#clock rate 64000
-Router(config-if)#no shutdown
-Router(config-if)#exit
-Router(config)#interface FastEthernet0/0
-Router(config-if)#ip address 172.16.1.1 255.255.0.0
-Router(config-if)#no shutdown
-Router(config-if)#exit
-
-Router(config)#router rip
-Router(config-router)#network 172.16.0.0
-Router(config-router)#network 10.0.0.0
-Router(config-router)#exit
-</pre>
-</div>
-
-<hr>
-
-<h2>Practical 3: Inter-VLAN Routing</h2>
-<p><strong>Aim:</strong> Implement Inter-VLAN Routing using Router-on-a-Stick.</p>
-<p><strong>Packet Tracer Setup:</strong> 1 Router (R1), 2 Switches (S1, S2), 2 PCs. S1 Fa0/5 to R1 G0/0/1, S1 Fa0/1 to S2 Fa0/1 (trunk), PC-A to S1 Fa0/6, PC-B to S2 Fa0/18.</p>
-
-<h4>Router R1 Configuration</h4>
-<div id="practical3_router">
-<pre>
-Router>enable
-Router#config terminal
-Router(config)#hostname R1
-R1(config)#no ip domain-lookup
-R1(config)#enable secret class
-R1(config)#line console 0
-R1(config-line)#password cisco
-R1(config-line)#login
-R1(config-line)#exit
-R1(config)#line vty 0 4
-R1(config-line)#password cisco
-R1(config-line)#login
-R1(config-line)#exit
-R1(config)#service password-encryption
-R1(config)#banner motd $ Authorized Users Only! $
-
-R1(config)#interface g0/0/1
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#interface g0/0/1.10
-R1(config-subif)#description Management Network
-R1(config-subif)#encapsulation dot1q 10
-R1(config-subif)#ip address 192.168.10.1 255.255.255.0
-R1(config-subif)#exit
-
-R1(config)#interface g0/0/1.20
-R1(config-subif)#encapsulation dot1q 20
-R1(config-subif)#description Sales Network
-R1(config-subif)#ip address 192.168.20.1 255.255.255.0
-R1(config-subif)#exit
-
-R1(config)#interface g0/0/1.30
-R1(config-subif)#encapsulation dot1q 30
-R1(config-subif)#description Operations Network
-R1(config-subif)#ip address 192.168.30.1 255.255.255.0
-R1(config-subif)#exit
-
-R1(config)#interface g0/0/1.1000
-R1(config-subif)#encapsulation dot1q 1000 native
-R1(config-subif)#description Native VLAN
-R1(config-subif)#exit
-
-R1#copy running-config startup-config
-</pre>
-</div>
-
-<h4>Switch S1 Configuration</h4>
-<div id="practical3_s1">
-<pre>
-Switch>enable
-Switch#config terminal
-Switch(config)#hostname S1
-S1(config)#no ip domain-lookup
-S1(config)#enable secret class
-S1(config)#line console 0
-S1(config-line)#password cisco
-S1(config-line)#login
-S1(config-line)#exit
-S1(config)#line vty 0 4
-S1(config-line)#password cisco
-S1(config-line)#login
-S1(config-line)#exit
-S1(config)#service password-encryption
-S1(config)#banner motd $ Authorized Users Only! $
-
-S1(config)#vlan 10
-S1(config-vlan)#name Management
-S1(config-vlan)#vlan 20
-S1(config-vlan)#name Sales
-S1(config-vlan)#vlan 30
-S1(config-vlan)#name Operations
-S1(config-vlan)#vlan 999
-S1(config-vlan)#name Parking_Lot
-S1(config-vlan)#vlan 1000
-S1(config-vlan)#name Native
-S1(config-vlan)#exit
-
-S1(config)#interface vlan 10
-S1(config-if)#ip address 192.168.10.11 255.255.255.0
-S1(config-if)#no shutdown
-S1(config-if)#exit
-S1(config)#ip default-gateway 192.168.10.1
-
-S1(config)#interface range f0/2-4, f0/7-24, g0/1-2
-S1(config-if-range)#switchport mode access
-S1(config-if-range)#switchport access vlan 999
-S1(config-if-range)#shutdown
-S1(config-if-range)#exit
-
-S1(config)#interface f0/6
-S1(config-if)#switchport mode access
-S1(config-if)#switchport access vlan 20
-S1(config-if)#exit
-
-S1(config)#interface f0/1
-S1(config-if)#switchport mode trunk
-S1(config-if)#switchport trunk native vlan 1000
-S1(config-if)#switchport trunk allowed vlan 10,20,30,1000
-S1(config-if)#exit
-
-S1(config)#interface f0/5
-S1(config-if)#switchport mode trunk
-S1(config-if)#switchport trunk native vlan 1000
-S1(config-if)#switchport trunk allowed vlan 10,20,30,1000
-S1(config-if)#exit
-
-S1#copy running-config startup-config
-</pre>
-</div>
-
-<h4>Switch S2 Configuration</h4>
-<div id="practical3_s2">
-<pre>
-Switch>enable
-Switch#config terminal
-Switch(config)#hostname S2
-S2(config)#no ip domain-lookup
-S2(config)#enable secret class
-S2(config)#line console 0
-S2(config-line)#password cisco
-S2(config-line)#login
-S2(config-line)#exit
-S2(config)#line vty 0 4
-S2(config-line)#password cisco
-S2(config-line)#login
-S2(config-line)#exit
-S2(config)#service password-encryption
-S2(config)#banner motd $ Authorized Users Only! $
-
-S2(config)#vlan 10
-S2(config-vlan)#name Management
-S2(config-vlan)#vlan 20
-S2(config-vlan)#name Sales
-S2(config-vlan)#vlan 30
-S2(config-vlan)#name Operations
-S2(config-vlan)#vlan 999
-S2(config-vlan)#name Parking_Lot
-S2(config-vlan)#vlan 1000
-S2(config-vlan)#name Native
-S2(config-vlan)#exit
-
-S2(config)#interface vlan 10
-S2(config-if)#ip address 192.168.10.12 255.255.255.0
-S2(config-if)#no shutdown
-S2(config-if)#exit
-S2(config)#ip default-gateway 192.168.10.1
-
-S2(config)#interface range f0/2-17, f0/19-24, g0/1-2
-S2(config-if-range)#switchport mode access
-S2(config-if-range)#switchport access vlan 999
-S2(config-if-range)#shutdown
-S2(config-if-range)#exit
-
-S2(config)#interface f0/18
-S2(config-if)#switchport mode access
-S2(config-if)#switchport access vlan 30
-S2(config-if)#exit
-
-S2(config)#interface f0/1
-S2(config-if)#switchport mode trunk
-S2(config-if)#switchport trunk native vlan 1000
-S2(config-if)#switchport trunk allowed vlan 10,20,30,1000
-S2(config-if)#exit
-
-S2#copy running-config startup-config
-</pre>
-</div>
-
-<hr>
-
-<h2>Practical 4: Spanning Tree Protocol</h2>
-<p><strong>Aim:</strong> Observe STP topology changes and implement RSTP.</p>
-<p><strong>Packet Tracer Setup:</strong> 3 Multilayer Switches (D1, D2, A1) in triangle topology. Use Gigabit for D1-D2, FastEthernet for A1.</p>
-
-<h4>Switch D1 Configuration</h4>
-<div id="practical4_d1">
-<pre>
-Switch>enable
-Switch#config terminal
-Switch(config)#hostname D1
-D1(config)#spanning-tree mode pvst
-D1(config)#line con 0
-D1(config-line)#exec-timeout 0 0
-D1(config-line)#logging synchronous
-D1(config-line)#exit
-
-D1(config)#interface range g1/0/1-24
-D1(config-if-range)#shutdown
-D1(config-if-range)#exit
-
-D1(config)#interface range g1/0/1, g1/0/5-6
-D1(config-if-range)#switchport mode trunk
-D1(config-if-range)#no shutdown
-D1(config-if-range)#exit
-
-D1(config)#vlan 2
-D1(config-vlan)#name SecondVLAN
-D1(config-vlan)#exit
-
-D1(config)#interface vlan 1
-D1(config-if)#ip address 10.0.0.1 255.0.0.0
-D1(config-if)#no shut
-D1(config-if)#exit
-</pre>
-</div>
-
-<h4>Switch D2 Configuration</h4>
-<div id="practical4_d2">
-<pre>
-Switch>enable
-Switch#config terminal
-Switch(config)#hostname D2
-D2(config)#spanning-tree mode pvst
-D2(config)#line con 0
-D2(config-line)#exec-timeout 0 0
-D2(config-line)#logging synchronous
-D2(config-line)#exit
-
-D2(config)#interface range g1/0/1-24
-D2(config-if-range)#shutdown
-D2(config-if-range)#exit
-
-D2(config)#interface range g1/0/1, g1/0/5-6
-D2(config-if-range)#switchport mode trunk
-D2(config-if-range)#no shutdown
-D2(config-if-range)#exit
-
-D2(config)#vlan 2
-D2(config-vlan)#name SecondVLAN
-D2(config-vlan)#exit
-
-D2(config)#interface vlan 1
-D2(config-if)#ip address 10.0.0.2 255.0.0.0
-D2(config-if)#no shut
-D2(config-if)#exit
-</pre>
-</div>
-
-<h4>Switch A1 Configuration</h4>
-<div id="practical4_a1">
-<pre>
-Switch>enable
-Switch#config terminal
-Switch(config)#hostname A1
-A1(config)#spanning-tree mode pvst
-A1(config)#line con 0
-A1(config-line)#exec-timeout 0 0
-A1(config-line)#logging synchronous
-A1(config-line)#exit
-
-A1(config)#interface range f0/1-24, g0/1-2
-A1(config-if-range)#shutdown
-A1(config-if-range)#exit
-
-A1(config)#interface range f0/1-4
-A1(config-if-range)#switchport mode trunk
-A1(config-if-range)#no shutdown
-A1(config-if-range)#exit
-
-A1(config)#vlan 2
-A1(config-vlan)#name SecondVLAN
-A1(config-vlan)#exit
-
-A1(config)#interface vlan 1
-A1(config-if)#ip address 10.0.0.3 255.0.0.0
-A1(config-if)#no shut
-A1(config-if)#exit
-</pre>
-</div>
-
-<h4>Configure RSTP</h4>
-<div id="practical4_rstp">
-<pre>
-D1#debug spanning-tree events
-D1#config t
-D1(config)#interface g1/0/1
-D1(config-if)#shutdown
-
-D2(config)#spanning-tree mode rapid-pvst
-
-D1(config-if)#no shutdown
-
-A1(config)#spanning-tree mode rapid-pvst
-
-Verify: show spanning-tree
-</pre>
-</div>
-
-<h4>MST Configuration</h4>
-<div id="practical4_mst">
-<pre>
-D1(config)#spanning-tree mode mst
-D1(config)#spanning-tree mst configuration
-D1(config-mst)#name REGION1
-D1(config-mst)#revision 1
-D1(config-mst)#instance 1 vlan 1-10
-D1(config-mst)#instance 2 vlan 11-20
-D1(config-mst)#exit
-D1(config)#spanning-tree mst 1 priority 4096
-</pre>
-</div>
-
-<hr>
-
-<h2>Practical 5: EtherChannel Implementation</h2>
-<p><strong>Aim:</strong> Implement EtherChannel using PAgP and LACP.</p>
-<p><strong>Packet Tracer Setup:</strong> 3 Switches (2960) - SWA, SWB, SWC. Connect with multiple links per Port Channel specification.</p>
-
-<h4>Switch SWA Configuration</h4>
-<div id="practical5_swa">
-<pre>
-Switch>enable
-Switch#config terminal
-Switch(config)#hostname SWA
-
-SWA(config)#interface FastEthernet0/21
-SWA(config-if)#switchport mode trunk
-SWA(config-if)#channel-group 2 mode active
-SWA(config-if)#exit
-
-SWA(config)#interface FastEthernet0/22
-SWA(config-if)#switchport mode trunk
-SWA(config-if)#channel-group 2 mode active
-SWA(config-if)#exit
-
-SWA(config)#interface GigabitEthernet0/1
-SWA(config-if)#switchport mode trunk
-SWA(config-if)#channel-group 1 mode desirable
-SWA(config-if)#exit
-
-SWA(config)#interface GigabitEthernet0/2
-SWA(config-if)#switchport mode trunk
-SWA(config-if)#channel-group 1 mode desirable
-SWA(config-if)#exit
-
-SWA#show etherchannel summary
-
-SWA#show etherchannel summary
-</pre>
-</div>
-
-<h4>Switch SWB Configuration</h4>
-<div id="practical5_swb">
-<pre>
-Switch>enable
-Switch#config terminal
-Switch(config)#hostname SWB
-
-SWB(config)#interface FastEthernet0/23
-SWB(config-if)#switchport mode trunk
-SWB(config-if)#channel-group 3 mode passive
-SWB(config-if)#exit
-
-SWB(config)#interface FastEthernet0/24
-SWB(config-if)#switchport mode trunk
-SWB(config-if)#channel-group 3 mode passive
-SWB(config-if)#exit
-
-SWB(config)#interface GigabitEthernet0/1
-SWB(config-if)#switchport mode trunk
-SWB(config-if)#channel-group 1 mode desirable
-SWB(config-if)#exit
-
-SWB(config)#interface GigabitEthernet0/2
-SWB(config-if)#switchport mode trunk
-SWB(config-if)#channel-group 1 mode desirable
-SWB(config-if)#exit
-
-SWB#show etherchannel summary
-</pre>
-</div>
-
-<h4>Switch SWC Configuration</h4>
-<div id="practical5_swc">
-<pre>
-Switch>enable
-Switch#config terminal
-Switch(config)#hostname SWC
-
-SWC(config)#interface FastEthernet0/21
-SWC(config-if)#switchport mode trunk
-SWC(config-if)#channel-group 2 mode active
-SWC(config-if)#exit
-
-SWC(config)#interface FastEthernet0/22
-SWC(config-if)#switchport mode trunk
-SWC(config-if)#channel-group 2 mode active
-SWC(config-if)#exit
-
-SWC(config)#interface FastEthernet0/23
-SWC(config-if)#switchport mode trunk
-SWC(config-if)#channel-group 3 mode active
-SWC(config-if)#exit
-
-SWC(config)#interface FastEthernet0/24
-SWC(config-if)#switchport mode trunk
-SWC(config-if)#channel-group 3 mode active
-SWC(config-if)#exit
-
-SWC#show etherchannel summary
-</pre>
-</div>
-
-<hr>
-
-<h2>Practical 6: OSPF Implementation</h2>
-
-<h3>6A. Single-Area OSPFv2</h3>
-<p><strong>Aim:</strong> Implement Single-Area OSPFv2.</p>
-<p><strong>Packet Tracer Setup:</strong> 3 Routers, 3 PCs. Triangle topology with serial connections between routers.</p>
-
-<h4>Router R1 Configuration</h4>
-<div id="practical6a_r1">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#hostname R1
-
-R1(config)#interface GigabitEthernet0/0
-R1(config-if)#ip address 192.168.1.1 255.255.255.0
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#interface Serial0/0/0
-R1(config-if)#ip address 192.168.12.1 255.255.255.252
-R1(config-if)#clock rate 64000
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#interface Serial0/0/1
-R1(config-if)#ip address 192.168.13.1 255.255.255.252
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#router ospf 1
-R1(config-router)#network 192.168.1.0 0.0.0.255 area 0
-R1(config-router)#network 192.168.12.0 0.0.0.3 area 0
-R1(config-router)#network 192.168.13.0 0.0.0.3 area 0
-R1(config-router)#exit
-</pre>
-</div>
-
-<h4>Router R2 Configuration</h4>
-<div id="practical6a_r2">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#hostname R2
-
-R2(config)#interface GigabitEthernet0/0
-R2(config-if)#ip address 192.168.2.1 255.255.255.0
-R2(config-if)#no shutdown
-R2(config-if)#exit
-
-R2(config)#interface Serial0/0/0
-R2(config-if)#ip address 192.168.12.2 255.255.255.252
-R2(config-if)#no shutdown
-R2(config-if)#exit
-
-R2(config)#interface Serial0/0/1
-R2(config-if)#ip address 192.168.23.1 255.255.255.252
-R2(config-if)#clock rate 64000
-R2(config-if)#no shutdown
-R2(config-if)#exit
-
-R2(config)#router ospf 1
-R2(config-router)#network 192.168.2.0 0.0.0.255 area 0
-R2(config-router)#network 192.168.12.0 0.0.0.3 area 0
-R2(config-router)#network 192.168.23.0 0.0.0.3 area 0
-R2(config-router)#exit
-</pre>
-</div>
-
-<h4>Router R3 Configuration</h4>
-<div id="practical6a_r3">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#hostname R3
-
-R3(config)#interface GigabitEthernet0/0
-R3(config-if)#ip address 192.168.3.1 255.255.255.0
-R3(config-if)#no shutdown
-R3(config-if)#exit
-
-R3(config)#interface Serial0/0/0
-R3(config-if)#ip address 192.168.13.2 255.255.255.252
-R3(config-if)#clock rate 64000
-R3(config-if)#no shutdown
-R3(config-if)#exit
-
-R3(config)#interface Serial0/0/1
-R3(config-if)#ip address 192.168.23.2 255.255.255.252
-R3(config-if)#no shutdown
-R3(config-if)#exit
-
-R3(config)#router ospf 1
-R3(config-router)#network 192.168.3.0 0.0.0.255 area 0
-R3(config-router)#network 192.168.13.0 0.0.0.3 area 0
-R3(config-router)#network 192.168.23.0 0.0.0.3 area 0
-R3(config-router)#exit
-
-Verification Commands:
-show ip ospf neighbor
-show ip route
-show ip protocols
-show ip ospf interface brief
-</pre>
-</div>
-
-<h3>6B. Multi-Area OSPFv2</h3>
-<div id="practical6b">
-<pre>
-R1 (Area 0):
-R1(config)#router ospf 1
-R1(config-router)#network 192.168.1.0 0.0.0.255 area 0
-R1(config-router)#network 192.168.15.0 0.0.0.3 area 0
-R1(config-router)#network 192.168.12.0 0.0.0.3 area 0
-R1(config-router)#exit
-
-R2 (Area 0 and Area 1):
-R2(config)#router ospf 1
-R2(config-router)#network 192.168.2.0 0.0.0.255 area 1
-R2(config-router)#network 192.168.12.0 0.0.0.3 area 0
-R2(config-router)#network 192.168.13.0 0.0.0.3 area 1
-R2(config-router)#exit
-
-R3 (Area 1 and Area 2):
-R3(config)#router ospf 1
-R3(config-router)#network 192.168.3.0 0.0.0.255 area 2
-R3(config-router)#network 192.168.13.0 0.0.0.3 area 1
-R3(config-router)#network 192.168.14.0 0.0.0.3 area 2
-R3(config-router)#exit
-
-R4 (Area 0 and Area 2):
-R4(config)#router ospf 1
-R4(config-router)#network 192.168.4.0 0.0.0.255 area 0
-R4(config-router)#network 192.168.15.0 0.0.0.3 area 0
-R4(config-router)#network 192.168.14.0 0.0.0.3 area 2
-R4(config-router)#exit
-</pre>
-</div>
-
-<h3>6C. OSPF Route Summarization</h3>
-<div id="practical6c">
-<pre>
-R2(config)#router ospf 1
-R2(config-router)#area 1 range 192.168.0.0 255.255.252.0
-R2(config-router)#exit
-</pre>
-</div>
-
-<h3>6D. OSPFv3 Configuration</h3>
-<div id="practical6d">
-<pre>
-R1(config)#ipv6 unicast-routing
-R1(config)#interface g0/0
-R1(config-if)#ipv6 address 2001:db8:1::1/64
-R1(config-if)#ipv6 ospf 1 area 0
-R1(config-if)#no shutdown
-R1(config-if)#exit
-R1(config)#ipv6 router ospf 1
-R1(config-rtr)#router-id 1.1.1.1
-R1(config-rtr)#exit
-</pre>
-</div>
-
-<hr>
-
-<h2>Practical 7: BGP Implementation</h2>
-<p><strong>Aim:</strong> Configure BGP for inter-autonomous system routing.</p>
-<p><strong>Packet Tracer Setup:</strong> 3 Routers (different AS), 3 PCs. Serial connections between routers.</p>
-
-<h4>Router R1 Configuration (AS 100)</h4>
-<div id="practical7_r1">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#hostname R1
-
-R1(config)#interface FastEthernet0/0
-R1(config-if)#ip address 10.0.0.1 255.0.0.0
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#interface Serial0/0/0
-R1(config-if)#ip address 40.0.0.1 255.0.0.0
-R1(config-if)#clock rate 64000
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#interface Serial0/0/1
-R1(config-if)#ip address 60.0.0.1 255.0.0.0
-R1(config-if)#clock rate 64000
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#router bgp 100
-R1(config-router)#neighbor 40.0.0.2 remote-as 200
-R1(config-router)#neighbor 60.0.0.2 remote-as 300
-R1(config-router)#network 10.0.0.0 mask 255.0.0.0
-R1(config-router)#exit
-</pre>
-</div>
-
-<h4>Router R2 Configuration (AS 200)</h4>
-<div id="practical7_r2">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#hostname R2
-
-R2(config)#interface FastEthernet0/0
-R2(config-if)#ip address 20.0.0.1 255.0.0.0
-R2(config-if)#no shutdown
-R2(config-if)#exit
-
-R2(config)#interface Serial0/0/0
-R2(config-if)#ip address 40.0.0.2 255.0.0.0
-R2(config-if)#no shutdown
-R2(config-if)#exit
-
-R2(config)#interface Serial0/0/1
-R2(config-if)#ip address 50.0.0.1 255.0.0.0
-R2(config-if)#clock rate 64000
-R2(config-if)#no shutdown
-R2(config-if)#exit
-
-R2(config)#router bgp 200
-R2(config-router)#neighbor 40.0.0.1 remote-as 100
-R2(config-router)#neighbor 50.0.0.2 remote-as 300
-R2(config-router)#network 20.0.0.0 mask 255.0.0.0
-R2(config-router)#exit
-</pre>
-</div>
-
-<h4>Router R3 Configuration (AS 300)</h4>
-<div id="practical7_r3">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#hostname R3
-
-R3(config)#interface FastEthernet0/0
-R3(config-if)#ip address 30.0.0.1 255.0.0.0
-R3(config-if)#no shutdown
-R3(config-if)#exit
-
-R3(config)#interface Serial0/0/0
-R3(config-if)#ip address 60.0.0.2 255.0.0.0
-R3(config-if)#no shutdown
-R3(config-if)#exit
-
-R3(config)#interface Serial0/0/1
-R3(config-if)#ip address 50.0.0.2 255.0.0.0
-R3(config-if)#no shutdown
-R3(config-if)#exit
-
-R3(config)#router bgp 300
-R3(config-router)#neighbor 60.0.0.1 remote-as 100
-R3(config-router)#neighbor 50.0.0.1 remote-as 200
-R3(config-router)#network 30.0.0.0 mask 255.0.0.0
-R3(config-router)#exit
-
-Verification Commands:
-show ip bgp
-show ip bgp summary
-show ip bgp neighbors
-show ip route bgp
-</pre>
-</div>
-
-<hr>
-
-<h2>Practical 8: VPN Implementation</h2>
-
-<h3>8A. IPsec Site-to-Site VPN</h3>
-<p><strong>Aim:</strong> Configure IPsec VPN for secure site-to-site communication.</p>
-<p><strong>Packet Tracer Setup:</strong> 3 Routers, 3 PCs. R1-R2-R3 connected via serial. VPN tunnel between R1 and R3.</p>
-
-<h4>Router R1 Configuration</h4>
-<div id="practical8_r1">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#hostname R1
-
-R1(config)#interface GigabitEthernet0/0
-R1(config-if)#ip address 192.168.1.1 255.255.255.0
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#interface Serial0/0/0
-R1(config-if)#ip address 10.1.1.2 255.255.255.252
-R1(config-if)#clock rate 64000
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#router rip
-R1(config-router)#network 10.0.0.0
-R1(config-router)#network 192.168.1.0
-R1(config-router)#exit
-
-R1(config)#license boot module c1900 technology-package securityk9
-
-R1(config)#access-list 110 permit ip 192.168.1.0 0.0.0.255 192.168.3.0 0.0.0.255
-
-R1(config)#crypto isakmp policy 10
-R1(config-isakmp)#encryption aes 256
-R1(config-isakmp)#authentication pre-share
-R1(config-isakmp)#group 5
-R1(config-isakmp)#exit
-
-R1(config)#crypto isakmp key vpnpa55 address 10.2.2.2
-
-R1(config)#crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
-
-R1(config)#crypto map VPN-MAP 10 ipsec-isakmp
-R1(config-crypto-map)#description VPN connection to R3
-R1(config-crypto-map)#set peer 10.2.2.2
-R1(config-crypto-map)#set transform-set VPN-SET
-R1(config-crypto-map)#match address 110
-R1(config-crypto-map)#exit
-
-R1(config)#interface s0/0/0
-R1(config-if)#crypto map VPN-MAP
-R1(config-if)#exit
-</pre>
-</div>
-
-<h4>Router R2 Configuration</h4>
-<div id="practical8_r2">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#hostname R2
-
-R2(config)#interface GigabitEthernet0/0
-R2(config-if)#ip address 192.168.2.1 255.255.255.0
-R2(config-if)#no shutdown
-R2(config-if)#exit
-
-R2(config)#interface Serial0/0/0
-R2(config-if)#ip address 10.1.1.1 255.255.255.252
-R2(config-if)#no shutdown
-R2(config-if)#exit
-
-R2(config)#interface Serial0/0/1
-R2(config-if)#ip address 10.2.2.1 255.255.255.252
-R2(config-if)#clock rate 64000
-R2(config-if)#no shutdown
-R2(config-if)#exit
-
-R2(config)#router rip
-R2(config-router)#network 10.0.0.0
-R2(config-router)#network 192.168.2.0
-R2(config-router)#exit
-</pre>
-</div>
-
-<h4>Router R3 Configuration</h4>
-<div id="practical8_r3">
-<pre>
-Router>enable
-Router#configure terminal
-Router(config)#hostname R3
-
-R3(config)#interface GigabitEthernet0/0
-R3(config-if)#ip address 192.168.3.1 255.255.255.0
-R3(config-if)#no shutdown
-R3(config-if)#exit
-
-R3(config)#interface Serial0/0/1
-R3(config-if)#ip address 10.2.2.2 255.255.255.252
-R3(config-if)#no shutdown
-R3(config-if)#exit
-
-R3(config)#router rip
-R3(config-router)#network 10.0.0.0
-R3(config-router)#network 192.168.3.0
-R3(config-router)#exit
-
-R3(config)#license boot module c1900 technology-package securityk9
-
-R3(config)#access-list 110 permit ip 192.168.3.0 0.0.0.255 192.168.1.0 0.0.0.255
-
-R3(config)#crypto isakmp policy 10
-R3(config-isakmp)#encryption aes 256
-R3(config-isakmp)#authentication pre-share
-R3(config-isakmp)#group 5
-R3(config-isakmp)#exit
-
-R3(config)#crypto isakmp key vpnpa55 address 10.1.1.2
-
-R3(config)#crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
-
-R3(config)#crypto map VPN-MAP 10 ipsec-isakmp
-R3(config-crypto-map)#description VPN connection to R1
-R3(config-crypto-map)#set peer 10.1.1.2
-R3(config-crypto-map)#set transform-set VPN-SET
-R3(config-crypto-map)#match address 110
-R3(config-crypto-map)#exit
-
-R3(config)#interface s0/0/1
-R3(config-if)#crypto map VPN-MAP
-R3(config-if)#exit
-
-Verification Commands:
-show crypto isakmp policy
-show crypto isakmp sa
-show crypto ipsec transform-set
-show crypto map
-show crypto ipsec sa
-</pre>
-</div>
-
-<h3>8B. GRE over IPsec</h3>
-<div id="practical8_gre">
-<pre>
-R1(config)#interface tunnel 0
-R1(config-if)#ip address 172.16.0.1 255.255.255.252
-R1(config-if)#tunnel source serial0/0/0
-R1(config-if)#tunnel destination 10.2.2.2
-R1(config-if)#tunnel mode gre ip
-R1(config-if)#exit
-
-R1(config)#crypto ipsec profile IPSEC-PROFILE
-R1(ipsec-profile)#set transform-set VPN-SET
-R1(ipsec-profile)#exit
-
-R1(config)#interface tunnel 0
-R1(config-if)#tunnel protection ipsec profile IPSEC-PROFILE
-R1(config-if)#exit
-
-R3(config)#interface tunnel 0
-R3(config-if)#ip address 172.16.0.2 255.255.255.252
-R3(config-if)#tunnel source serial0/0/1
-R3(config-if)#tunnel destination 10.1.1.2
-R3(config-if)#tunnel mode gre ip
-R3(config-if)#exit
-
-R3(config)#crypto ipsec profile IPSEC-PROFILE
-R3(ipsec-profile)#set transform-set VPN-SET
-R3(ipsec-profile)#exit
-
-R3(config)#interface tunnel 0
-R3(config-if)#tunnel protection ipsec profile IPSEC-PROFILE
-R3(config-if)#exit
-</pre>
-</div>
-
-<h3>8C. VRF Lite</h3>
-<div id="practical8_vrf">
-<pre>
-R1(config)#ip vrf CUSTOMER-A
-R1(config-vrf)#rd 100:1
-R1(config-vrf)#exit
-
-R1(config)#ip vrf CUSTOMER-B
-R1(config-vrf)#rd 100:2
-R1(config-vrf)#exit
-
-R1(config)#interface GigabitEthernet0/0
-R1(config-if)#ip vrf forwarding CUSTOMER-A
-R1(config-if)#ip address 192.168.1.1 255.255.255.0
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-R1(config)#interface GigabitEthernet0/1
-R1(config-if)#ip vrf forwarding CUSTOMER-B
-R1(config-if)#ip address 192.168.2.1 255.255.255.0
-R1(config-if)#no shutdown
-R1(config-if)#exit
-
-Verification Commands:
-show ip vrf
-show ip route vrf CUSTOMER-A
-show ip route vrf CUSTOMER-B
-</pre>
-</div>
-
-<hr>
-
-<h2>Practical 9: SDN Simulation with Controllers</h2>
-
-<h3>9A. OpenDaylight with Mininet</h3>
-<p><strong>Aim:</strong> Simulate SDN using OpenDaylight controller with Mininet.</p>
-<p><strong>Note:</strong> Requires Linux system with Mininet and OpenDaylight installed.</p>
-
-<div id="practical9_mininet">
-<pre>
-Mininet Installation (Linux):
-sudo apt-get update
-sudo apt-get install mininet
-sudo mn --version
-
-OpenDaylight Installation:
-wget https://nexus.opendaylight.org/content/repositories/opendaylight.release/org/opendaylight/integration/karaf/0.8.4/karaf-0.8.4.tar.gz
-tar -xvf karaf-0.8.4.tar.gz
-cd karaf-0.8.4
-./bin/karaf
-
-Install ODL Features:
-opendaylight-user@root>feature:install odl-restconf
-opendaylight-user@root>feature:install odl-l2switch-switch-ui
-opendaylight-user@root>feature:install odl-mdsal-apidocs
-opendaylight-user@root>feature:install odl-dluxapps-applications
-
-Create Mininet Topology:
-sudo mn --controller=remote,ip=127.0.0.1,port=6633 --topo tree,2
-
-Mininet Commands:
-mininet> nodes
-mininet> net
-mininet> links
-mininet> h1 ping h2
-mininet> pingall
-mininet> dump
-mininet> exit
-
-Access OpenDaylight DLUX UI:
-Open browser: http://localhost:8181/index.html
-Username: admin
-Password: admin
-</pre>
-</div>
-
-<h3>9B. OFNet SDN Emulator</h3>
-<div id="practical9_ofnet">
-<pre>
-OFNet Installation:
-git clone https://github.com/onfsdn/OFNet.git
-cd OFNet
-sudo python setup.py install
-
-Create OFNet Topology:
-from ofnet.topology import Topology
-from ofnet.node import Controller, Switch, Host
-
-topo = Topology()
-c1 = topo.addController('c1')
-s1 = topo.addSwitch('s1')
-s2 = topo.addSwitch('s2')
-h1 = topo.addHost('h1')
-h2 = topo.addHost('h2')
-
-topo.addLink(h1, s1)
-topo.addLink(h2, s2)
-topo.addLink(s1, s2)
-
-topo.start()
-</pre>
-</div>
-
-<hr>
-
-<h2>Practical 10: OpenFlow Using Mininet</h2>
-<p><strong>Aim:</strong> Simulate OpenFlow protocol using Mininet for SDN experimentation.</p>
-<p><strong>Prerequisites:</strong> Linux system, Mininet, OpenFlow controller (POX/Ryu/Floodlight).</p>
-
-<div id="practical10">
-<pre>
-Install POX Controller:
-git clone https://github.com/noxrepo/pox
-cd pox
-./pox.py forwarding.l2_learning
-
-Basic Mininet Topology:
-sudo mn --topo single,3 --mac --controller remote --switch ovsk
-
-mininet> nodes
-mininet> net
-mininet> dump
-
-Custom Topology Script:
-from mininet.topo import Topo
-from mininet.net import Mininet
-from mininet.node import RemoteController
-from mininet.cli import CLI
-from mininet.log import setLogLevel
-
-class CustomTopo(Topo):
-    def build(self):
-        s1 = self.addSwitch('s1')
-        s2 = self.addSwitch('s2')
-        s3 = self.addSwitch('s3')
-        
-        h1 = self.addHost('h1', ip='10.0.0.1/24')
-        h2 = self.addHost('h2', ip='10.0.0.2/24')
-        h3 = self.addHost('h3', ip='10.0.0.3/24')
-        h4 = self.addHost('h4', ip='10.0.0.4/24')
-        
-        self.addLink(h1, s1)
-        self.addLink(h2, s1)
-        self.addLink(h3, s2)
-        self.addLink(h4, s3)
-        self.addLink(s1, s2)
-        self.addLink(s2, s3)
-        self.addLink(s3, s1)
-
-def runCustomTopo():
-    topo = CustomTopo()
-    net = Mininet(topo=topo, controller=RemoteController)
-    net.start()
-    CLI(net)
-    net.stop()
-
-if __name__ == '__main__':
-    setLogLevel('info')
-    runCustomTopo()
-
-Run Custom Topology:
-sudo python custom_topo.py
-
-OpenFlow Switch Configuration:
-sudo ovs-vsctl show
-sudo ovs-vsctl list-br
-sudo ovs-vsctl list-ports s1
-sudo ovs-ofctl show s1
-sudo ovs-ofctl dump-flows s1
-sudo ovs-ofctl dump-tables s1
-
-Add Flow Entries Manually:
-sudo ovs-ofctl add-flow s1 priority=100,in_port=1,actions=output:2
-sudo ovs-ofctl add-flow s1 priority=100,in_port=2,actions=output:1
-sudo ovs-ofctl dump-flows s1
-
-Test Connectivity:
-mininet> h1 ping h2
-mininet> h1 ping h3
-mininet> pingall
-mininet> iperf h1 h2
-
-Monitor Traffic:
-mininet> h1 ifconfig
-mininet> s1 ifconfig
-mininet> dump
-
-Advanced OpenFlow Commands:
-sudo ovs-ofctl add-flow s1 "table=0,priority=100,dl_type=0x0800,nw_dst=10.0.0.2,actions=output:2"
-sudo ovs-ofctl add-flow s1 "table=0,priority=100,dl_type=0x0806,actions=flood"
-sudo ovs-ofctl mod-flows s1 "table=0,priority=100,dl_type=0x0800,nw_dst=10.0.0.2,actions=output:3"
-sudo ovs-ofctl del-flows s1
-
-Create Linear Topology:
-sudo mn --topo linear,4 --mac --controller remote --switch ovsk
-
-Create Tree Topology:
-sudo mn --topo tree,depth=2,fanout=3 --mac --controller remote --switch ovsk
-
-Performance Testing:
-mininet> iperf h1 h2
-mininet> h1 ping -c 10 h2
-mininet> h1 traceroute h3
-
-Clean Up Mininet:
-sudo mn -c
-sudo ovs-vsctl show
-</pre>
-</div>
-
-<hr>
-
-<h2>General Verification Commands</h2>
-
-<h4>Router Commands</h4>
-<pre>
-show running-config
-show ip interface brief
-show ip route
-show interfaces
-show version
-show protocols
-ping [ip-address]
-traceroute [ip-address]
-show cdp neighbors
-show clock
-</pre>
-
-<h4>Switch Commands</h4>
-<pre>
-show running-config
-show vlan brief
-show interfaces status
-show interfaces trunk
-show spanning-tree
-show mac address-table
-show port-channel summary
-show etherchannel summary
-show vtp status
-</pre>
-
-<h4>Debugging Commands</h4>
-<pre>
-debug ip packet
-debug ip routing
-debug spanning-tree events
-debug etherchannel
-no debug all
-undebug all
-</pre>
-
-<hr>
-
-<footer>
-<p><strong>End of SDN Practicals Document</strong></p>
-<p>SIES (Nerul) College of Arts, Science and Commerce (Autonomous)</p>
-<p>Master of Science in Computer Science - Academic Year 2025-2026</p>
-<p>Submitted by: Darshan Jadhav | Roll No: MCS.25.06</p>
-<p>Guide: Ms. Flosia Moses</p>
-</footer>
 
 </body>
+
 </html>
