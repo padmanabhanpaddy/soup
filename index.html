@@ -1,903 +1,959 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Applied Signal and Image Processing Practicals</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ML Practical Journal – Darshan Jadhav</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap');
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #131720;
+      --border: #1e2535;
+      --accent: #4fffb0;
+      --accent2: #4a9eff;
+      --text: #c8d3e8;
+      --muted: #5a6a8a;
+      --code-bg: #0a0d12;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+    }
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    header .tag {
+      display: inline-block;
+      margin-top: 1rem;
+      background: var(--accent);
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.25rem 0.8rem;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Index ── */
+    #practical-index {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.8rem 2rem;
+      max-width: 860px;
+      margin: 0 auto 3rem;
+    }
+    #practical-index h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent2);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .index-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem 2rem;
+    }
+    @media (max-width: 600px) { .index-list { grid-template-columns: 1fr; } }
+    .index-list li {
+      font-size: 0.88rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+    .index-list li .idx-num {
+      color: var(--accent);
+      min-width: 22px;
+      font-weight: 600;
+    }
+    .index-list li a {
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .index-list li a:hover { color: var(--accent); }
+
+    /* ── Practical cards ── */
+    .practical-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .practical {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .practical-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.2rem 1.6rem;
+      border-bottom: 1px solid var(--border);
+      background: #0f121a;
+    }
+    .prac-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #000;
+      background: var(--accent);
+      border-radius: 6px;
+      padding: 0.2rem 0.55rem;
+      white-space: nowrap;
+    }
+    .practical-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #e8edf8;
+      line-height: 1.4;
+    }
+
+    .practical-body {
+      padding: 1.5rem 1.6rem;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent2);
+      margin-bottom: 0.6rem;
+    }
+
+    .theory {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem 1.4rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.65;
+      color: #a8c0e8;
+      white-space: pre;
+    }
+
+    /* simple keyword colouring via spans injected manually */
+    .kw   { color: #c792ea; }   /* import, from, def, for, if, return, class */
+    .fn   { color: #82aaff; }   /* function names */
+    .str  { color: #c3e88d; }   /* strings */
+    .num  { color: #f78c6c; }   /* numbers */
+    .cmt  { color: #546e7a; }   /* comments */
+    .cls  { color: #ffcb6b; }   /* class names */
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.2rem 0;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Applied Signal and Image Processing Practicals</h1>
-<h3>MSc Computer Science - Python Image Processing Lab Manual</h3>
-<p><strong>Submitted by:</strong> Sakshi Sunil Musale | <strong>Seat Number:</strong> MCS.24.09</p>
-<p><strong>Academic Year:</strong> 2024-25</p>
-
-<hr>
-
-<h2>Practical 1: Signal Processing Fundamentals</h2>
-<p><strong>Aim:</strong> Demonstrate upsampling, downsampling, and Fast Fourier Transform on image/speech signals.</p>
-
-<h3>1A. Up-Sampling</h3>
-<div id="practical1a">im = Image.open("../images/clock.jpg")  # the original small clock image
-pylab.imshow(im), pylab.show()
-
-im1 = im.resize((im.width*5, im.height*5), Image.NEAREST)  # nearest neighbor interpolation
-pylab.figure(figsize=(10,10)), pylab.imshow(im1), pylab.show()
-
-im1 = im.resize((im.width*5, im.height*5), Image.BILINEAR)  # up-sample with bi-linear interpolation
-pylab.figure(figsize=(10,10)), pylab.imshow(im1), pylab.show()
-
-im.resize((im.width*10, im.height*10), Image.BICUBIC).show()  # bi-cubic interpolation
-pylab.figure(figsize=(10,10)), pylab.imshow(im1), pylab.show()</div>
-
-<h3>1B. Down-Sampling</h3>
-<div id="practical1b">im = im.resize((im.width//5, im.height//5))
-pylab.figure(figsize=(15,10)), pylab.imshow(im), pylab.show()
-
-im = Image.open("../images/tajmahal.jpg")
-im = im.resize((im.width//5, im.height//5), Image.ANTIALIAS)
-pylab.figure(figsize=(15,10)), pylab.imshow(im), pylab.show()
-
-im = imread('../images/umbc.png')
-im1 = im.copy()
-pylab.figure(figsize=(20,15))
-
-for i in range(4):
-    pylab.subplot(2,2,i+1), pylab.imshow(im1, cmap='gray'), pylab.axis('off')
-    pylab.title('image size = ' + str(im1.shape[1]) + 'x' + str(im1.shape[0]))
-    im1 = rescale(im1, scale = 0.5, multichannel=True, anti_aliasing=False)
-
-pylab.subplots_adjust(wspace=0.1, hspace=0.1)
-pylab.show()</div>
-
-<h3>1C. FFT with numpy.fft module</h3>
-<div id="practical1c">import numpy.fft as fp
-
-im1 = rgb2gray(imread('../images/house.png'))
-pylab.figure(figsize=(12,10))
-
-freq1 = fp.fft2(im1)
-im1_ = fp.ifft2(freq1).real
-
-pylab.subplot(2,2,1), pylab.imshow(im1, cmap='gray'), pylab.title('Original Image', size=20)
-pylab.subplot(2,2,2), pylab.imshow(20*np.log10(0.01 + np.abs(fp.fftshift(freq1))), cmap='gray')
-pylab.title('FFT Spectrum Magnitude', size=20)
-
-pylab.subplot(2,2,3), pylab.imshow(np.angle(fp.fftshift(freq1)), cmap='gray')
-pylab.title('FFT Phase', size=20)
-
-pylab.subplot(2,2,4), pylab.imshow(np.clip(im1_,0,255), cmap='gray')
-pylab.title('Reconstructed Image', size=20)
-
-pylab.show()
-
-# Reconstructed images with mixed frequency components
-pylab.figure(figsize=(20,15))
-
-im1_ = fp.ifft2(np.vectorize(complex)(freq1.real, freq2.imag)).real
-im2_ = fp.ifft2(np.vectorize(complex)(freq2.real, freq1.imag)).real
-pylab.subplot(211), pylab.imshow(np.clip(im1_,0,255), cmap='gray')
-pylab.title('Reconstructed Image (Re(F1) + Im(F2))', size=20)
-pylab.subplot(212), pylab.imshow(np.clip(im2_,0,255), cmap='gray')
-pylab.title('Reconstructed Image (Re(F2) + Im(F1))', size=20)
-pylab.show()</div>
-
-<hr>
-
-<h2>Practical 2: Signal Analysis and Correlation</h2>
-
-<h3>2A. Triangle Signal Generation</h3>
-<p><strong>Aim:</strong> Create a triangle signal and plot a 3-period segment.</p>
-<div id="practical2a">import os
-
-if not os.path.exists('thinkdsp.py'):
-    !wget https://github.com/AllenDowney/ThinkDSP/raw/master/code/thinkdsp.py
-
-import thinkdsp
-
-cos_sig = thinkdsp.CosSignal(freq=440, amp=1.0, offset=0)
-sin_sig = thinkdsp.SinSignal(freq=880, amp=0.5, offset=0)
-mix = cos_sig + sin_sig
-
-wave = mix.make_wave(duration=0.5, start=0, framerate=11025)
-period = mix.period
-segment = wave.segment(start=0, duration=period*3)
-
-spectrum = wave.make_spectrum()
-spectrum.plot()
-
-signal = thinkdsp.TriangleSignal(200)
-signal.plot()
-
-wave = signal.make_wave(framerate=11025)
-spectrum = wave.make_spectrum()
-spectrum.plot()</div>
-
-<h3>2B. Signal Correlation</h3>
-<p><strong>Aim:</strong> Plot signal segments and compute correlation between them.</p>
-<div id="practical2b">start = 0.0
-duration = 0.2
-segment = wave.segment(start, duration)
-segment.plot()
-decorate(xlabel='Time (s)')
-
-import numpy as np
-import matplotlib.pyplot as plt
-from thinkdsp import decorate
-from thinkdsp import SinSignal
-
-def make_sine(offset):
-    signal = SinSignal(freq=440, offset=offset)
-    wave = signal.make_wave(duration=0.5, framerate=10000)
-    return wave
-
-wave1 = make_sine(offset=0)
-wave2 = make_sine(offset=1)
-
-wave1.segment(duration=0.01).plot()
-wave2.segment(duration=0.01).plot()
-decorate(xlabel='Time (s)')
-
-wave1.corr(wave2)
-# Output: 0.5403023058681397
-
-def compute_corr(offset):
-    wave1 = make_sine(offset=0)
-    wave2 = make_sine(offset=-offset)
-    wave1.segment(duration=0.01).plot()
-    wave2.segment(duration=0.01).plot()
-    
-    corr = wave1.corr(wave2)
-    print('corr =', corr)
-    
-    decorate(xlabel='Time (s)')
-
-from ipywidgets import interact, interactive, fixed
-import ipywidgets as widgets
-
-PI2 = np.pi * 2
-slider = widgets.FloatSlider(min=0, max=PI2, value=1)
-interact(compute_corr, offset=slider);</div>
-
-<hr>
-
-<h2>Practical 3: Convolution and Template Matching</h2>
-
-<h3>3A. Convolution on Grayscale Image</h3>
-<p><strong>Aim:</strong> Apply convolution operations on images.</p>
-<div id="practical3a">im = rgb2gray(imread('../images/cameraman.jpg')).astype(float)
-print(np.max(im))
-print(im.shape)
-
-blur_box_kernel = np.ones((3,3)) / 9
-edge_laplace_kernel = np.array([[0,1,0],[1,-4,1],[0,1,0]])
-im_blurred = signal.convolve2d(im, blur_box_kernel)
-im_edges = np.clip(signal.convolve2d(im, edge_laplace_kernel), 0, 1)
-
-fig, axes = pylab.subplots(ncols=3, sharex=True, sharey=True, figsize=(18,6))
-axes[0].imshow(im, cmap=pylab.cm.gray)
-axes[0].set_title('Original Image', size=20)
-axes[1].imshow(im_blurred, cmap=pylab.cm.gray)
-axes[1].set_title('Box Blur', size=20)
-axes[2].imshow(im_edges, cmap=pylab.cm.gray)
-axes[2].set_title('Laplace Edge Detection', size=20)
-
-for ax in axes:
-    ax.axis('off')
-pylab.show()</div>
-
-<h3>3B. Template Matching with Cross-Correlation</h3>
-<div id="practical3b">face_image = misc.face(gray=True) - misc.face(gray=True).mean()
-template_image = np.copy(face_image[300:365, 670:750])  # right eye
-template_image -= template_image.mean()
-
-face_image = face_image + np.random.randn(*face_image.shape) * 50  # add random noise
-
-correlation = signal.correlate2d(face_image, template_image, boundary='symm', mode='same')
-y, x = np.unravel_index(np.argmax(correlation), correlation.shape)  # find the match
-
-fig, (ax_original, ax_template, ax_correlation) = pylab.subplots(3, 1, figsize=(6, 15))
-ax_original.imshow(face_image, cmap='gray')
-ax_original.set_title('Original', size=20)
-ax_original.set_axis_off()
-
-ax_template.imshow(template_image, cmap='gray')
-ax_template.set_title('Template', size=20)
-ax_template.set_axis_off()
-
-ax_correlation.imshow(correlation, cmap='afmhot')
-ax_correlation.set_title('Cross-correlation', size=20)
-ax_correlation.set_axis_off()
-
-ax_original.plot(x, y, 'ro')
-fig.show()</div>
-
-<hr>
-
-<h2>Practical 4: Pixel Intensity Transformations</h2>
-
-<h3>4A. Log Transform</h3>
-<p><strong>Aim:</strong> Implement log and power-law transformations.</p>
-<div id="practical4a">def plot_image(image, title=''):
-    pylab.title(title, size=20), pylab.imshow(image)
-    pylab.axis('off')
-
-def plot_hist(r, g, b, title=''):
-    r, g, b = img_as_ubyte(r), img_as_ubyte(g), img_as_ubyte(b)
-    pylab.hist(np.array(r).ravel(), bins=256, range=(0, 256), color='r', alpha=0.5)
-    pylab.hist(np.array(g).ravel(), bins=256, range=(0, 256), color='g', alpha=0.5)
-    pylab.hist(np.array(b).ravel(), bins=256, range=(0, 256), color='b', alpha=0.5)
-    pylab.xlabel('pixel value', size=20), pylab.ylabel('frequency', size=20)
-    pylab.title(title, size=20)
-
-im = Image.open("../images/parrot.png")
-im_r, im_g, im_b = im.split()
-pylab.style.use('ggplot')
-pylab.figure(figsize=(15,5))
-
-pylab.subplot(121), plot_image(im, 'original image')
-pylab.subplot(122), plot_hist(im_r, im_g, im_b, 'histogram for RGB channels')
-pylab.show()
-
-im = im.point(lambda i: 255*np.log(1+i/255))
-im_r, im_g, im_b = im.split()
-pylab.style.use('ggplot')
-pylab.figure(figsize=(15,5))
-
-pylab.subplot(121), plot_image(im, 'image after log transform')
-pylab.subplot(122), plot_hist(im_r, im_g, im_b, 'histogram of RGB channels log transform')
-pylab.show()</div>
-
-<h3>4B. Power-Law Transform</h3>
-<div id="practical4b">im = img_as_float(imread('../images/earthfromsky.jpg'))
-gamma = 5
-im1 = im**gamma
-
-pylab.style.use('ggplot')
-pylab.figure(figsize=(15,5))
-
-pylab.subplot(121), plot_hist(im[...,0], im[...,1], im[...,2], 'histogram for RGB channels (input)')
-pylab.subplot(122), plot_hist(im1[...,0], im1[...,1], im1[...,2], 'histogram for RGB channels (output)')
-pylab.show()</div>
-
-<h3>4C. Contrast Stretching</h3>
-<div id="practical4c">im = Image.open('../images/cheetah.png')
-im_r, im_g, im_b, _ = im.split()
-pylab.style.use('ggplot')
-pylab.figure(figsize=(15,5))
-pylab.subplot(121)
-plot_image(im)
-pylab.subplot(122)
-plot_hist(im_r, im_g, im_b)
-pylab.show()
-
-def contrast(c):
-    return 0 if c < 70 else (255 if c > 150 else (255*c - 22950) / 48)  # piece-wise linear function
-
-im1 = im.point(contrast)
-im_r, im_g, im_b, _ = im1.split()
-pylab.style.use('ggplot')
-pylab.figure(figsize=(15,5))
-pylab.subplot(121)
-plot_image(im1)
-pylab.subplot(122)
-plot_hist(im_r, im_g, im_b)
-pylab.yscale('log', basey=10)
-pylab.show()</div>
-
-<h3>4D. Thresholding</h3>
-<div id="practical4d">im = Image.open('../images/swans.jpg').convert('L')
-pylab.hist(np.array(im).ravel(), bins=256, range=(0, 256), color='g')
-pylab.xlabel('Pixel values'), pylab.ylabel('Frequency'), pylab.title('Histogram of pixel values')
-pylab.show()
-
-pylab.figure(figsize=(12,18))
-pylab.gray()
-
-pylab.subplot(221), plot_image(im, 'original image'), pylab.axis('off')
-th = [0, 50, 100, 150, 200]
-
-for i in range(2, 5):
-    im1 = im.point(lambda x: x > th[i])
-    pylab.subplot(2,2,i), plot_image(im1, 'binary image with threshold=' + str(th[i]))
-
-pylab.show()</div>
-
-<h3>4E. Half-Toning</h3>
-<div id="practical4e">im = Image.open('../images/swans.jpg').convert('L')
-im = Image.fromarray(np.clip(im + np.random.randint(-128, 128, (im.height, im.width)), 0, 255).astype(np.uint8))
-
-pylab.figure(figsize=(12,18))
-pylab.subplot(221), plot_image(im, 'original image (with noise)')
-th = [0, 50, 100, 150, 200]
-
-for i in range(2, 5):
-    im1 = im.point(lambda x: x > th[i])
-    pylab.subplot(2,2,i), plot_image(im1, 'binary image with threshold=' + str(th[i]))
-
-pylab.show()</div>
-
-<h3>4F. Histogram Equalization</h3>
-<div id="practical4f">img = rgb2gray(imread('../images/earthfromsky.jpg'))
-img_eq = exposure.equalize_hist(img)
-img_adapteq = exposure.equalize_adapthist(img, clip_limit=0.03)
-
-pylab.gray()
-images = [img, img_eq, img_adapteq]
-titles = ['original input (earth from sky)', 'after histogram equalization', 'after adaptive histogram equalization']
-
-for i in range(3):
-    pylab.figure(figsize=(20,10)), plot_image(images[i], titles[i])
-
-pylab.figure(figsize=(15,5))
-
-for i in range(3):
-    pylab.subplot(1,3,i+1), pylab.hist(images[i].ravel(), color='g'), pylab.title(titles[i], size=15)
-
-pylab.show()</div>
-
-<hr>
-
-<h2>Practical 5: Image Enhancement with Gradients</h2>
-<p><strong>Aim:</strong> Apply image enhancements using gradient and Laplacian operations.</p>
-
-<h3>5A. Derivatives and Gradients</h3>
-<div id="practical5a">def plot_image(image, title):
-    pylab.imshow(image), pylab.title(title, size=20), pylab.axis('off')
-
-ker_x = [[-1, 1]]
-ker_y = [[-1], [1]]
-
-im = rgb2gray(imread('../images/chess.png'))
-im_x = signal.convolve2d(im, ker_x, mode='same')
-im_y = signal.convolve2d(im, ker_y, mode='same')
-im_mag = np.sqrt(im_x**2 + im_y**2)
-im_dir = np.arctan(im_y/im_x)
-
-pylab.gray()
-pylab.figure(figsize=(30,20))
-
-pylab.subplot(231), plot_image(im, 'original')
-pylab.subplot(232), plot_image(im_x, 'grad_x')
-pylab.subplot(233), plot_image(im_y, 'grad_y')
-pylab.subplot(234), plot_image(im_mag, '||grad||')
-pylab.subplot(235), plot_image(im_dir, r'$\theta)
-pylab.subplot(236)
-pylab.plot(range(im.shape[1]), im[0,:], 'b-', label=r'$f(x,y)|_{x=0}, linewidth=5)
-pylab.plot(range(im.shape[1]), im_x[0,:], 'r-', label=r'$grad_x (f(x,y))|_{x=0})
-pylab.title(r'$grad_x (f(x,y))|_{x=0}, size=30)
-pylab.legend(prop={'size': 20})
-
-pylab.show()</div>
-
-<h3>5B. Laplacian</h3>
-<div id="practical5b">ker_laplacian = [[0,-1,0],[-1, 4, -1],[0,-1,0]]
-
-im = rgb2gray(imread('../images/chess.png'))
-im1 = np.clip(signal.convolve2d(im, ker_laplacian, mode='same'),0,1)
-
-pylab.gray()
-pylab.figure(figsize=(20,10))
-pylab.subplot(121), plot_image(im, 'original')
-pylab.subplot(122), plot_image(im1, 'laplacian convolved')
-pylab.show()</div>
-
-<hr>
-
-<h2>Practical 6: Noise Smoothing</h2>
-<p><strong>Aim:</strong> Implement linear and nonlinear noise smoothing techniques.</p>
-
-<h3>6A. Linear Smoothing - Box Blur</h3>
-<div id="practical6a">i = 1
-pylab.figure(figsize=(10,25))
-
-for prop_noise in np.linspace(0.05,0.3,3):
-    im = Image.open('../images/mandrill.jpg')
-    n = int(im.width * im.height * prop_noise)
-    x, y = np.random.randint(0, im.width, n), np.random.randint(0, im.height, n)
-    
-    for (x,y) in zip(x,y):
-        im.putpixel((x, y), ((0,0,0) if np.random.rand() < 0.5 else (255,255,255)))
-    
-    im.save('../images/mandrill_spnoise_' + str(prop_noise) + '.jpg')
-    pylab.subplot(6,2,i), plot_image(im, 'Original Image with ' + str(int(100*prop_noise)) + '% added noise')
-    i += 1
-    
-    im1 = im.filter(ImageFilter.BLUR)
-    pylab.subplot(6,2,i), plot_image(im1, 'Blurred Image')
-    i += 1
-
-pylab.show()</div>
-
-<h3>6B. Gaussian Blur</h3>
-<div id="practical6b">im = Image.open('../images/mandrill_spnoise_0.2.jpg')
-pylab.figure(figsize=(20,6))
-i = 1
-
-for radius in range(1, 4):
-    im1 = im.filter(ImageFilter.GaussianBlur(radius))
-    pylab.subplot(1,3,i), plot_image(im1, 'radius = ' + str(round(radius,2)))
-    i += 1
-
-pylab.suptitle('PIL Gaussian Blur with different Radius', size=20)
-pylab.show()</div>
-
-<h3>6C. Nonlinear Smoothing - Median Filter</h3>
-<div id="practical6c">i = 1
-pylab.figure(figsize=(25,35))
-
-for prop_noise in np.linspace(0.05,0.3,3):
-    im = Image.open('../images/mandrill.jpg')
-    n = int(im.width * im.height * prop_noise)
-    x, y = np.random.randint(0, im.width, n), np.random.randint(0, im.height, n)
-    
-    for (x,y) in zip(x,y):
-        im.putpixel((x, y), ((0,0,0) if np.random.rand() < 0.5 else (255,255,255)))
-    
-    im.save('../images/mandrill_spnoise_' + str(prop_noise) + '.jpg')
-    pylab.subplot(6,4,i)
-    plot_image(im, 'Original Image with ' + str(int(100*prop_noise)) + '%added noise')
-    i += 1
-    
-    for sz in [3,7,11]:
-        im1 = im.filter(ImageFilter.MedianFilter(size=sz))
-        pylab.subplot(6,4,i), plot_image(im1, 'Output (Median Filter size=' + str(sz) + ')')
-        i += 1
-
-pylab.show()</div>
-
-<hr>
-
-<h2>Practical 7: Image Sharpening</h2>
-<p><strong>Aim:</strong> Apply smoothing, sharpening, and unsharp masking filters.</p>
-
-<h3>7A. Sharpening with Laplacian</h3>
-<div id="practical7a">from skimage.filters import laplace
-
-im = rgb2gray(imread('../images/me8.jpg'))
-im1 = np.clip(laplace(im) + im, 0, 1)
-
-pylab.figure(figsize=(10,15))
-
-pylab.subplot(211), plot_image(im, 'original image')
-pylab.subplot(212), plot_image(im1, 'sharpened image')
-pylab.tight_layout()
-
-pylab.show()</div>
-
-<h3>7B. Unsharp Masking</h3>
-<div id="practical7b">def rgb2gray(im):
-    return np.clip(0.2989 * im[...,0] + 0.5870 * im[...,1] + 0.1140 * im[...,2], 0, 1)
-
-im = rgb2gray(img_as_float(misc.imread('../images/me4.jpg')))
-im_blurred = ndimage.gaussian_filter(im, 5)
-im_detail = np.clip(im - im_blurred, 0, 1)
-
-pylab.gray()
-
-fig, axes = pylab.subplots(nrows=2, ncols=3, sharex=True, sharey=True, figsize=(15, 15))
-axes = axes.ravel()
-
-axes[0].set_title('Original image', size=15), axes[0].imshow(im)
-axes[1].set_title('Blurred image, sigma=5', size=15), axes[1].imshow(im_blurred)
-axes[2].set_title('Detail image', size=15), axes[2].imshow(im_detail)
-
-alpha = [1, 5, 10]
-
-for i in range(3):
-    im_sharp = np.clip(im + alpha[i]*im_detail, 0, 1)
-    axes[3+i].imshow(im_sharp), axes[3+i].set_title('Sharpened image, alpha=' + str(alpha[i]), size=15)
-
-for ax in axes:
-    ax.axis('off')
-
-fig.tight_layout()
-pylab.show()</div>
-
-<hr>
-
-<h2>Practical 8: Edge Detection</h2>
-<p><strong>Aim:</strong> Apply Sobel and Canny edge detection techniques.</p>
-
-<h3>8A. Sobel Edge Detector</h3>
-<div id="practical8a">im = rgb2gray(imread('../images/tajmahal1.jpg'))
-
-pylab.gray()
-pylab.figure(figsize=(20,18))
-pylab.subplot(2,2,1)
-plot_image(im, 'original')
-
-pylab.subplot(2,2,2)
-edges_x = filters.sobel_h(im)
-plot_image(np.clip(edges_x,0,1), 'sobel_x')
-
-pylab.subplot(2,2,3)
-edges_y = filters.sobel_v(im)
-plot_image(np.clip(edges_y,0,1), 'sobel_y')
-
-pylab.subplot(2,2,4)
-edges = filters.sobel(im)
-plot_image(np.clip(edges,0,1), 'sobel')
-
-pylab.subplots_adjust(wspace=0.1, hspace=0.1)
-pylab.show()</div>
-
-<h3>8B. Canny Edge Detector</h3>
-<div id="practical8b">im = rgb2gray(imread('../images/tiger3.jpg'))
-im = ndimage.gaussian_filter(im, 4)
-im += 0.05 * np.random.random(im.shape)
-
-edges1 = feature.canny(im)
-edges2 = feature.canny(im, sigma=2)
-
-fig, (axes1, axes2, axes3) = pylab.subplots(nrows=1, ncols=3, figsize=(30, 12), sharex=True, sharey=True)
-
-axes1.imshow(im, cmap=pylab.cm.gray), axes1.axis('off'), axes1.set_title('noisy image', fontsize=50)
-axes2.imshow(edges1, cmap=pylab.cm.gray), axes2.axis('off')
-axes2.set_title('Canny filter, $\\sigma=1, fontsize=50)
-axes3.imshow(edges2, cmap=pylab.cm.gray), axes3.axis('off')
-axes3.set_title('Canny filter, $\\sigma=3, fontsize=50)
-
-fig.tight_layout()
-pylab.show()</div>
-
-<hr>
-
-<h2>Practical 9: Morphological Operations</h2>
-<p><strong>Aim:</strong> Implement morphological image processing techniques.</p>
-
-<h3>9A. Erosion</h3>
-<div id="practical9a">from skimage.morphology import binary_erosion, rectangle
-
-def plot_image(image, title=''):
-    pylab.title(title, size=20), pylab.imshow(image)
-    pylab.axis('off')
-
-im = rgb2gray(imread('../images/clock2.jpg'))
-im[im <= 0.5] = 0
-im[im > 0.5] = 1
-
-pylab.gray()
-pylab.figure(figsize=(20,10))
-
-pylab.subplot(1,3,1), plot_image(im, 'original')
-im1 = binary_erosion(im, rectangle(1,5))
-pylab.subplot(1,3,2), plot_image(im1, 'erosion with rectangle size (1,5)')
-im1 = binary_erosion(im, rectangle(1,15))
-pylab.subplot(1,3,3), plot_image(im1, 'erosion with rectangle size (1,15)')
-
-pylab.show()</div>
-
-<h3>9B. Dilation</h3>
-<div id="practical9b">from skimage.morphology import binary_dilation, disk
-from skimage import img_as_float
-
-im = img_as_float(imread('../images/tagore.png'))
-im = 1 - im[...,3]
-im[im <= 0.5] = 0
-im[im > 0.5] = 1
-
-pylab.gray()
-pylab.figure(figsize=(18,9))
-pylab.subplot(131)
-pylab.imshow(im)
-pylab.title('original', size=20)
-pylab.axis('off')
-
-for d in range(1,3):
-    pylab.subplot(1,3,d+1)
-    im1 = binary_dilation(im, disk(2*d))
-    pylab.imshow(im1)
-    pylab.title('dilation with disk size ' + str(2*d), size=20)
-    pylab.axis('off')
-
-pylab.show()</div>
-
-<h3>9C. Opening and Closing</h3>
-<div id="practical9c">from skimage.morphology import binary_opening, binary_closing, binary_erosion, binary_dilation, disk
-
-im = rgb2gray(imread('../images/circles.jpg'))
-im[im <= 0.5] = 0
-im[im > 0.5] = 1
-
-pylab.gray()
-pylab.figure(figsize=(20,10))
-
-pylab.subplot(1,3,1), plot_image(im, 'original')
-im1 = binary_opening(im, disk(12))
-pylab.subplot(1,3,2), plot_image(im1, 'opening with disk size ' + str(12))
-im1 = binary_closing(im, disk(6))
-pylab.subplot(1,3,3), plot_image(im1, 'closing with disk size ' + str(6))
-
-pylab.show()</div>
-
-<h3>9D. Skeletonizing</h3>
-<div id="practical9d">def plot_images_horizontally(original, filtered, filter_name, sz=(18,7)):
-    pylab.gray()
-    pylab.figure(figsize = sz)
-    pylab.subplot(1,2,1), plot_image(original, 'original')
-    pylab.subplot(1,2,2), plot_image(filtered, filter_name)
-    pylab.show()
-
-from skimage.morphology import skeletonize
-
-im = img_as_float(imread('../images/dynasaur.png')[...,3])
-threshold = 0.5
-im[im <= threshold] = 0
-im[im > threshold] = 1
-skeleton = skeletonize(im)
-
-plot_images_horizontally(im, skeleton, 'skeleton', sz=(18,9))</div>
-
-<h3>9E. Convex Hull</h3>
-<div id="practical9e">from skimage.morphology import convex_hull_image
-
-im = rgb2gray(imread('../images/horse-dog.jpg'))
-threshold = 0.5
-im[im < threshold] = 0
-im[im >= threshold] = 1
-
-chull = convex_hull_image(im)
-plot_images_horizontally(im, chull, 'convex hull', sz=(18,9))
-
-im = im.astype(np.bool)
-chull_diff = img_as_float(chull.copy())
-chull_diff[im] = 2
-
-pylab.figure(figsize=(20,10))
-pylab.imshow(chull_diff, cmap=pylab.cm.gray, interpolation='nearest')
-pylab.title('Difference Image', size=20)
-pylab.show()</div>
-
-<h3>9F. Removing Small Objects</h3>
-<div id="practical9f">from skimage.morphology import remove_small_objects
-
-im = rgb2gray(imread('../images/circles.jpg'))
-im[im > 0.5] = 1
-im[im <= 0.5] = 0
-im = im.astype(np.bool)
-
-pylab.figure(figsize=(20,20))
-pylab.subplot(2,2,1), plot_image(im, 'original')
-i = 2
-
-for osz in [50, 200, 500]:
-    im1 = remove_small_objects(im, osz, connectivity=1)
-    pylab.subplot(2,2,i), plot_image(im1, 'removing small objects below size ' + str(osz))
-    i += 1
-
-pylab.show()</div>
-
-<hr>
-
-<h2>Practical 10: Feature Extraction</h2>
-<p><strong>Aim:</strong> Extract image features using corner detectors, blob detectors, HoG, and Haar features.</p>
-
-<h3>10A. Harris Corner Detector</h3>
-<div id="practical10a">image = imread('../images/chess_football.png')
-image_gray = rgb2gray(image)
-
-coordinates = corner_harris(image_gray, k=0.001)
-image[coordinates>0.01*coordinates.max()]=[255,0,0,255]
-
-pylab.figure(figsize=(20,10))
-pylab.imshow(image), pylab.axis('off'), pylab.show()</div>
-
-<h3>10B. Blob Detectors (LoG, DoG, DoH)</h3>
-<div id="practical10b">from numpy import sqrt
-from skimage.feature import blob_dog, blob_log, blob_doh
-
-im = imread('../images/butterfly.png')
-im_gray = rgb2gray(im)
-
-log_blobs = blob_log(im_gray, max_sigma=30, num_sigma=10, threshold=.1)
-log_blobs[:, 2] = sqrt(2) * log_blobs[:, 2]
-
-dog_blobs = blob_dog(im_gray, max_sigma=30, threshold=0.1)
-dog_blobs[:, 2] = sqrt(2) * dog_blobs[:, 2]
-
-doh_blobs = blob_doh(im_gray, max_sigma=30, threshold=0.005)
-list_blobs = [log_blobs, dog_blobs, doh_blobs]
-
-colors, titles = ['yellow', 'lime', 'red'], ['Laplacian of Gaussian', 'Difference of Gaussian', 'Determinant of Hessian']
-sequence = zip(list_blobs, colors, titles)
-
-fig, axes = pylab.subplots(2, 2, figsize=(20, 20), sharex=True, sharey=True)
-axes = axes.ravel()
-
-axes[0].imshow(im, interpolation='nearest')
-axes[0].set_title('original image', size=30), axes[0].set_axis_off()
-
-for idx, (blobs, color, title) in enumerate(sequence):
-    axes[idx+1].imshow(im, interpolation='nearest')
-    axes[idx+1].set_title('Blobs with ' + title, size=30)
-    for blob in blobs:
-        y, x, row = blob
-        col = pylab.Circle((x, y), row, color=color, linewidth=2, fill=False)
-        axes[idx+1].add_patch(col), axes[idx+1].set_axis_off()
-
-pylab.tight_layout(), pylab.show()</div>
-
-<h3>10C. HOG (Histogram of Oriented Gradients)</h3>
-<div id="practical10c">from skimage.feature import hog
-from skimage import exposure
-
-image = rgb2gray(imread('../images/cameraman.jpg'))
-
-fd, hog_image = hog(image, orientations=8, pixels_per_cell=(16, 16),
-                    cells_per_block=(1, 1), visualize=True)
-print(image.shape, len(fd))
-
-fig, (axes1, axes2) = pylab.subplots(1, 2, figsize=(15, 10), sharex=True, sharey=True)
-axes1.axis('off'), axes1.imshow(image, cmap=pylab.cm.gray), axes1.set_title('Input image')
-
-hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
-axes2.axis('off'), axes2.imshow(hog_image_rescaled, cmap=pylab.cm.gray), axes2.set_title('Histogram of Oriented Gradients')
-
-pylab.show()</div>
-
-<h3>10D. Haar-like Features</h3>
-<div id="practical10d">from skimage.feature import haar_like_feature_coord
-from skimage.feature import draw_haar_like_feature
-
-images = [np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((3, 3)),
-          np.zeros((3, 3)), np.zeros((2, 2))]
-
-feature_types = ['type-2-x', 'type-2-y', 'type-3-x', 'type-3-y', 'type-4']
-fig, axes = pylab.subplots(3, 2, figsize=(5,7))
-
-for axes, img, feat_t in zip(np.ravel(axes), images, feature_types):
-    coordinates, _ = haar_like_feature_coord(img.shape[0], img.shape[1], feat_t)
-    
-    haar_feature = draw_haar_like_feature(img, 0, 0, img.shape[0], img.shape[1], coordinates,
-                                         max_n_features=1, random_state=0,
-                                         color_positive_block=(1.0, 0.0, 0.0),
-                                         color_negative_block=(0.0, 0.0, 1.0), alpha=0.8)
-    
-    axes.imshow(haar_feature), axes.set_title(feat_t), axes.set_axis_off()
-
-pylab.axis('off'), pylab.tight_layout(), pylab.show()</div>
-
-<hr>
-
-<h2>Practical 11: Image Segmentation</h2>
-<p><strong>Aim:</strong> Apply segmentation for detecting lines, circles using Hough transform and edge/region-based methods.</p>
-
-<h3>11A. Hough Transform - Lines and Circles</h3>
-<div id="practical11a">image = rgb2gray(imread('../images/triangle_circle.png'))
-
-h, theta, d = hough_line(image)
-
-fig, axes = plt.subplots(2, 2, figsize=(20, 20))
-ax = axes.ravel()
-
-ax[0].imshow(image, cmap=cm.gray)
-ax[0].set_title('Input image', size=20)
-ax[0].set_axis_off()
-
-ax[1].imshow(np.log(1 + h),
-            extent=[10*np.rad2deg(theta[-1]), np.rad2deg(theta[0]), d[-1], d[0]],
-            cmap=cm.hot, aspect=1/1.5)
-
-ax[1].set_title('Hough transform', size=20)
-ax[1].set_xlabel('Angles (degrees)', size=20)
-ax[1].set_ylabel('Distance (pixels)', size=20)
-ax[1].axis('image')
-
-ax[2].imshow(image, cmap=cm.gray)
-
-for _, angle, dist in zip(*hough_line_peaks(h, theta, d)):
-    y0 = (dist - 0 * np.cos(angle)) / np.sin(angle)
-    y1 = (dist - image.shape[1] * np.cos(angle)) / np.sin(angle)
-    ax[2].plot((0, image.shape[1]), (y0, y1), '-r')
-
-ax[2].set_xlim((0, image.shape[1]))
-ax[2].set_ylim((image.shape[0], 0))
-ax[2].set_axis_off()
-ax[2].set_title('Detected lines', size=20)
-
-hough_radii = np.arange(50, 100, 2)
-hough_res = hough_circle(image, hough_radii)
-
-accums, cx, cy, radii = hough_circle_peaks(hough_res, hough_radii, total_num_peaks=6)
-
-image = gray2rgb(image)
-
-for center_y, center_x, radius in zip(cy, cx, radii):
-    circy, circx = circle_perimeter(center_y, center_x, radius)
-    image[circy, circx] = (0.9, 0.2, 0.2)
-
-ax[3].imshow(image, cmap=plt.cm.gray)
-ax[3].set_axis_off()
-ax[3].set_title('Detected Circles', size=20)
-
-plt.tight_layout()
-plt.show()</div>
-
-<h3>11B. Edge-Based and Region-Based Segmentation</h3>
-<div id="practical11b">coins = data.coins()
-
-hist = np.histogram(coins, bins=np.arange(0, 256), normed=True)
-
-fig, axes = plt.subplots(1, 2, figsize=(20, 10))
-axes[0].imshow(coins, cmap=plt.cm.gray, interpolation='nearest')
-axes[0].axis('off')
-
-axes[1].plot(hist[1][:-1], hist[0], lw=2)
-axes[1].set_title('histogram of gray values')
-plt.show()
-
-edges = canny(coins, sigma=2)
-
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.imshow(edges, cmap=plt.cm.gray, interpolation='nearest')
-ax.set_title('Canny detector')
-ax.axis('off')
-plt.show()
-
-from scipy import ndimage as ndi
-
-fill_coins = ndi.binary_fill_holes(edges)
-
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.imshow(fill_coins, cmap=plt.cm.gray, interpolation='nearest')
-ax.set_title('filling the holes')
-ax.axis('off')
-plt.show()
-
-segmentation = morphology.watershed(elevation_map, markers)
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.imshow(segmentation, cmap=plt.cm.gray, interpolation='nearest')
-ax.set_title('segmentation')
-ax.axis('off')
-plt.show()</div>
-
-<hr>
-
-<div id="info">
-<h2>Practical IDs for Scraping</h2>
-<p>Use these IDs to scrape individual practicals:</p>
-<ul>
-<li><strong>practical1a</strong> - Up-Sampling</li>
-<li><strong>practical1b</strong> - Down-Sampling</li>
-<li><strong>practical1c</strong> - FFT with numpy.fft</li>
-<li><strong>practical2a</strong> - Triangle Signal Generation</li>
-<li><strong>practical2b</strong> - Signal Correlation</li>
-<li><strong>practical3a</strong> - Convolution on Grayscale Image</li>
-<li><strong>practical3b</strong> - Template Matching</li>
-<li><strong>practical4a</strong> - Log Transform</li>
-<li><strong>practical4b</strong> - Power-Law Transform</li>
-<li><strong>practical4c</strong> - Contrast Stretching</li>
-<li><strong>practical4d</strong> - Thresholding</li>
-<li><strong>practical4e</strong> - Half-Toning</li>
-<li><strong>practical4f</strong> - Histogram Equalization</li>
-<li><strong>practical5a</strong> - Derivatives and Gradients</li>
-<li><strong>practical5b</strong> - Laplacian</li>
-<li><strong>practical6a</strong> - Linear Smoothing - Box Blur</li>
-<li><strong>practical6b</strong> - Gaussian Blur</li>
-<li><strong>practical6c</strong> - Nonlinear Smoothing - Median Filter</li>
-<li><strong>practical7a</strong> - Sharpening with Laplacian</li>
-<li><strong>practical7b</strong> - Unsharp Masking</li>
-<li><strong>practical8a</strong> - Sobel Edge Detector</li>
-<li><strong>practical8b</strong> - Canny Edge Detector</li>
-<li><strong>practical9a</strong> - Erosion</li>
-<li><strong>practical9b</strong> - Dilation</li>
-<li><strong>practical9c</strong> - Opening and Closing</li>
-<li><strong>practical9d</strong> - Skeletonizing</li>
-<li><strong>practical9e</strong> - Convex Hull</li>
-<li><strong>practical9f</strong> - Removing Small Objects</li>
-<li><strong>practical10a</strong> - Harris Corner Detector</li>
-<li><strong>practical10b</strong> - Blob Detectors (LoG, DoG, DoH)</li>
-<li><strong>practical10c</strong> - HOG Features</li>
-<li><strong>practical10d</strong> - Haar-like Features</li>
-<li><strong>practical11a</strong> - Hough Transform</li>
-<li><strong>
-
-</strong>
-</li>
-</ul>
+<header>
+  <h1>Machine Learning Practical Journal</h1>
+  <p>Darshan Jadhav &nbsp;·&nbsp; MCS.25.06 &nbsp;·&nbsp; MSC CS Part 1 &nbsp;·&nbsp; 2025-2026</p>
+  <span class="tag">SIES (Nerul) College</span>
+</header>
+
+<!-- ════════════════════════════════════
+     INDEX  –  id: practical-index
+     Each entry maps a label → anchor id
+════════════════════════════════════ -->
+<div id="practical-index">
+  <h2>// Index</h2>
+  <ul class="index-list">
+    <li><span class="idx-num">01</span><a href="#practical-1">Linear Regression – Diabetes Dataset</a></li>
+    <li><span class="idx-num">02</span><a href="#practical-2">Logistic Regression – Iris Dataset</a></li>
+    <li><span class="idx-num">03</span><a href="#practical-3">Multinomial Logistic Regression – Iris Dataset</a></li>
+    <li><span class="idx-num">04</span><a href="#practical-4">SVM Classifier – Iris Dataset</a></li>
+    <li><span class="idx-num">05</span><a href="#practical-5">Decision Tree – Moons Dataset</a></li>
+    <li><span class="idx-num">06</span><a href="#practical-6">SVM Regressor – California Housing Dataset</a></li>
+    <li><span class="idx-num">07</span><a href="#practical-7">Batch Gradient Descent with Early Stopping – Softmax Regression</a></li>
+    <li><span class="idx-num">08</span><a href="#practical-8">MLP – MNIST Handwritten Digits</a></li>
+    <li><span class="idx-num">09</span><a href="#practical-9">Customer Segmentation – Unsupervised Learning</a></li>
+    <li><span class="idx-num">10</span><a href="#practical-10">Association Rules – Frequent Itemsets</a></li>
+  </ul>
 </div>
 
-</div>
+<div class="practical-wrapper">
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 1  –  id: practical-1
+  ══════════════════════════════════ -->
+  <div id="practical-1" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-01</span>
+      <h2>Linear Regression – Diabetes Dataset</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        Linear Regression is used to model the relationship between a dependent variable and one or more independent variables. Applied on the Diabetes Dataset, it predicts a quantitative measure of disease progression. The model is evaluated using Mean Squared Error and the R² (variance) score, and trained using scikit-learn's <code>LinearRegression</code>.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="cmt">#Import Dependencies</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> sklearn <span class="kw">import</span> datasets, linear_model, metrics
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> mean_squared_error, r2_score
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+
+<span class="cmt">#Load the diabetes dataset</span>
+diabetes = datasets.<span class="fn">load_diabetes</span>()
+
+<span class="cmt">#X - feature vectors, y - Target values</span>
+X = diabetes.data
+y = diabetes.target
+
+<span class="cmt">#Splitting X and y into training and testing sets</span>
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(X, y, test_size=<span class="num">0.4</span>, random_state=<span class="num">1</span>)
+
+<span class="cmt">#Create linear regression object</span>
+lin_reg = linear_model.<span class="fn">LinearRegression</span>()
+
+<span class="cmt">#Train the model using train and test data</span>
+lin_reg.<span class="fn">fit</span>(X_train, y_train)
+
+<span class="cmt">#Predict values for X_test data</span>
+predicted = lin_reg.<span class="fn">predict</span>(X_test)
+
+<span class="cmt">#Regression coefficients</span>
+<span class="fn">print</span>(<span class="str">'\n Coefficients are:\n'</span>, lin_reg.coef_)
+
+<span class="cmt">#Intercept</span>
+<span class="fn">print</span>(<span class="str">'\nIntercept : '</span>, lin_reg.intercept_)
+
+<span class="cmt">#Variance score: 1 means perfect prediction</span>
+<span class="fn">print</span>(<span class="str">'Variance score: '</span>, lin_reg.<span class="fn">score</span>(X_test, y_test))
+
+<span class="cmt">#Mean Squared Error</span>
+<span class="fn">print</span>(<span class="str">"Mean squared error: %.2f\n"</span> % <span class="fn">mean_squared_error</span>(y_test, predicted))
+
+<span class="cmt">#Original data of X_test</span>
+expected = y_test
+
+<span class="cmt">#Plot a graph for expected and predicted values</span>
+plt.<span class="fn">title</span>(<span class="str">'Linear Regression ( DIABETES Dataset)'</span>)
+plt.<span class="fn">scatter</span>(expected, predicted, c=<span class="str">'b'</span>, marker=<span class="str">'.'</span>, s=<span class="num">36</span>)
+plt.<span class="fn">plot</span>(np.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">330</span>, <span class="num">100</span>), np.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">330</span>, <span class="num">100</span>), <span class="str">'--r'</span>, linewidth=<span class="num">2</span>)
+plt.<span class="fn">show</span>()
+</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 2  –  id: practical-2
+  ══════════════════════════════════ -->
+  <div id="practical-2" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-02</span>
+      <h2>Logistic Regression – Iris Dataset</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        Logistic Regression is a supervised machine learning algorithm used for classification problems. It predicts the probability that an input belongs to a particular class (such as 0 or 1) using the sigmoid function, which converts values into a range between 0 and 1. Based on this probability, the model assigns the input to a specific category. It is commonly used for tasks like spam detection, disease prediction, and binary classification.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> <span class="cls">LogisticRegression</span>
+<span class="kw">from</span> sklearn <span class="kw">import</span> datasets
+
+<span class="cmt"># import some data to play with</span>
+iris = datasets.<span class="fn">load_iris</span>()
+X = iris.data[:, :<span class="num">2</span>]  <span class="cmt"># we only take the first two features.</span>
+Y = iris.target
+
+<span class="cmt"># Create an instance of Logistic Regression Classifier and fit the data.</span>
+logreg = <span class="cls">LogisticRegression</span>(C=<span class="num">1e5</span>)
+logreg.<span class="fn">fit</span>(X, Y)
+
+<span class="cmt"># Plot the decision boundary.</span>
+x_min, x_max = X[:, <span class="num">0</span>].<span class="fn">min</span>() - <span class="num">0.5</span>, X[:, <span class="num">0</span>].<span class="fn">max</span>() + <span class="num">0.5</span>
+y_min, y_max = X[:, <span class="num">1</span>].<span class="fn">min</span>() - <span class="num">0.5</span>, X[:, <span class="num">1</span>].<span class="fn">max</span>() + <span class="num">0.5</span>
+
+h = <span class="num">0.02</span>  <span class="cmt"># step size in the mesh</span>
+xx, yy = np.<span class="fn">meshgrid</span>(np.<span class="fn">arange</span>(x_min, x_max, h),
+                      np.<span class="fn">arange</span>(y_min, y_max, h))
+
+Z = logreg.<span class="fn">predict</span>(np.c_[xx.<span class="fn">ravel</span>(), yy.<span class="fn">ravel</span>()])
+
+<span class="cmt"># Put the result into a color plot</span>
+Z = Z.<span class="fn">reshape</span>(xx.shape)
+plt.<span class="fn">figure</span>(<span class="num">1</span>, figsize=(<span class="num">4</span>, <span class="num">3</span>))
+plt.<span class="fn">pcolormesh</span>(xx, yy, Z, cmap=plt.cm.Paired)
+
+<span class="cmt"># Plot also the training points</span>
+plt.<span class="fn">scatter</span>(X[:, <span class="num">0</span>], X[:, <span class="num">1</span>], c=Y, edgecolors=<span class="str">'k'</span>, cmap=plt.cm.Paired)
+plt.<span class="fn">xlabel</span>(<span class="str">"Sepal length"</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">"Sepal width"</span>)
+plt.<span class="fn">xlim</span>(xx.<span class="fn">min</span>(), xx.<span class="fn">max</span>())
+plt.<span class="fn">ylim</span>(yy.<span class="fn">min</span>(), yy.<span class="fn">max</span>())
+plt.<span class="fn">xticks</span>(())
+plt.<span class="fn">yticks</span>(())
+plt.<span class="fn">show</span>()
+</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 3  –  id: practical-3
+  ══════════════════════════════════ -->
+  <div id="practical-3" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-03</span>
+      <h2>Multinomial Logistic Regression – Iris Dataset</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        Multinomial Logistic Regression is an extension of Logistic Regression used when the dependent variable has more than two categories. Instead of predicting only two classes, it can classify data into three or more possible outcomes. The model calculates the probability of each class and assigns the input to the class with the highest probability. It is commonly used in problems like predicting types of products, customer categories, or different classes of objects.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="cmt"># --- 1. Loading the libraries and the data ---</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> <span class="cls">LogisticRegression</span>
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn <span class="kw">import</span> preprocessing
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> accuracy_score
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> cross_val_score
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> confusion_matrix
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> statsmodels.api <span class="kw">as</span> sm
+
+pd.<span class="fn">set_option</span>(<span class="str">'float_format'</span>, <span class="str">'{:f}'</span>.<span class="fn">format</span>)
+
+<span class="cmt"># Use the direct link to the raw CSV file</span>
+csv_url = <span class="str">'https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv'</span>
+iris = pd.<span class="fn">read_csv</span>(csv_url)
+
+<span class="cmt"># --- Data Preparation ---</span>
+x = iris.<span class="fn">drop</span>(<span class="str">'species'</span>, axis=<span class="num">1</span>)
+y = iris[<span class="str">'species'</span>]
+trainX, testX, trainY, testY = <span class="fn">train_test_split</span>(x, y, test_size=<span class="num">0.2</span>, random_state=<span class="num">42</span>)
+
+<span class="cmt"># --- Fit the model ---</span>
+log_reg = <span class="cls">LogisticRegression</span>(solver=<span class="str">'newton-cg'</span>, multi_class=<span class="str">'multinomial'</span>)
+log_reg.<span class="fn">fit</span>(trainX, trainY)
+y_pred = log_reg.<span class="fn">predict</span>(testX)
+
+<span class="cmt"># --- Model validation ---</span>
+<span class="fn">print</span>(<span class="str">'Accuracy: {:.2f}'</span>.<span class="fn">format</span>(<span class="fn">accuracy_score</span>(testY, y_pred)))
+<span class="fn">print</span>(<span class="str">'Error rate: {:.2f}'</span>.<span class="fn">format</span>(<span class="num">1</span> - <span class="fn">accuracy_score</span>(testY, y_pred)))
+
+<span class="cmt"># --- Cross-validation scores ---</span>
+clf = <span class="cls">LogisticRegression</span>(solver=<span class="str">'newton-cg'</span>, multi_class=<span class="str">'multinomial'</span>, random_state=<span class="num">42</span>)
+scores = <span class="fn">cross_val_score</span>(clf, trainX, trainY, cv=<span class="num">5</span>)
+<span class="fn">print</span>(<span class="str">"Accuracy: %0.2f (+/- %0.2f)"</span> % (scores.<span class="fn">mean</span>(), scores.<span class="fn">std</span>() * <span class="num">2</span>))
+
+<span class="cmt"># --- Confusion Matrix ---</span>
+confusion_matrix_result = <span class="fn">confusion_matrix</span>(testY, y_pred)
+plt.<span class="fn">matshow</span>(confusion_matrix_result, cmap=plt.cm.gray)
+plt.<span class="fn">title</span>(<span class="str">'Confusion Matrix'</span>)
+plt.<span class="fn">show</span>()
+
+<span class="cmt"># --- Calculated probabilities ---</span>
+probability = log_reg.<span class="fn">predict_proba</span>(testX)
+df = pd.<span class="fn">DataFrame</span>(probability, columns=log_reg.classes_)
+df[<span class="str">'sum'</span>] = df.<span class="fn">sum</span>(axis=<span class="num">1</span>)
+df[<span class="str">'predicted_class'</span>] = y_pred
+
+<span class="cmt"># --- Multinomial Logit with statsmodels ---</span>
+x_sm = iris.<span class="fn">drop</span>(<span class="str">'species'</span>, axis=<span class="num">1</span>)
+y_sm = iris[<span class="str">'species'</span>]
+x_sm = sm.<span class="fn">add_constant</span>(x_sm, prepend=<span class="kw">False</span>)
+mnlogit_mod = sm.<span class="fn">MNLogit</span>(y_sm, x_sm)
+mnlogit_fit = mnlogit_mod.<span class="fn">fit</span>()
+<span class="fn">print</span>(mnlogit_fit.<span class="fn">summary</span>())
+</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 4  –  id: practical-4
+  ══════════════════════════════════ -->
+  <div id="practical-4" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-04</span>
+      <h2>SVM Classifier – Iris Dataset</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        Support Vector Machine is a supervised machine learning algorithm used for classification and regression tasks. In classification, it finds the best separating boundary (hyperplane) that divides data into different classes with the maximum margin between them. SVM can handle both linear and non-linear data by using kernel functions, making it effective for many real-world classification problems.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> sklearn <span class="kw">import</span> svm, datasets
+
+<span class="kw">def</span> <span class="fn">make_meshgrid</span>(x, y, h=<span class="num">0.02</span>):
+    x_min, x_max = x.<span class="fn">min</span>() - <span class="num">1</span>, x.<span class="fn">max</span>() + <span class="num">1</span>
+    y_min, y_max = y.<span class="fn">min</span>() - <span class="num">1</span>, y.<span class="fn">max</span>() + <span class="num">1</span>
+    xx, yy = np.<span class="fn">meshgrid</span>(np.<span class="fn">arange</span>(x_min, x_max, h),
+                          np.<span class="fn">arange</span>(y_min, y_max, h))
+    <span class="kw">return</span> xx, yy
+
+<span class="kw">def</span> <span class="fn">plot_contours</span>(ax, clf, xx, yy, **params):
+    Z = clf.<span class="fn">predict</span>(np.c_[xx.<span class="fn">ravel</span>(), yy.<span class="fn">ravel</span>()])
+    Z = Z.<span class="fn">reshape</span>(xx.shape)
+    out = ax.<span class="fn">contourf</span>(xx, yy, Z, **params)
+    <span class="kw">return</span> out
+
+iris = datasets.<span class="fn">load_iris</span>()
+X = iris.data[:, :<span class="num">2</span>]
+y = iris.target
+
+C = <span class="num">1.0</span>  <span class="cmt"># SVM regularization parameter</span>
+models = (
+    svm.<span class="fn">SVC</span>(kernel=<span class="str">"linear"</span>, C=C),
+    svm.<span class="fn">LinearSVC</span>(C=C, max_iter=<span class="num">10000</span>),
+    svm.<span class="fn">SVC</span>(kernel=<span class="str">"rbf"</span>, gamma=<span class="num">0.7</span>, C=C),
+    svm.<span class="fn">SVC</span>(kernel=<span class="str">"poly"</span>, degree=<span class="num">3</span>, gamma=<span class="str">"auto"</span>, C=C),
+)
+models = (clf.<span class="fn">fit</span>(X, y) <span class="kw">for</span> clf <span class="kw">in</span> models)
+
+titles = (
+    <span class="str">"SVC with linear kernel"</span>,
+    <span class="str">"LinearSVC (linear kernel)"</span>,
+    <span class="str">"SVC with RBF kernel"</span>,
+    <span class="str">"SVC with polynomial (degree 3) kernel"</span>,
+)
+
+fig, sub = plt.<span class="fn">subplots</span>(<span class="num">2</span>, <span class="num">2</span>)
+plt.<span class="fn">subplots_adjust</span>(wspace=<span class="num">0.4</span>, hspace=<span class="num">0.4</span>)
+
+X0, X1 = X[:, <span class="num">0</span>], X[:, <span class="num">1</span>]
+xx, yy = <span class="fn">make_meshgrid</span>(X0, X1)
+
+<span class="kw">for</span> clf, title, ax <span class="kw">in</span> <span class="fn">zip</span>(models, titles, sub.<span class="fn">flatten</span>()):
+    <span class="fn">plot_contours</span>(ax, clf, xx, yy, cmap=plt.cm.coolwarm, alpha=<span class="num">0.8</span>)
+    ax.<span class="fn">scatter</span>(X0, X1, c=y, cmap=plt.cm.coolwarm, s=<span class="num">20</span>, edgecolors=<span class="str">'k'</span>)
+    ax.<span class="fn">set_xlim</span>(xx.<span class="fn">min</span>(), xx.<span class="fn">max</span>())
+    ax.<span class="fn">set_ylim</span>(yy.<span class="fn">min</span>(), yy.<span class="fn">max</span>())
+    ax.<span class="fn">set_xlabel</span>(<span class="str">"Sepal length"</span>)
+    ax.<span class="fn">set_ylabel</span>(<span class="str">"Sepal width"</span>)
+    ax.<span class="fn">set_xticks</span>(())
+    ax.<span class="fn">set_yticks</span>(())
+    ax.<span class="fn">set_title</span>(title)
+
+plt.<span class="fn">show</span>()
+</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 5  –  id: practical-5
+  ══════════════════════════════════ -->
+  <div id="practical-5" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-05</span>
+      <h2>Decision Tree – Moons Dataset</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        A Decision Tree is a supervised machine learning algorithm used for classification and regression tasks. It works by splitting the data into branches based on feature values, forming a tree-like structure of nodes, branches, and leaves. Each internal node represents a decision based on a feature, and the leaf node represents the final output or class prediction. Decision trees are easy to understand and interpret.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> sklearn.datasets <span class="kw">import</span> make_moons
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split, <span class="cls">GridSearchCV</span>
+<span class="kw">from</span> sklearn.tree <span class="kw">import</span> <span class="cls">DecisionTreeClassifier</span>
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> confusion_matrix, precision_score, recall_score, f1_score
+
+<span class="kw">def</span> <span class="fn">plot_dataset</span>(X, y, axes):
+    plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">6</span>))
+    plt.<span class="fn">plot</span>(X[:, <span class="num">0</span>][y==<span class="num">0</span>], X[:, <span class="num">1</span>][y==<span class="num">0</span>], <span class="str">"bs"</span>, alpha=<span class="num">0.5</span>)
+    plt.<span class="fn">plot</span>(X[:, <span class="num">0</span>][y==<span class="num">1</span>], X[:, <span class="num">1</span>][y==<span class="num">1</span>], <span class="str">"g^"</span>, alpha=<span class="num">0.2</span>)
+    plt.<span class="fn">axis</span>(axes)
+    plt.<span class="fn">grid</span>(<span class="kw">True</span>, which=<span class="str">'both'</span>)
+    plt.<span class="fn">xlabel</span>(r<span class="str">"$x_1$"</span>, fontsize=<span class="num">20</span>)
+    plt.<span class="fn">ylabel</span>(r<span class="str">"$x_2$"</span>, fontsize=<span class="num">20</span>, rotation=<span class="num">0</span>)
+
+X, y = <span class="fn">make_moons</span>(n_samples=<span class="num">10000</span>, noise=<span class="num">0.4</span>, random_state=<span class="num">21</span>)
+<span class="fn">plot_dataset</span>(X, y, [<span class="num">-3</span>, <span class="num">5</span>, <span class="num">-3</span>, <span class="num">3</span>])
+
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(X, y, test_size=<span class="num">0.2</span>)
+
+tree_clf = <span class="cls">DecisionTreeClassifier</span>()
+
+parameter = {
+    <span class="str">'criterion'</span>: [<span class="str">"gini"</span>, <span class="str">"entropy"</span>],
+    <span class="str">'max_leaf_nodes'</span>: <span class="fn">list</span>(<span class="fn">range</span>(<span class="num">2</span>, <span class="num">50</span>)),
+    <span class="str">'min_samples_split'</span>: [<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>]
+}
+
+clf = <span class="cls">GridSearchCV</span>(tree_clf, parameter, cv=<span class="num">5</span>,
+                    scoring=<span class="str">"accuracy"</span>, return_train_score=<span class="kw">True</span>, n_jobs=<span class="num">-1</span>)
+clf.<span class="fn">fit</span>(X_train, y_train)
+
+cvres = clf.cv_results_
+<span class="kw">for</span> mean_score, params <span class="kw">in</span> <span class="fn">zip</span>(cvres[<span class="str">"mean_train_score"</span>], cvres[<span class="str">"params"</span>]):
+    <span class="fn">print</span>(mean_score, params)
+
+pred = clf.<span class="fn">predict</span>(X_train)
+<span class="fn">print</span>(confusion_matrix(y_train, pred))
+
+pre = <span class="fn">precision_score</span>(y_train, pred)
+re  = <span class="fn">recall_score</span>(y_train, pred)
+<span class="fn">print</span>(f<span class="str">"Precision: {pre} Recall:{re}"</span>)
+
+<span class="fn">print</span>(<span class="str">"Training score:"</span>, clf.<span class="fn">score</span>(X_train, y_train))
+<span class="fn">print</span>(<span class="str">"Testing score:"</span>,  clf.<span class="fn">score</span>(X_test,  y_test))
+</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 6  –  id: practical-6
+  ══════════════════════════════════ -->
+  <div id="practical-6" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-06</span>
+      <h2>SVM Regressor – California Housing Dataset</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        Support Vector Regression is a type of Support Vector Machine used for regression problems. It predicts continuous numerical values instead of categories. SVR tries to find a function that fits the data within a certain error margin while keeping the model as simple as possible. It works well for both linear and non-linear relationships by using kernel functions.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="cmt">#Import Libraries</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+
+train = pd.<span class="fn">read_csv</span>(<span class="str">"./california_housing_data.csv"</span>)
+test  = pd.<span class="fn">read_csv</span>(<span class="str">"./california_housing_data.csv"</span>)
+
+<span class="cmt">#Select appropriate features</span>
+data = train[[<span class="str">'total_rooms'</span>, <span class="str">'total_bedrooms'</span>, <span class="str">'housing_median_age'</span>,
+              <span class="str">'median_income'</span>, <span class="str">'population'</span>, <span class="str">'households'</span>]]
+
+<span class="cmt">#Fill missing values with column mean</span>
+<span class="kw">for</span> col <span class="kw">in</span> data.columns:
+    data[col] = data[col].<span class="fn">fillna</span>(data[col].<span class="fn">mean</span>())
+
+y = train[<span class="str">'median_house_value'</span>].values
+data[<span class="str">'longitude'</span>] = train[<span class="str">'longitude'</span>]   <span class="cmt"># dropped later</span>
+data[<span class="str">'latitude'</span>]  = train[<span class="str">'latitude'</span>]
+data.<span class="fn">drop</span>([<span class="str">'longitude'</span>, <span class="str">'latitude'</span>], axis=<span class="num">1</span>, inplace=<span class="kw">True</span>)
+
+<span class="cmt">#Visualize the data</span>
+plt.<span class="fn">figure</span>()
+sns.<span class="fn">heatmap</span>(data.<span class="fn">corr</span>(), cmap=<span class="str">'coolwarm'</span>)
+plt.<span class="fn">show</span>()
+
+sns.<span class="fn">lmplot</span>(x=<span class="str">'median_income'</span>, y=<span class="str">'median_house_value'</span>, data=train)
+sns.<span class="fn">lmplot</span>(x=<span class="str">'housing_median_age'</span>, y=<span class="str">'median_house_value'</span>, data=train)
+
+<span class="cmt">#Fitting the Model</span>
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> <span class="cls">StandardScaler</span>
+<span class="kw">from</span> sklearn.svm <span class="kw">import</span> <span class="cls">SVR</span>
+
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(data, y, test_size=<span class="num">0.2</span>)
+
+sc_X = <span class="cls">StandardScaler</span>()
+sc_y = <span class="cls">StandardScaler</span>()
+X_train = sc_X.<span class="fn">fit_transform</span>(X_train)
+X_test  = sc_X.<span class="fn">fit_transform</span>(X_test)
+y_train = sc_y.<span class="fn">fit_transform</span>(y_train.<span class="fn">reshape</span>(<span class="num">-1</span>, <span class="num">1</span>))
+y_test  = sc_y.<span class="fn">fit_transform</span>(y_test.<span class="fn">reshape</span>(<span class="num">-1</span>, <span class="num">1</span>))
+
+regressor = <span class="cls">SVR</span>(kernel=<span class="str">'rbf'</span>)
+regressor.<span class="fn">fit</span>(X_train, y_train)
+
+y_pred = regressor.<span class="fn">predict</span>(X_test)
+y_pred = y_pred.<span class="fn">reshape</span>(<span class="num">1</span>, <span class="num">-1</span>)
+y_pred = sc_y.<span class="fn">inverse_transform</span>(y_pred)
+<span class="fn">print</span>(y_pred)
+</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 7  –  id: practical-7
+  ══════════════════════════════════ -->
+  <div id="practical-7" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-07</span>
+      <h2>Batch Gradient Descent with Early Stopping – Softmax Regression</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        Softmax Regression trained using Batch Gradient Descent updates model parameters by computing the gradient of the loss function using the entire training dataset in each iteration. During training, early stopping is used to prevent overfitting by monitoring the validation error. If the validation error stops improving for several iterations, the training process is stopped. This helps the model generalize better while reducing unnecessary computations.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> scipy <span class="kw">as</span> sp
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_iris
+
+iris = <span class="fn">load_iris</span>()
+x = iris[<span class="str">'data'</span>]
+y = iris[<span class="str">'target'</span>]
+
+<span class="cmt"># Add a bias term (column of 1s) to the feature matrix</span>
+x_with_bias = np.c_[np.<span class="fn">ones</span>((<span class="fn">len</span>(x), <span class="num">1</span>)), x]
+
+np.random.<span class="fn">seed</span>(<span class="num">1234</span>)
+
+test_ratio       = <span class="num">0.2</span>
+validation_ratio = <span class="num">0.2</span>
+total_size       = <span class="fn">len</span>(x_with_bias)
+
+test_size       = <span class="fn">int</span>(total_size * test_ratio)
+validation_size = <span class="fn">int</span>(total_size * validation_ratio)
+train_size      = total_size - test_size - validation_size
+
+rnd_indices = np.random.<span class="fn">permutation</span>(total_size)
+
+x_train = x_with_bias[rnd_indices[:train_size]]
+y_train = y[rnd_indices[:train_size]]
+x_valid = x_with_bias[rnd_indices[train_size:-test_size]]
+y_valid = y[rnd_indices[train_size:-test_size]]
+x_test  = x_with_bias[rnd_indices[-test_size:]]
+y_test  = y[rnd_indices[-test_size:]]
+
+<span class="kw">def</span> <span class="fn">one_hot</span>(y):
+    n_classes = y.<span class="fn">max</span>() + <span class="num">1</span>
+    m = <span class="fn">len</span>(y)
+    y_one_hot = np.<span class="fn">zeros</span>((m, n_classes))
+    y_one_hot[np.<span class="fn">arange</span>(m), y] = <span class="num">1</span>
+    <span class="kw">return</span> y_one_hot
+
+y_train_prob = <span class="fn">one_hot</span>(y_train)
+y_valid_prob = <span class="fn">one_hot</span>(y_valid)
+y_test_prob  = <span class="fn">one_hot</span>(y_test)
+
+<span class="kw">def</span> <span class="fn">softmax</span>(sk_x):
+    top    = np.<span class="fn">exp</span>(sk_x)
+    bottom = np.<span class="fn">sum</span>(top, axis=<span class="num">1</span>, keepdims=<span class="kw">True</span>)
+    <span class="kw">return</span> top / bottom
+
+n_inputs  = x_train.shape[<span class="num">1</span>]  <span class="cmt"># 5 (4 features + bias)</span>
+n_outputs = <span class="fn">len</span>(np.<span class="fn">unique</span>(y_train))  <span class="cmt"># 3 (Iris classes)</span>
+
+eta          = <span class="num">0.01</span>
+n_iterations = <span class="num">5001</span>
+m            = <span class="fn">len</span>(x_train)
+epsilon      = <span class="num">1e-7</span>
+best_loss    = np.infty
+Theta        = np.random.<span class="fn">randn</span>(n_inputs, n_outputs)
+
+<span class="kw">for</span> iteration <span class="kw">in</span> <span class="fn">range</span>(n_iterations):
+    logits      = x_train.dot(Theta)
+    Y_proba     = <span class="fn">softmax</span>(logits)
+    xentropy    = -np.<span class="fn">mean</span>(np.<span class="fn">sum</span>(y_train_prob * np.<span class="fn">log</span>(Y_proba + epsilon), axis=<span class="num">1</span>))
+    gradients   = (<span class="num">1</span> / m) * x_train.T.dot(Y_proba - y_train_prob)
+    Theta      -= eta * gradients
+
+    logits_val  = x_valid.dot(Theta)
+    Y_proba_val = <span class="fn">softmax</span>(logits_val)
+    val_loss    = -np.<span class="fn">mean</span>(np.<span class="fn">sum</span>(y_valid_prob * np.<span class="fn">log</span>(Y_proba_val + epsilon), axis=<span class="num">1</span>))
+
+    <span class="kw">if</span> iteration % <span class="num">500</span> == <span class="num">0</span>:
+        <span class="fn">print</span>(iteration, xentropy, val_loss)
+
+    <span class="kw">if</span> val_loss &lt; best_loss:
+        best_loss  = val_loss
+        best_Theta = Theta.<span class="fn">copy</span>()
+
+logits_test  = x_test.dot(best_Theta)
+Y_proba_test = <span class="fn">softmax</span>(logits_test)
+y_predict    = np.<span class="fn">argmax</span>(Y_proba_test, axis=<span class="num">1</span>)
+accuracy     = np.<span class="fn">mean</span>(y_predict == y_test)
+<span class="fn">print</span>(<span class="str">"Test Accuracy:"</span>, accuracy)
+</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 8  –  id: practical-8
+  ══════════════════════════════════ -->
+  <div id="practical-8" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-08</span>
+      <h2>MLP – MNIST Handwritten Digits Classification</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        A Multilayer Perceptron (MLP) is a type of Artificial Neural Network used for classification tasks. In the MNIST Dataset, an MLP is trained to recognize handwritten digits from 0 to 9. The network consists of an input layer, one or more hidden layers, and an output layer. Each pixel of the digit image is used as an input feature, and the model learns patterns in the data to correctly classify the handwritten digits.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="cmt"># Import libraries</span>
+<span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> tensorflow.keras.datasets <span class="kw">import</span> mnist
+<span class="kw">from</span> tensorflow.keras.models <span class="kw">import</span> <span class="cls">Sequential</span>
+<span class="kw">from</span> tensorflow.keras.layers <span class="kw">import</span> <span class="cls">Dense</span>, <span class="cls">Flatten</span>
+<span class="kw">from</span> PIL <span class="kw">import</span> Image
+
+<span class="cmt"># Load dataset</span>
+(train_img, train_lab), (test_img, test_lab) = mnist.<span class="fn">load_data</span>()
+
+<span class="cmt"># Show sample images</span>
+plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">4</span>))
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
+    plt.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">5</span>, i+<span class="num">1</span>)
+    plt.<span class="fn">imshow</span>(train_img[i], cmap=<span class="str">'gray'</span>)
+    plt.<span class="fn">title</span>(f<span class="str">"Digit: {train_lab[i]}"</span>)
+    plt.<span class="fn">axis</span>(<span class="str">'off'</span>)
+plt.<span class="fn">show</span>()
+
+<span class="cmt"># Normalize data</span>
+train_img = train_img / <span class="num">255.0</span>
+test_img  = test_img  / <span class="num">255.0</span>
+
+<span class="cmt"># Build model</span>
+model = <span class="cls">Sequential</span>()
+model.<span class="fn">add</span>(<span class="cls">Flatten</span>(input_shape=(<span class="num">28</span>, <span class="num">28</span>)))
+model.<span class="fn">add</span>(<span class="cls">Dense</span>(<span class="num">512</span>, activation=<span class="str">'relu'</span>))
+model.<span class="fn">add</span>(<span class="cls">Dense</span>(<span class="num">512</span>, activation=<span class="str">'relu'</span>))
+model.<span class="fn">add</span>(<span class="cls">Dense</span>(<span class="num">10</span>,  activation=<span class="str">'softmax'</span>))
+
+<span class="cmt"># Compile model</span>
+model.<span class="fn">compile</span>(optimizer=<span class="str">'adam'</span>,
+              loss=<span class="str">'sparse_categorical_crossentropy'</span>,
+              metrics=[<span class="str">'accuracy'</span>])
+
+<span class="cmt"># Train model</span>
+history = model.<span class="fn">fit</span>(train_img, train_lab, epochs=<span class="num">5</span>, validation_split=<span class="num">0.1</span>)
+
+<span class="cmt"># Save model</span>
+model.<span class="fn">save</span>(<span class="str">"project.h5"</span>)
+
+<span class="cmt"># Evaluate model</span>
+loss, acc = model.<span class="fn">evaluate</span>(test_img, test_lab)
+<span class="fn">print</span>(<span class="str">"Test Accuracy:"</span>, acc)
+
+<span class="cmt"># Predict on test data</span>
+predictions      = model.<span class="fn">predict</span>(test_img)
+predicted_labels = np.<span class="fn">argmax</span>(predictions, axis=<span class="num">1</span>)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
+    <span class="fn">print</span>(<span class="str">"Actual:"</span>, test_lab[i], <span class="str">" Predicted:"</span>, predicted_labels[i])
+
+<span class="cmt"># Visualize predictions</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+    plt.<span class="fn">imshow</span>(test_img[i], cmap=<span class="str">'gray'</span>)
+    plt.<span class="fn">title</span>(f<span class="str">"Actual: {test_lab[i]} | Predicted: {predicted_labels[i]}"</span>)
+    plt.<span class="fn">axis</span>(<span class="str">'off'</span>)
+    plt.<span class="fn">show</span>()
+
+<span class="kw">def</span> <span class="fn">load_image</span>(path):
+    img = Image.<span class="fn">open</span>(path).<span class="fn">convert</span>(<span class="str">'L'</span>)
+    img = img.<span class="fn">resize</span>((<span class="num">28</span>, <span class="num">28</span>))
+    img = np.<span class="fn">array</span>(img)
+    img = img / <span class="num">255.0</span>
+    img = img.<span class="fn">reshape</span>(<span class="num">1</span>, <span class="num">28</span>, <span class="num">28</span>)
+    <span class="kw">return</span> img
+</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 9  –  id: practical-9
+  ══════════════════════════════════ -->
+  <div id="practical-9" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-09</span>
+      <h2>Customer Segmentation – Unsupervised Learning (K-Means)</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        Customer segmentation using Unsupervised Learning is a technique used to divide customers into different groups based on similar characteristics such as purchasing behavior, preferences, or demographics. Since the data has no labeled output, algorithms like K-Means Clustering are used to automatically find patterns and form clusters of similar customers. This helps businesses understand customer behavior and create targeted marketing strategies for different customer groups.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> warnings
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> <span class="cls">StandardScaler</span>
+<span class="kw">from</span> sklearn.decomposition <span class="kw">import</span> <span class="cls">PCA</span>
+<span class="kw">from</span> sklearn.cluster <span class="kw">import</span> <span class="cls">KMeans</span>
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> adjusted_rand_score
+
+warnings.<span class="fn">filterwarnings</span>(<span class="str">"ignore"</span>)
+pd.<span class="fn">set_option</span>(<span class="str">'display.max_columns'</span>, <span class="num">100</span>)
+
+df = pd.<span class="fn">read_csv</span>(<span class="str">'int_online_tx.csv'</span>)
+df = df[df.CustomerID.<span class="fn">notnull</span>()]
+df[<span class="str">'CustomerID'</span>] = df.CustomerID.<span class="fn">astype</span>(<span class="fn">int</span>)
+df[<span class="str">'Sales'</span>] = df.Quantity * df.UnitPrice
+
+invoice_data = df.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>)[<span class="str">'InvoiceNo'</span>].<span class="fn">agg</span>(total_transactions=<span class="str">'nunique'</span>)
+product_data = df.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>)[<span class="str">'StockCode'</span>].<span class="fn">agg</span>(
+    total_products=<span class="str">'count'</span>, total_unique_products=<span class="str">'nunique'</span>)
+sales_data    = df.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>)[<span class="str">'Sales'</span>].<span class="fn">agg</span>(total_sales=<span class="str">'sum'</span>, avg_product_value=<span class="str">'mean'</span>)
+cart_data     = df.<span class="fn">groupby</span>([<span class="str">'CustomerID'</span>, <span class="str">'InvoiceNo'</span>])[<span class="str">'Sales'</span>].<span class="fn">agg</span>(cart_value=<span class="str">'sum'</span>)
+cart_data.<span class="fn">reset_index</span>(inplace=<span class="kw">True</span>)
+agg_cart_data = cart_data.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>)[<span class="str">'cart_value'</span>].<span class="fn">agg</span>(
+    avg_cart_value=<span class="str">'mean'</span>, min_cart_value=<span class="str">'min'</span>, max_cart_value=<span class="str">'max'</span>)
+
+customer_df = invoice_data.<span class="fn">join</span>([product_data, sales_data, agg_cart_data])
+
+<span class="cmt">#Item one-hot encoding (StockCode vector)</span>
+item_dummies = pd.<span class="fn">get_dummies</span>(df.StockCode)
+item_dummies[<span class="str">'CustomerID'</span>] = df.CustomerID
+item_data = item_dummies.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>).<span class="fn">sum</span>()
+
+<span class="cmt">#PCA for dimensionality reduction</span>
+scaler = <span class="cls">StandardScaler</span>()
+item_data_scaled = scaler.<span class="fn">fit_transform</span>(item_data)
+pca = <span class="cls">PCA</span>()
+pca.<span class="fn">fit</span>(item_data_scaled)
+cumulative_explained_variance = np.<span class="fn">cumsum</span>(pca.explained_variance_ratio_)
+
+pca = <span class="cls">PCA</span>(n_components=<span class="num">300</span>)
+PC_items = pca.<span class="fn">fit_transform</span>(item_data_scaled)
+
+<span class="cmt">#K-Means Clustering</span>
+base_df   = pd.<span class="fn">read_csv</span>(<span class="str">'Files/analytical_base_table.csv'</span>, index_col=<span class="num">0</span>)
+pca_df    = base_df.<span class="fn">join</span>(pd.<span class="fn">read_csv</span>(<span class="str">'Files/pca_item_data.csv'</span>, index_col=<span class="num">0</span>))
+p_scaler  = <span class="cls">StandardScaler</span>()
+pca_df_scaled = p_scaler.<span class="fn">fit_transform</span>(pca_df)
+
+p_kmeans  = <span class="cls">KMeans</span>(n_clusters=<span class="num">3</span>, init=<span class="str">'k-means++'</span>, random_state=<span class="num">123</span>)
+p_kmeans.<span class="fn">fit</span>(pca_df_scaled)
+pca_df[<span class="str">'cluster'</span>] = p_kmeans.<span class="fn">fit_predict</span>(pca_df_scaled)
+
+sns.<span class="fn">lmplot</span>(x=<span class="str">'total_sales'</span>, y=<span class="str">'avg_cart_value'</span>,
+           hue=<span class="str">'cluster'</span>, data=pca_df, fit_reg=<span class="kw">False</span>)
+plt.<span class="fn">show</span>()
+
+<span class="fn">print</span>(<span class="fn">adjusted_rand_score</span>(pca_df.cluster, pca_df.cluster))
+</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PRACTICAL 10  –  id: practical-10
+  ══════════════════════════════════ -->
+  <div id="practical-10" class="practical">
+    <div class="practical-header">
+      <span class="prac-num">P-10</span>
+      <h2>Association Rules – Frequent Itemsets (Apriori)</h2>
+    </div>
+    <div class="practical-body">
+      <p class="section-label">Theory</p>
+      <p class="theory">
+        Association Rule Learning generates rules from Frequent Itemsets to find relationships between items in a dataset. The rules are evaluated using two key metrics — <strong>Support</strong>: the frequency of the itemset in the dataset, and <strong>Confidence</strong>: the likelihood that item B is purchased when item A is purchased. The Apriori algorithm is used to mine frequent itemsets efficiently.
+      </p>
+      <hr class="divider"/>
+      <p class="section-label">Code</p>
+<pre>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
+<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> <span class="cls">TransactionEncoder</span>
+
+<span class="cmt"># Read dataset</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">'/content/Groceries_dataset.csv'</span>, names=[<span class="str">'itemDescription'</span>], sep=<span class="str">','</span>)
+<span class="fn">print</span>(df.<span class="fn">head</span>())
+<span class="fn">print</span>(df.shape)
+
+<span class="cmt"># Group transactions by Member + Date, collect items as lists</span>
+data = pd.<span class="fn">read_csv</span>(<span class="str">'Groceries_dataset.csv'</span>).<span class="fn">groupby</span>(
+    [<span class="str">'Member_number'</span>, <span class="str">'Date'</span>])[<span class="str">'itemDescription'</span>].<span class="fn">apply</span>(<span class="fn">list</span>)
+
+<span class="cmt"># TransactionEncoder → boolean DataFrame</span>
+te = <span class="cls">TransactionEncoder</span>()
+df_encoded = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(data), columns=te.columns_)
+
+<span class="cmt"># Run Apriori</span>
+frequent_itemsets = <span class="fn">apriori</span>(df_encoded, min_support=<span class="num">0.01</span>, use_colnames=<span class="kw">True</span>)
+<span class="fn">print</span>(frequent_itemsets)
+
+<span class="cmt"># Generate association rules</span>
+rules = <span class="fn">association_rules</span>(frequent_itemsets, metric=<span class="str">"confidence"</span>, min_threshold=<span class="num">0.1</span>)
+<span class="fn">print</span>(rules[[<span class="str">'antecedents'</span>, <span class="str">'consequents'</span>, <span class="str">'support'</span>, <span class="str">'confidence'</span>, <span class="str">'lift'</span>]])
+
+<span class="cmt"># Sort by confidence descending</span>
+rules_sorted = rules.<span class="fn">sort_values</span>(by=<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>)
+<span class="fn">print</span>(rules_sorted.<span class="fn">head</span>(<span class="num">10</span>))
+</pre>
+    </div>
+  </div>
+
+</div><!-- end practical-wrapper -->
 
 </body>
-
 </html>
