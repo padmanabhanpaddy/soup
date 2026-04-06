@@ -1,959 +1,1002 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ML Practical Journal – Darshan Jadhav</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap');
-
-    :root {
-      --bg: #0d0f14;
-      --surface: #131720;
-      --border: #1e2535;
-      --accent: #4fffb0;
-      --accent2: #4a9eff;
-      --text: #c8d3e8;
-      --muted: #5a6a8a;
-      --code-bg: #0a0d12;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Syne', sans-serif;
-      min-height: 100vh;
-      padding: 2rem 1.5rem 4rem;
-    }
-
-    header {
-      text-align: center;
-      padding: 3rem 0 2.5rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2.5rem;
-    }
-    header h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.5px;
-    }
-    header p {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-top: 0.4rem;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    header .tag {
-      display: inline-block;
-      margin-top: 1rem;
-      background: var(--accent);
-      color: #000;
-      font-size: 0.75rem;
-      font-weight: 700;
-      font-family: 'JetBrains Mono', monospace;
-      padding: 0.25rem 0.8rem;
-      border-radius: 999px;
-      letter-spacing: 0.05em;
-    }
-
-    /* ── Index ── */
-    #practical-index {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.8rem 2rem;
-      max-width: 860px;
-      margin: 0 auto 3rem;
-    }
-    #practical-index h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--accent2);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 1.2rem;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .index-list {
-      list-style: none;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.55rem 2rem;
-    }
-    @media (max-width: 600px) { .index-list { grid-template-columns: 1fr; } }
-    .index-list li {
-      font-size: 0.88rem;
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--muted);
-      display: flex;
-      gap: 0.5rem;
-      align-items: flex-start;
-    }
-    .index-list li .idx-num {
-      color: var(--accent);
-      min-width: 22px;
-      font-weight: 600;
-    }
-    .index-list li a {
-      color: var(--text);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .index-list li a:hover { color: var(--accent); }
-
-    /* ── Practical cards ── */
-    .practical-wrapper {
-      max-width: 860px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 2.5rem;
-    }
-
-    .practical {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .practical-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1.2rem 1.6rem;
-      border-bottom: 1px solid var(--border);
-      background: #0f121a;
-    }
-    .prac-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #000;
-      background: var(--accent);
-      border-radius: 6px;
-      padding: 0.2rem 0.55rem;
-      white-space: nowrap;
-    }
-    .practical-header h2 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #e8edf8;
-      line-height: 1.4;
-    }
-
-    .practical-body {
-      padding: 1.5rem 1.6rem;
-    }
-
-    .section-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--accent2);
-      margin-bottom: 0.6rem;
-    }
-
-    .theory {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      color: var(--text);
-      margin-bottom: 1.5rem;
-    }
-
-    pre {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.2rem 1.4rem;
-      overflow-x: auto;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 1.65;
-      color: #a8c0e8;
-      white-space: pre;
-    }
-
-    /* simple keyword colouring via spans injected manually */
-    .kw   { color: #c792ea; }   /* import, from, def, for, if, return, class */
-    .fn   { color: #82aaff; }   /* function names */
-    .str  { color: #c3e88d; }   /* strings */
-    .num  { color: #f78c6c; }   /* numbers */
-    .cmt  { color: #546e7a; }   /* comments */
-    .cls  { color: #ffcb6b; }   /* class names */
-
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 1.2rem 0;
-    }
-  </style>
+<title>Compiler Design Practicals</title>
 </head>
 <body>
 
-<header>
-  <h1>Machine Learning Practical Journal</h1>
-  <p>Darshan Jadhav &nbsp;·&nbsp; MCS.25.06 &nbsp;·&nbsp; MSC CS Part 1 &nbsp;·&nbsp; 2025-2026</p>
-  <span class="tag">SIES (Nerul) College</span>
-</header>
+<h1>Compiler Design Practicals</h1>
+<h3>LEX & YACC Programming Lab Manual</h3>
+<p><strong>Submitted by:</strong> Darshan Jadhav | <strong>Roll No:</strong> MCS.25.06</p>
+<p><strong>Course:</strong> MSc CS Part 1 | <strong>Academic Year:</strong> 2025-2026</p>
+<p><strong>Guide:</strong> Prof. Aditya Jinturkar</p>
 
-<!-- ════════════════════════════════════
-     INDEX  –  id: practical-index
-     Each entry maps a label → anchor id
-════════════════════════════════════ -->
-<div id="menu">
-  <h2>// Index</h2>
-  <ul class="index-list">
-    <li>01 | practical-1 | Linear Regression – Diabetes Dataset</li>
-    <li>02 | practical-2 | Logistic Regression – Iris Dataset</li>
-    <li>03 | practical-3 | Multinomial Logistic Regression – Iris Dataset</li>
-    <li>04 | practical-4 | SVM Classifier – Iris Dataset</li>
-    <li>05 | practical-5 | Decision Tree – Moons Dataset</li>
-    <li>06 | practical-6 | SVM Regressor – California Housing Dataset</li>
-    <li>07 | practical-7 | Batch Gradient Descent with Early Stopping – Softmax Regression</li>
-    <li>08 | practical-8 | MLP – MNIST Handwritten Digits</li>
-    <li>09 | practical-9 | Customer Segmentation – Unsupervised Learning</li>
-    <li>10 | practical-10 | Association Rules – Frequent Itemsets</li>
-  </ul>
-</div>
+<hr>
 
-<div class="practical-wrapper">
+<h2>Setup Instructions</h2>
+<p><strong>Software Required:</strong> EditPlus Portable (or any text editor with LEX/YACC support)</p>
+<ol>
+<li>Open EditPlus → File → New → Configure Terminal → Select LEX/YACC</li>
+<li>Save files with appropriate extensions (.l for LEX, .y for YACC)</li>
+<li>Compile using Tools → CMD</li>
+</ol>
 
-  <!-- ══════════════════════════════════
-       PRACTICAL 1  –  id: practical-1
-  ══════════════════════════════════ -->
-  <div id="practical-1" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-01</span>
-      <h2>Linear Regression – Diabetes Dataset</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        Linear Regression is used to model the relationship between a dependent variable and one or more independent variables. Applied on the Diabetes Dataset, it predicts a quantitative measure of disease progression. The model is evaluated using Mean Squared Error and the R² (variance) score, and trained using scikit-learn's <code>LinearRegression</code>.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
-<pre>
-<span class="cmt">#Import Dependencies</span>
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-<span class="kw">from</span> sklearn <span class="kw">import</span> datasets, linear_model, metrics
-<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
-<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> mean_squared_error, r2_score
-<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+<hr>
 
-<span class="cmt">#Load the diabetes dataset</span>
-diabetes = datasets.<span class="fn">load_diabetes</span>()
+<h2>Practical 1: Count Vowels and Consonants</h2>
+<p><strong>Aim:</strong> Write a LEX program to count the number of vowels and consonants in a given string.</p>
 
-<span class="cmt">#X - feature vectors, y - Target values</span>
-X = diabetes.data
-y = diabetes.target
+<div id="practical1">%{
+#include<stdio.h>
+int vowel_count = 0;
+int consonant_count = 0;
+%}
 
-<span class="cmt">#Splitting X and y into training and testing sets</span>
-X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(X, y, test_size=<span class="num">0.4</span>, random_state=<span class="num">1</span>)
+%%
+[aeiouAEIOU] { vowel_count++; }
+[a-zA-Z] { consonant_count++; }
+. { ; }
+\n { ; }
+%%
 
-<span class="cmt">#Create linear regression object</span>
-lin_reg = linear_model.<span class="fn">LinearRegression</span>()
-
-<span class="cmt">#Train the model using train and test data</span>
-lin_reg.<span class="fn">fit</span>(X_train, y_train)
-
-<span class="cmt">#Predict values for X_test data</span>
-predicted = lin_reg.<span class="fn">predict</span>(X_test)
-
-<span class="cmt">#Regression coefficients</span>
-<span class="fn">print</span>(<span class="str">'\n Coefficients are:\n'</span>, lin_reg.coef_)
-
-<span class="cmt">#Intercept</span>
-<span class="fn">print</span>(<span class="str">'\nIntercept : '</span>, lin_reg.intercept_)
-
-<span class="cmt">#Variance score: 1 means perfect prediction</span>
-<span class="fn">print</span>(<span class="str">'Variance score: '</span>, lin_reg.<span class="fn">score</span>(X_test, y_test))
-
-<span class="cmt">#Mean Squared Error</span>
-<span class="fn">print</span>(<span class="str">"Mean squared error: %.2f\n"</span> % <span class="fn">mean_squared_error</span>(y_test, predicted))
-
-<span class="cmt">#Original data of X_test</span>
-expected = y_test
-
-<span class="cmt">#Plot a graph for expected and predicted values</span>
-plt.<span class="fn">title</span>(<span class="str">'Linear Regression ( DIABETES Dataset)'</span>)
-plt.<span class="fn">scatter</span>(expected, predicted, c=<span class="str">'b'</span>, marker=<span class="str">'.'</span>, s=<span class="num">36</span>)
-plt.<span class="fn">plot</span>(np.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">330</span>, <span class="num">100</span>), np.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">330</span>, <span class="num">100</span>), <span class="str">'--r'</span>, linewidth=<span class="num">2</span>)
-plt.<span class="fn">show</span>()
-</pre>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════
-       PRACTICAL 2  –  id: practical-2
-  ══════════════════════════════════ -->
-  <div id="practical-2" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-02</span>
-      <h2>Logistic Regression – Iris Dataset</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        Logistic Regression is a supervised machine learning algorithm used for classification problems. It predicts the probability that an input belongs to a particular class (such as 0 or 1) using the sigmoid function, which converts values into a range between 0 and 1. Based on this probability, the model assigns the input to a specific category. It is commonly used for tasks like spam detection, disease prediction, and binary classification.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
-<pre>
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> <span class="cls">LogisticRegression</span>
-<span class="kw">from</span> sklearn <span class="kw">import</span> datasets
-
-<span class="cmt"># import some data to play with</span>
-iris = datasets.<span class="fn">load_iris</span>()
-X = iris.data[:, :<span class="num">2</span>]  <span class="cmt"># we only take the first two features.</span>
-Y = iris.target
-
-<span class="cmt"># Create an instance of Logistic Regression Classifier and fit the data.</span>
-logreg = <span class="cls">LogisticRegression</span>(C=<span class="num">1e5</span>)
-logreg.<span class="fn">fit</span>(X, Y)
-
-<span class="cmt"># Plot the decision boundary.</span>
-x_min, x_max = X[:, <span class="num">0</span>].<span class="fn">min</span>() - <span class="num">0.5</span>, X[:, <span class="num">0</span>].<span class="fn">max</span>() + <span class="num">0.5</span>
-y_min, y_max = X[:, <span class="num">1</span>].<span class="fn">min</span>() - <span class="num">0.5</span>, X[:, <span class="num">1</span>].<span class="fn">max</span>() + <span class="num">0.5</span>
-
-h = <span class="num">0.02</span>  <span class="cmt"># step size in the mesh</span>
-xx, yy = np.<span class="fn">meshgrid</span>(np.<span class="fn">arange</span>(x_min, x_max, h),
-                      np.<span class="fn">arange</span>(y_min, y_max, h))
-
-Z = logreg.<span class="fn">predict</span>(np.c_[xx.<span class="fn">ravel</span>(), yy.<span class="fn">ravel</span>()])
-
-<span class="cmt"># Put the result into a color plot</span>
-Z = Z.<span class="fn">reshape</span>(xx.shape)
-plt.<span class="fn">figure</span>(<span class="num">1</span>, figsize=(<span class="num">4</span>, <span class="num">3</span>))
-plt.<span class="fn">pcolormesh</span>(xx, yy, Z, cmap=plt.cm.Paired)
-
-<span class="cmt"># Plot also the training points</span>
-plt.<span class="fn">scatter</span>(X[:, <span class="num">0</span>], X[:, <span class="num">1</span>], c=Y, edgecolors=<span class="str">'k'</span>, cmap=plt.cm.Paired)
-plt.<span class="fn">xlabel</span>(<span class="str">"Sepal length"</span>)
-plt.<span class="fn">ylabel</span>(<span class="str">"Sepal width"</span>)
-plt.<span class="fn">xlim</span>(xx.<span class="fn">min</span>(), xx.<span class="fn">max</span>())
-plt.<span class="fn">ylim</span>(yy.<span class="fn">min</span>(), yy.<span class="fn">max</span>())
-plt.<span class="fn">xticks</span>(())
-plt.<span class="fn">yticks</span>(())
-plt.<span class="fn">show</span>()
-</pre>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════
-       PRACTICAL 3  –  id: practical-3
-  ══════════════════════════════════ -->
-  <div id="practical-3" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-03</span>
-      <h2>Multinomial Logistic Regression – Iris Dataset</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        Multinomial Logistic Regression is an extension of Logistic Regression used when the dependent variable has more than two categories. Instead of predicting only two classes, it can classify data into three or more possible outcomes. The model calculates the probability of each class and assigns the input to the class with the highest probability. It is commonly used in problems like predicting types of products, customer categories, or different classes of objects.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
-<pre>
-<span class="cmt"># --- 1. Loading the libraries and the data ---</span>
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">import</span> pandas <span class="kw">as</span> pd
-<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> <span class="cls">LogisticRegression</span>
-<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
-<span class="kw">from</span> sklearn <span class="kw">import</span> preprocessing
-<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> accuracy_score
-<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> cross_val_score
-<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> confusion_matrix
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-<span class="kw">import</span> statsmodels.api <span class="kw">as</span> sm
-
-pd.<span class="fn">set_option</span>(<span class="str">'float_format'</span>, <span class="str">'{:f}'</span>.<span class="fn">format</span>)
-
-<span class="cmt"># Use the direct link to the raw CSV file</span>
-csv_url = <span class="str">'https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv'</span>
-iris = pd.<span class="fn">read_csv</span>(csv_url)
-
-<span class="cmt"># --- Data Preparation ---</span>
-x = iris.<span class="fn">drop</span>(<span class="str">'species'</span>, axis=<span class="num">1</span>)
-y = iris[<span class="str">'species'</span>]
-trainX, testX, trainY, testY = <span class="fn">train_test_split</span>(x, y, test_size=<span class="num">0.2</span>, random_state=<span class="num">42</span>)
-
-<span class="cmt"># --- Fit the model ---</span>
-log_reg = <span class="cls">LogisticRegression</span>(solver=<span class="str">'newton-cg'</span>, multi_class=<span class="str">'multinomial'</span>)
-log_reg.<span class="fn">fit</span>(trainX, trainY)
-y_pred = log_reg.<span class="fn">predict</span>(testX)
-
-<span class="cmt"># --- Model validation ---</span>
-<span class="fn">print</span>(<span class="str">'Accuracy: {:.2f}'</span>.<span class="fn">format</span>(<span class="fn">accuracy_score</span>(testY, y_pred)))
-<span class="fn">print</span>(<span class="str">'Error rate: {:.2f}'</span>.<span class="fn">format</span>(<span class="num">1</span> - <span class="fn">accuracy_score</span>(testY, y_pred)))
-
-<span class="cmt"># --- Cross-validation scores ---</span>
-clf = <span class="cls">LogisticRegression</span>(solver=<span class="str">'newton-cg'</span>, multi_class=<span class="str">'multinomial'</span>, random_state=<span class="num">42</span>)
-scores = <span class="fn">cross_val_score</span>(clf, trainX, trainY, cv=<span class="num">5</span>)
-<span class="fn">print</span>(<span class="str">"Accuracy: %0.2f (+/- %0.2f)"</span> % (scores.<span class="fn">mean</span>(), scores.<span class="fn">std</span>() * <span class="num">2</span>))
-
-<span class="cmt"># --- Confusion Matrix ---</span>
-confusion_matrix_result = <span class="fn">confusion_matrix</span>(testY, y_pred)
-plt.<span class="fn">matshow</span>(confusion_matrix_result, cmap=plt.cm.gray)
-plt.<span class="fn">title</span>(<span class="str">'Confusion Matrix'</span>)
-plt.<span class="fn">show</span>()
-
-<span class="cmt"># --- Calculated probabilities ---</span>
-probability = log_reg.<span class="fn">predict_proba</span>(testX)
-df = pd.<span class="fn">DataFrame</span>(probability, columns=log_reg.classes_)
-df[<span class="str">'sum'</span>] = df.<span class="fn">sum</span>(axis=<span class="num">1</span>)
-df[<span class="str">'predicted_class'</span>] = y_pred
-
-<span class="cmt"># --- Multinomial Logit with statsmodels ---</span>
-x_sm = iris.<span class="fn">drop</span>(<span class="str">'species'</span>, axis=<span class="num">1</span>)
-y_sm = iris[<span class="str">'species'</span>]
-x_sm = sm.<span class="fn">add_constant</span>(x_sm, prepend=<span class="kw">False</span>)
-mnlogit_mod = sm.<span class="fn">MNLogit</span>(y_sm, x_sm)
-mnlogit_fit = mnlogit_mod.<span class="fn">fit</span>()
-<span class="fn">print</span>(mnlogit_fit.<span class="fn">summary</span>())
-</pre>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════
-       PRACTICAL 4  –  id: practical-4
-  ══════════════════════════════════ -->
-  <div id="practical-4" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-04</span>
-      <h2>SVM Classifier – Iris Dataset</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        Support Vector Machine is a supervised machine learning algorithm used for classification and regression tasks. In classification, it finds the best separating boundary (hyperplane) that divides data into different classes with the maximum margin between them. SVM can handle both linear and non-linear data by using kernel functions, making it effective for many real-world classification problems.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
-<pre>
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-<span class="kw">from</span> sklearn <span class="kw">import</span> svm, datasets
-
-<span class="kw">def</span> <span class="fn">make_meshgrid</span>(x, y, h=<span class="num">0.02</span>):
-    x_min, x_max = x.<span class="fn">min</span>() - <span class="num">1</span>, x.<span class="fn">max</span>() + <span class="num">1</span>
-    y_min, y_max = y.<span class="fn">min</span>() - <span class="num">1</span>, y.<span class="fn">max</span>() + <span class="num">1</span>
-    xx, yy = np.<span class="fn">meshgrid</span>(np.<span class="fn">arange</span>(x_min, x_max, h),
-                          np.<span class="fn">arange</span>(y_min, y_max, h))
-    <span class="kw">return</span> xx, yy
-
-<span class="kw">def</span> <span class="fn">plot_contours</span>(ax, clf, xx, yy, **params):
-    Z = clf.<span class="fn">predict</span>(np.c_[xx.<span class="fn">ravel</span>(), yy.<span class="fn">ravel</span>()])
-    Z = Z.<span class="fn">reshape</span>(xx.shape)
-    out = ax.<span class="fn">contourf</span>(xx, yy, Z, **params)
-    <span class="kw">return</span> out
-
-iris = datasets.<span class="fn">load_iris</span>()
-X = iris.data[:, :<span class="num">2</span>]
-y = iris.target
-
-C = <span class="num">1.0</span>  <span class="cmt"># SVM regularization parameter</span>
-models = (
-    svm.<span class="fn">SVC</span>(kernel=<span class="str">"linear"</span>, C=C),
-    svm.<span class="fn">LinearSVC</span>(C=C, max_iter=<span class="num">10000</span>),
-    svm.<span class="fn">SVC</span>(kernel=<span class="str">"rbf"</span>, gamma=<span class="num">0.7</span>, C=C),
-    svm.<span class="fn">SVC</span>(kernel=<span class="str">"poly"</span>, degree=<span class="num">3</span>, gamma=<span class="str">"auto"</span>, C=C),
-)
-models = (clf.<span class="fn">fit</span>(X, y) <span class="kw">for</span> clf <span class="kw">in</span> models)
-
-titles = (
-    <span class="str">"SVC with linear kernel"</span>,
-    <span class="str">"LinearSVC (linear kernel)"</span>,
-    <span class="str">"SVC with RBF kernel"</span>,
-    <span class="str">"SVC with polynomial (degree 3) kernel"</span>,
-)
-
-fig, sub = plt.<span class="fn">subplots</span>(<span class="num">2</span>, <span class="num">2</span>)
-plt.<span class="fn">subplots_adjust</span>(wspace=<span class="num">0.4</span>, hspace=<span class="num">0.4</span>)
-
-X0, X1 = X[:, <span class="num">0</span>], X[:, <span class="num">1</span>]
-xx, yy = <span class="fn">make_meshgrid</span>(X0, X1)
-
-<span class="kw">for</span> clf, title, ax <span class="kw">in</span> <span class="fn">zip</span>(models, titles, sub.<span class="fn">flatten</span>()):
-    <span class="fn">plot_contours</span>(ax, clf, xx, yy, cmap=plt.cm.coolwarm, alpha=<span class="num">0.8</span>)
-    ax.<span class="fn">scatter</span>(X0, X1, c=y, cmap=plt.cm.coolwarm, s=<span class="num">20</span>, edgecolors=<span class="str">'k'</span>)
-    ax.<span class="fn">set_xlim</span>(xx.<span class="fn">min</span>(), xx.<span class="fn">max</span>())
-    ax.<span class="fn">set_ylim</span>(yy.<span class="fn">min</span>(), yy.<span class="fn">max</span>())
-    ax.<span class="fn">set_xlabel</span>(<span class="str">"Sepal length"</span>)
-    ax.<span class="fn">set_ylabel</span>(<span class="str">"Sepal width"</span>)
-    ax.<span class="fn">set_xticks</span>(())
-    ax.<span class="fn">set_yticks</span>(())
-    ax.<span class="fn">set_title</span>(title)
-
-plt.<span class="fn">show</span>()
-</pre>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════
-       PRACTICAL 5  –  id: practical-5
-  ══════════════════════════════════ -->
-  <div id="practical-5" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-05</span>
-      <h2>Decision Tree – Moons Dataset</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        A Decision Tree is a supervised machine learning algorithm used for classification and regression tasks. It works by splitting the data into branches based on feature values, forming a tree-like structure of nodes, branches, and leaves. Each internal node represents a decision based on a feature, and the leaf node represents the final output or class prediction. Decision trees are easy to understand and interpret.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
-<pre>
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-<span class="kw">from</span> sklearn.datasets <span class="kw">import</span> make_moons
-<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split, <span class="cls">GridSearchCV</span>
-<span class="kw">from</span> sklearn.tree <span class="kw">import</span> <span class="cls">DecisionTreeClassifier</span>
-<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> confusion_matrix, precision_score, recall_score, f1_score
-
-<span class="kw">def</span> <span class="fn">plot_dataset</span>(X, y, axes):
-    plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">6</span>))
-    plt.<span class="fn">plot</span>(X[:, <span class="num">0</span>][y==<span class="num">0</span>], X[:, <span class="num">1</span>][y==<span class="num">0</span>], <span class="str">"bs"</span>, alpha=<span class="num">0.5</span>)
-    plt.<span class="fn">plot</span>(X[:, <span class="num">0</span>][y==<span class="num">1</span>], X[:, <span class="num">1</span>][y==<span class="num">1</span>], <span class="str">"g^"</span>, alpha=<span class="num">0.2</span>)
-    plt.<span class="fn">axis</span>(axes)
-    plt.<span class="fn">grid</span>(<span class="kw">True</span>, which=<span class="str">'both'</span>)
-    plt.<span class="fn">xlabel</span>(r<span class="str">"$x_1$"</span>, fontsize=<span class="num">20</span>)
-    plt.<span class="fn">ylabel</span>(r<span class="str">"$x_2$"</span>, fontsize=<span class="num">20</span>, rotation=<span class="num">0</span>)
-
-X, y = <span class="fn">make_moons</span>(n_samples=<span class="num">10000</span>, noise=<span class="num">0.4</span>, random_state=<span class="num">21</span>)
-<span class="fn">plot_dataset</span>(X, y, [<span class="num">-3</span>, <span class="num">5</span>, <span class="num">-3</span>, <span class="num">3</span>])
-
-X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(X, y, test_size=<span class="num">0.2</span>)
-
-tree_clf = <span class="cls">DecisionTreeClassifier</span>()
-
-parameter = {
-    <span class="str">'criterion'</span>: [<span class="str">"gini"</span>, <span class="str">"entropy"</span>],
-    <span class="str">'max_leaf_nodes'</span>: <span class="fn">list</span>(<span class="fn">range</span>(<span class="num">2</span>, <span class="num">50</span>)),
-    <span class="str">'min_samples_split'</span>: [<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>]
+int yywrap()
+{
+    return 1;
 }
 
-clf = <span class="cls">GridSearchCV</span>(tree_clf, parameter, cv=<span class="num">5</span>,
-                    scoring=<span class="str">"accuracy"</span>, return_train_score=<span class="kw">True</span>, n_jobs=<span class="num">-1</span>)
-clf.<span class="fn">fit</span>(X_train, y_train)
+int main()
+{
+    printf("Enter a string: ");
+    yylex();
+    printf("Number of vowels: %d\n", vowel_count);
+    printf("Number of consonants: %d\n", consonant_count);
+    return 0;
+}
 
-cvres = clf.cv_results_
-<span class="kw">for</span> mean_score, params <span class="kw">in</span> <span class="fn">zip</span>(cvres[<span class="str">"mean_train_score"</span>], cvres[<span class="str">"params"</span>]):
-    <span class="fn">print</span>(mean_score, params)
+/* Compilation & Execution:
+   lex filename.l
+   gcc lex.yy.c
+   ./a.out
+*/</div>
 
-pred = clf.<span class="fn">predict</span>(X_train)
-<span class="fn">print</span>(confusion_matrix(y_train, pred))
+<hr>
 
-pre = <span class="fn">precision_score</span>(y_train, pred)
-re  = <span class="fn">recall_score</span>(y_train, pred)
-<span class="fn">print</span>(f<span class="str">"Precision: {pre} Recall:{re}"</span>)
+<h2>Practical 2: Count Characters, Words, Spaces, Lines</h2>
+<p><strong>Aim:</strong> Program to calculate the number of characters, words, spaces, and end of lines in a given input file.</p>
 
-<span class="fn">print</span>(<span class="str">"Training score:"</span>, clf.<span class="fn">score</span>(X_train, y_train))
-<span class="fn">print</span>(<span class="str">"Testing score:"</span>,  clf.<span class="fn">score</span>(X_test,  y_test))
-</pre>
-    </div>
-  </div>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Save LEX program as prac2.l</li>
+<li>Create input file sample.txt with test data</li>
+<li>Compile and run</li>
+</ol>
 
-  <!-- ══════════════════════════════════
-       PRACTICAL 6  –  id: practical-6
-  ══════════════════════════════════ -->
-  <div id="practical-6" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-06</span>
-      <h2>SVM Regressor – California Housing Dataset</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        Support Vector Regression is a type of Support Vector Machine used for regression problems. It predicts continuous numerical values instead of categories. SVR tries to find a function that fits the data within a certain error margin while keeping the model as simple as possible. It works well for both linear and non-linear relationships by using kernel functions.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
+<div id="practical2">%{
+#include<stdio.h>
+int char_count = 0;
+int word_count = 0;
+int space_count = 0;
+int line_count = 0;
+%}
+
+%%
+[^ \t\n]+ { word_count++; char_count += yyleng; }
+[ ] { space_count++; }
+\t { space_count++; }
+\n { line_count++; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main(int argc, char *argv[])
+{
+    if(argc != 2)
+    {
+        printf("Usage: ./a.out <filename>\n");
+        return 1;
+    }
+    
+    yyin = fopen(argv[1], "r");
+    if(!yyin)
+    {
+        printf("Error opening file\n");
+        return 1;
+    }
+    
+    yylex();
+    
+    printf("Number of characters: %d\n", char_count);
+    printf("Number of words: %d\n", word_count);
+    printf("Number of spaces: %d\n", space_count);
+    printf("Number of lines: %d\n", line_count);
+    
+    fclose(yyin);
+    return 0;
+}
+
+/* Compilation & Execution:
+   lex prac2.l
+   gcc lex.yy.c
+   ./a.out sample.txt
+*/</div>
+
+<hr>
+
+<h2>Practical 3: Count Positive/Negative Integers and Fractions</h2>
+<p><strong>Aim:</strong> Count the number of positive and negative integers and fractions.</p>
+
+<div id="practical3">%{
+#include<stdio.h>
+int positive_int = 0;
+int negative_int = 0;
+int positive_frac = 0;
+int negative_frac = 0;
+%}
+
+%%
+\+?[0-9]+ { positive_int++; printf("Positive Integer: %s\n", yytext); }
+-[0-9]+ { negative_int++; printf("Negative Integer: %s\n", yytext); }
+\+?[0-9]+\.[0-9]+ { positive_frac++; printf("Positive Fraction: %s\n", yytext); }
+-[0-9]+\.[0-9]+ { negative_frac++; printf("Negative Fraction: %s\n", yytext); }
+. { ; }
+\n { ; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("Enter numbers (press Ctrl+D to end):\n");
+    yylex();
+    printf("\nPositive Integers: %d\n", positive_int);
+    printf("Negative Integers: %d\n", negative_int);
+    printf("Positive Fractions: %d\n", positive_frac);
+    printf("Negative Fractions: %d\n", negative_frac);
+    return 0;
+}
+
+/* Compilation & Execution:
+   lex prac3.l
+   gcc lex.yy.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<h2>Practical 4: Count and Remove Comments from C Program</h2>
+<p><strong>Aim:</strong> Count the number of comment lines in a C program, eliminate them, and copy the program to a separate file.</p>
+
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Save LEX program as prac4.l</li>
+<li>Create input C file: comment.c</li>
+<li>Output will be saved to output.c</li>
+</ol>
+
+<div id="practical4">%{
+#include<stdio.h>
+int comment_count = 0;
+FILE *output_file;
+%}
+
+%%
+"//".*  { comment_count++; }
+"/*"([^*]|\*+[^*/])*\*+"/" { comment_count++; }
+.       { fprintf(output_file, "%s", yytext); }
+\n      { fprintf(output_file, "\n"); }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main(int argc, char *argv[])
+{
+    if(argc != 2)
+    {
+        printf("Usage: ./a.out <source.c>\n");
+        return 1;
+    }
+    
+    yyin = fopen(argv[1], "r");
+    if(!yyin)
+    {
+        printf("Error opening input file\n");
+        return 1;
+    }
+    
+    output_file = fopen("output.c", "w");
+    if(!output_file)
+    {
+        printf("Error creating output file\n");
+        return 1;
+    }
+    
+    yylex();
+    
+    printf("Number of comment lines: %d\n", comment_count);
+    printf("Program without comments saved to output.c\n");
+    
+    fclose(yyin);
+    fclose(output_file);
+    return 0;
+}
+
+/* Compilation & Execution:
+   lex prac4.l
+   gcc lex.yy.c
+   ./a.out comment.c
+*/</div>
+
+<hr>
+
+<h2>Practical 5: Replace scanf/printf with readf/writef</h2>
+<p><strong>Aim:</strong> Count the number of 'scanf' and 'printf' statements in a C program and replace them with 'readf' and 'writef' respectively.</p>
+
+<div id="practical5">%{
+#include<stdio.h>
+int scanf_count = 0;
+int printf_count = 0;
+FILE *output_file;
+%}
+
+%%
+"scanf"  { scanf_count++; fprintf(output_file, "readf"); }
+"printf" { printf_count++; fprintf(output_file, "writef"); }
+.        { fprintf(output_file, "%s", yytext); }
+\n       { fprintf(output_file, "\n"); }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main(int argc, char *argv[])
+{
+    if(argc != 2)
+    {
+        printf("Usage: ./a.out <source.c>\n");
+        return 1;
+    }
+    
+    yyin = fopen(argv[1], "r");
+    if(!yyin)
+    {
+        printf("Error opening input file\n");
+        return 1;
+    }
+    
+    output_file = fopen("modified.c", "w");
+    if(!output_file)
+    {
+        printf("Error creating output file\n");
+        return 1;
+    }
+    
+    yylex();
+    
+    printf("Number of scanf statements: %d\n", scanf_count);
+    printf("Number of printf statements: %d\n", printf_count);
+    printf("Modified program saved to modified.c\n");
+    
+    fclose(yyin);
+    fclose(output_file);
+    return 0;
+}
+
+/* Compilation & Execution:
+   lex prac5.l
+   gcc lex.yy.c
+   ./a.out arithmetic.c
+*/</div>
+
+<hr>
+
+<h2>Practical 6: Recognize Arithmetic Expression</h2>
+<p><strong>Aim:</strong> Recognize a valid arithmetic expression and identify the identifiers and operators present.</p>
+
+<div id="practical6">%{
+#include<stdio.h>
+%}
+
+%%
+[a-zA-Z][a-zA-Z0-9]* { printf("Identifier: %s\n", yytext); }
+[0-9]+ { printf("Number: %s\n", yytext); }
+\+ { printf("Operator: +\n"); }
+- { printf("Operator: -\n"); }
+\* { printf("Operator: *\n"); }
+\/ { printf("Operator: /\n"); }
+= { printf("Operator: =\n"); }
+\( { printf("Left Parenthesis\n"); }
+\) { printf("Right Parenthesis\n"); }
+; { printf("Semicolon\n"); }
+[ \t\n] { ; }
+. { printf("Invalid character: %s\n", yytext); }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("Enter an arithmetic expression:\n");
+    yylex();
+    return 0;
+}
+
+/* Compilation & Execution:
+   lex prac6.l
+   gcc lex.yy.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<h2>Practical 7: Recognize Simple or Compound Sentence</h2>
+<p><strong>Aim:</strong> Recognize whether a given sentence is simple or compound.</p>
+
+<div id="practical7">%{
+#include<stdio.h>
+int is_simple = 1;
+%}
+
+%%
+[ \t\n]+[aA][nN][dD][ \t\n]+ { is_simple = 0; }
+[ \t\n]+[oO][rR][ \t\n]+ { is_simple = 0; }
+[ \t\n]+[bB][uU][tT][ \t\n]+ { is_simple = 0; }
+. { ; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("Enter the sentence (press Ctrl+D to end):\n");
+    yylex();
+    
+    if(is_simple == 1)
+    {
+        printf("The given sentence is SIMPLE\n");
+    }
+    else
+    {
+        printf("The given sentence is COMPOUND\n");
+    }
+    
+    return 0;
+}
+
+/* Compilation & Execution:
+   lex prac7.l
+   gcc lex.yy.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<h2>Practical 8: Count Identifiers in File</h2>
+<p><strong>Aim:</strong> Recognize and count the number of identifiers in a given input file.</p>
+
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Save LEX program as prac8.l</li>
+<li>Create input file identifier.txt with sample code</li>
+</ol>
+
+<div id="practical8">%{
+#include<stdio.h>
+int id = 0;
+%}
+
+%%
+[a-zA-Z][a-zA-Z0-9_]* { id++; ECHO; printf("\n"); }
+.+ { ; }
+\n { ; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main(int argc, char *argv[])
+{
+    if(argc != 2)
+    {
+        printf("Usage: ./a.out <sourcefile>\n");
+        exit(0);
+    }
+    
+    yyin = fopen(argv[1], "r");
+    if(!yyin)
+    {
+        printf("Error opening file\n");
+        exit(0);
+    }
+    
+    printf("Valid identifiers are:\n");
+    yylex();
+    printf("\nNumber of identifiers = %d\n", id);
+    
+    fclose(yyin);
+    return 0;
+}
+
+/* Compilation & Execution:
+   lex prac8.l
+   gcc lex.yy.c
+   ./a.out identifier.txt
+*/</div>
+
+<hr>
+
+<h2>Practical 9: Validate Simple Expression</h2>
+<p><strong>Aim:</strong> Test the validity of a simple expression involving operators +, -, *, /.</p>
+
+<div id="practical9">%{
+#include<stdio.h>
+int valid = 1;
+%}
+
+%%
+[a-zA-Z][a-zA-Z0-9]* { ; }
+[0-9]+ { ; }
+[\+\-\*\/] { ; }
+[\(\)] { ; }
+[ \t] { ; }
+\n { return 0; }
+. { valid = 0; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("Enter an arithmetic expression:\n");
+    yylex();
+    
+    if(valid == 1)
+    {
+        printf("Valid expression\n");
+    }
+    else
+    {
+        printf("Invalid expression\n");
+    }
+    
+    return 0;
+}
+
+/* Compilation & Execution:
+   lex prac9.l
+   gcc lex.yy.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<h2>Practical 10: Recognize Nested IF Statements</h2>
+<p><strong>Aim:</strong> Recognize nested IF control statements and display the level of nesting.</p>
+
+<p><strong>Files Required:</strong></p>
+<ul>
+<li>work.y (YACC file)</li>
+<li>work.l (LEX file)</li>
+</ul>
+
+<h3>YACC File (work.y)</h3>
+<div id="practical10a">%{
+#include<stdio.h>
+int level = 0;
+int max_level = 0;
+%}
+
+%token IF ELSE NUM ID
+
+%%
+stmt: if_stmt { printf("Maximum nesting level: %d\n", max_level); }
+    ;
+
+if_stmt: IF '(' condition ')' 
+         { 
+             level++; 
+             if(level > max_level) 
+                 max_level = level; 
+         }
+         stmt_block 
+         { level--; }
+       | IF '(' condition ')' stmt_block ELSE 
+         { 
+             level++; 
+             if(level > max_level) 
+                 max_level = level; 
+         }
+         stmt_block 
+         { level--; }
+       | other_stmt
+       ;
+
+stmt_block: '{' stmt_list '}'
+          | stmt
+          ;
+
+stmt_list: stmt_list stmt
+         | stmt
+         ;
+
+condition: ID
+         | NUM
+         ;
+
+other_stmt: ID ';'
+          | /* empty */
+          ;
+%%
+
+int yyerror(char *s)
+{
+    printf("Error: %s\n", s);
+    return 0;
+}
+
+int main()
+{
+    printf("Enter nested IF statements:\n");
+    yyparse();
+    return 0;
+}
+</div>
+
+<h3>LEX File (work.l)</h3>
+<div id="practical10b">%{
+#include "y.tab.h"
+%}
+
+%%
+"if"        { return IF; }
+"else"      { return ELSE; }
+[a-zA-Z][a-zA-Z0-9]* { return ID; }
+[0-9]+      { return NUM; }
+[\(\)\{\};] { return yytext[0]; }
+[ \t\n]     { ; }
+.           { ; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+/* Compilation & Execution:
+   yacc -d work.y
+   lex work.l
+   gcc lex.yy.c y.tab.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<h2>Practical 11: Check Expression Syntax</h2>
+<p><strong>Aim:</strong> Check the syntax of simple expression involving the operators +, -, *, /.</p>
+
+<h3>YACC File (prac11.y)</h3>
+<div id="practical11a">%{
+#include<stdio.h>
+#include<stdlib.h>
+%}
+
+%token NUM ID
+
+%%
+expr: expr '+' term { printf("Valid expression\n"); }
+    | expr '-' term { printf("Valid expression\n"); }
+    | term
+    ;
+
+term: term '*' factor { printf("Valid expression\n"); }
+    | term '/' factor { printf("Valid expression\n"); }
+    | factor
+    ;
+
+factor: '(' expr ')'
+      | NUM
+      | ID
+      ;
+%%
+
+int yyerror(char *s)
+{
+    printf("Syntax Error: %s\n", s);
+    exit(0);
+}
+
+int main()
+{
+    printf("Enter an arithmetic expression:\n");
+    yyparse();
+    printf("Expression is syntactically correct\n");
+    return 0;
+}
+</div>
+
+<h3>LEX File (prac11.l)</h3>
+<div id="practical11b">%{
+#include "y.tab.h"
+%}
+
+%%
+[0-9]+      { return NUM; }
+[a-zA-Z][a-zA-Z0-9]* { return ID; }
+[\+\-\*\/\(\)] { return yytext[0]; }
+[ \t\n]     { ; }
+.           { ; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+/* Compilation & Execution:
+   yacc -d prac11.y
+   lex prac11.l
+   gcc lex.yy.c y.tab.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<h2>Practical 12: Recognize Valid Variable</h2>
+<p><strong>Aim:</strong> Recognize a valid variable which starts with a letter, followed by any number of letters or digits.</p>
+
+<h3>YACC File (prac12.y)</h3>
+<div id="practical12a">%{
+#include<stdio.h>
+%}
+
+%token LETTER DIGIT
+
+%%
+variable: LETTER alphanumeric { printf("Valid variable\n"); }
+        ;
+
+alphanumeric: alphanumeric LETTER
+            | alphanumeric DIGIT
+            | /* empty */
+            ;
+%%
+
+int yyerror(char *s)
+{
+    printf("Invalid variable\n");
+    return 0;
+}
+
+int main()
+{
+    printf("Enter a variable name:\n");
+    yyparse();
+    return 0;
+}
+</div>
+
+<h3>LEX File (prac12.l)</h3>
+<div id="practical12b">%{
+#include "y.tab.h"
+%}
+
+%%
+[a-zA-Z]    { return LETTER; }
+[0-9]       { return DIGIT; }
+\n          { return 0; }
+.           { ; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+/* Compilation & Execution:
+   yacc -d prac12.y
+   lex prac12.l
+   gcc lex.yy.c y.tab.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<h2>Practical 13: Evaluate Arithmetic Expression</h2>
+<p><strong>Aim:</strong> Evaluate an arithmetic expression involving operators +, -, *, /.</p>
+
+<h3>YACC File (prac13.y)</h3>
+<div id="practical13a">%{
+#include<stdio.h>
+int result;
+%}
+
+%token NUM
+%left '+' '-'
+%left '*' '/'
+
+%%
+expr: expr '+' expr { $$ = $1 + $3; }
+    | expr '-' expr { $$ = $1 - $3; }
+    | expr '*' expr { $$ = $1 * $3; }
+    | expr '/' expr { $$ = $1 / $3; }
+    | '(' expr ')' { $$ = $2; }
+    | NUM { $$ = $1; }
+    ;
+%%
+
+int yyerror(char *s)
+{
+    printf("Error: %s\n", s);
+    return 0;
+}
+
+int main()
+{
+    printf("Enter an arithmetic expression:\n");
+    yyparse();
+    printf("Result: %d\n", result);
+    return 0;
+}
+</div>
+
+<h3>LEX File (prac13.l)</h3>
+<div id="practical13b">%{
+#include "y.tab.h"
+extern int yylval;
+%}
+
+%%
+[0-9]+      { yylval = atoi(yytext); return NUM; }
+[\+\-\*\/\(\)] { return yytext[0]; }
+[ \t\n]     { ; }
+.           { ; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+/* Compilation & Execution:
+   yacc -d prac13.y
+   lex prac13.l
+   gcc lex.yy.c y.tab.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<h2>Practical 14: Recognize Grammar (aⁿbⁿ, n>=0)</h2>
+<p><strong>Aim:</strong> Recognize strings 'aaab', 'abbb', 'ab' and 'a' using grammar (aⁿbⁿ, n>=0).</p>
+
+<h3>YACC File (prac14.y)</h3>
+<div id="practical14a">%{
+#include<stdio.h>
+%}
+
+%token A B
+
+%%
+S: A S B { printf("Valid string\n"); }
+ | /* empty */ { printf("Valid string\n"); }
+ ;
+%%
+
+int yyerror(char *s)
+{
+    printf("Invalid string\n");
+    return 0;
+}
+
+int main()
+{
+    printf("Enter a string (format: a^n b^n, n>=0):\n");
+    yyparse();
+    return 0;
+}
+</div>
+
+<h3>LEX File (prac14.l)</h3>
+<div id="practical14b">%{
+#include "y.tab.h"
+%}
+
+%%
+"a"     { return A; }
+"b"     { return B; }
+\n      { return 0; }
+.       { ; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+/* Compilation & Execution:
+   yacc -d prac14.y
+   lex prac14.l
+   gcc lex.yy.c y.tab.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<h2>Practical 15: Recognize Grammar (aⁿb, n>=10)</h2>
+<p><strong>Aim:</strong> Recognize the grammar (aⁿb, n>=10).</p>
+
+<h3>YACC File (prac15.y)</h3>
+<div id="practical15a">%{
+#include<stdio.h>
+int count = 0;
+%}
+
+%token A B
+
+%%
+S: A A A A A A A A A A Alist B 
+   { 
+       if(count >= 10) 
+           printf("Valid string\n"); 
+       else 
+           printf("Invalid string\n"); 
+   }
+ ;
+
+Alist: Alist A { count++; }
+     | /* empty */
+     ;
+%%
+
+int yyerror(char *s)
+{
+    printf("Invalid string\n");
+    return 0;
+}
+
+int main()
+{
+    printf("Enter a string (format: a^n b, n>=10):\n");
+    yyparse();
+    return 0;
+}
+</div>
+
+<h3>LEX File (prac15.l)</h3>
+<div id="practical15b">%{
+#include "y.tab.h"
+%}
+
+%%
+"a"     { return A; }
+"b"     { return B; }
+\n      { return 0; }
+.       { ; }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+/* Compilation & Execution:
+   yacc -d prac15.y
+   lex prac15.l
+   gcc lex.yy.c y.tab.c
+   ./a.out
+*/</div>
+
+<hr>
+
+<div id="info">
+<h2>Practical IDs for Scraping</h2>
+<p>Use these IDs to scrape individual practicals:</p>
+<ul>
+<li><strong>practical1</strong> - Count Vowels and Consonants</li>
+<li><strong>practical2</strong> - Count Characters, Words, Spaces, Lines</li>
+<li><strong>practical3</strong> - Count Positive/Negative Integers and Fractions</li>
+<li><strong>practical4</strong> - Count and Remove Comments</li>
+<li><strong>practical5</strong> - Replace scanf/printf</li>
+<li><strong>practical6</strong> - Recognize Arithmetic Expression</li>
+<li><strong>practical7</strong> - Simple or Compound Sentence</li>
+<li><strong>practical8</strong> - Count Identifiers</li>
+<li><strong>practical9</strong> - Validate Expression</li>
+<li><strong>practical10a</strong> - Nested IF (YACC)</li>
+<li><strong>practical10b</strong> - Nested IF (LEX)</li>
+<li><strong>practical11a</strong> - Expression Syntax (YACC)</li>
+<li><strong>practical11b</strong> - Expression Syntax (LEX)</li>
+<li><strong>practical12a</strong> - Valid Variable (YACC)</li>
+<li><strong>practical12b</strong> - Valid Variable (LEX)</li>
+<li><strong>practical13a</strong> - Evaluate Expression (YACC)</li>
+<li><strong>practical13b</strong> - Evaluate Expression (LEX)</li>
+<li><strong>practical14a</strong> - Grammar aⁿbⁿ (YACC)</li>
+<li><strong>practical14b</strong> - Grammar aⁿbⁿ (LEX)</li>
+<li><strong>practical15a</strong> - Grammar aⁿb (YACC)</li>
+<li><strong>practical15b</strong> - Grammar aⁿb (LEX)</li>
+</ul>
+
+<p><strong>Example Python scraping code:</strong></p>
 <pre>
-<span class="cmt">#Import Libraries</span>
-<span class="kw">import</span> pandas <span class="kw">as</span> pd
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+import requests
+from bs4 import BeautifulSoup
 
-train = pd.<span class="fn">read_csv</span>(<span class="str">"./california_housing_data.csv"</span>)
-test  = pd.<span class="fn">read_csv</span>(<span class="str">"./california_housing_data.csv"</span>)
-
-<span class="cmt">#Select appropriate features</span>
-data = train[[<span class="str">'total_rooms'</span>, <span class="str">'total_bedrooms'</span>, <span class="str">'housing_median_age'</span>,
-              <span class="str">'median_income'</span>, <span class="str">'population'</span>, <span class="str">'households'</span>]]
-
-<span class="cmt">#Fill missing values with column mean</span>
-<span class="kw">for</span> col <span class="kw">in</span> data.columns:
-    data[col] = data[col].<span class="fn">fillna</span>(data[col].<span class="fn">mean</span>())
-
-y = train[<span class="str">'median_house_value'</span>].values
-data[<span class="str">'longitude'</span>] = train[<span class="str">'longitude'</span>]   <span class="cmt"># dropped later</span>
-data[<span class="str">'latitude'</span>]  = train[<span class="str">'latitude'</span>]
-data.<span class="fn">drop</span>([<span class="str">'longitude'</span>, <span class="str">'latitude'</span>], axis=<span class="num">1</span>, inplace=<span class="kw">True</span>)
-
-<span class="cmt">#Visualize the data</span>
-plt.<span class="fn">figure</span>()
-sns.<span class="fn">heatmap</span>(data.<span class="fn">corr</span>(), cmap=<span class="str">'coolwarm'</span>)
-plt.<span class="fn">show</span>()
-
-sns.<span class="fn">lmplot</span>(x=<span class="str">'median_income'</span>, y=<span class="str">'median_house_value'</span>, data=train)
-sns.<span class="fn">lmplot</span>(x=<span class="str">'housing_median_age'</span>, y=<span class="str">'median_house_value'</span>, data=train)
-
-<span class="cmt">#Fitting the Model</span>
-<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
-<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> <span class="cls">StandardScaler</span>
-<span class="kw">from</span> sklearn.svm <span class="kw">import</span> <span class="cls">SVR</span>
-
-X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(data, y, test_size=<span class="num">0.2</span>)
-
-sc_X = <span class="cls">StandardScaler</span>()
-sc_y = <span class="cls">StandardScaler</span>()
-X_train = sc_X.<span class="fn">fit_transform</span>(X_train)
-X_test  = sc_X.<span class="fn">fit_transform</span>(X_test)
-y_train = sc_y.<span class="fn">fit_transform</span>(y_train.<span class="fn">reshape</span>(<span class="num">-1</span>, <span class="num">1</span>))
-y_test  = sc_y.<span class="fn">fit_transform</span>(y_test.<span class="fn">reshape</span>(<span class="num">-1</span>, <span class="num">1</span>))
-
-regressor = <span class="cls">SVR</span>(kernel=<span class="str">'rbf'</span>)
-regressor.<span class="fn">fit</span>(X_train, y_train)
-
-y_pred = regressor.<span class="fn">predict</span>(X_test)
-y_pred = y_pred.<span class="fn">reshape</span>(<span class="num">1</span>, <span class="num">-1</span>)
-y_pred = sc_y.<span class="fn">inverse_transform</span>(y_pred)
-<span class="fn">print</span>(y_pred)
+response = requests.get('YOUR_URL')
+code = BeautifulSoup(response.text, 'html.parser').find('div', id='practical1').text
+print(code)
 </pre>
-    </div>
-  </div>
+</div>
 
-  <!-- ══════════════════════════════════
-       PRACTICAL 7  –  id: practical-7
-  ══════════════════════════════════ -->
-  <div id="practical-7" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-07</span>
-      <h2>Batch Gradient Descent with Early Stopping – Softmax Regression</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        Softmax Regression trained using Batch Gradient Descent updates model parameters by computing the gradient of the loss function using the entire training dataset in each iteration. During training, early stopping is used to prevent overfitting by monitoring the validation error. If the validation error stops improving for several iterations, the training process is stopped. This helps the model generalize better while reducing unnecessary computations.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
+<hr>
+
+<h2>Important LEX & YACC Commands</h2>
+
+<h3>LEX Compilation</h3>
 <pre>
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">import</span> scipy <span class="kw">as</span> sp
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-<span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_iris
-
-iris = <span class="fn">load_iris</span>()
-x = iris[<span class="str">'data'</span>]
-y = iris[<span class="str">'target'</span>]
-
-<span class="cmt"># Add a bias term (column of 1s) to the feature matrix</span>
-x_with_bias = np.c_[np.<span class="fn">ones</span>((<span class="fn">len</span>(x), <span class="num">1</span>)), x]
-
-np.random.<span class="fn">seed</span>(<span class="num">1234</span>)
-
-test_ratio       = <span class="num">0.2</span>
-validation_ratio = <span class="num">0.2</span>
-total_size       = <span class="fn">len</span>(x_with_bias)
-
-test_size       = <span class="fn">int</span>(total_size * test_ratio)
-validation_size = <span class="fn">int</span>(total_size * validation_ratio)
-train_size      = total_size - test_size - validation_size
-
-rnd_indices = np.random.<span class="fn">permutation</span>(total_size)
-
-x_train = x_with_bias[rnd_indices[:train_size]]
-y_train = y[rnd_indices[:train_size]]
-x_valid = x_with_bias[rnd_indices[train_size:-test_size]]
-y_valid = y[rnd_indices[train_size:-test_size]]
-x_test  = x_with_bias[rnd_indices[-test_size:]]
-y_test  = y[rnd_indices[-test_size:]]
-
-<span class="kw">def</span> <span class="fn">one_hot</span>(y):
-    n_classes = y.<span class="fn">max</span>() + <span class="num">1</span>
-    m = <span class="fn">len</span>(y)
-    y_one_hot = np.<span class="fn">zeros</span>((m, n_classes))
-    y_one_hot[np.<span class="fn">arange</span>(m), y] = <span class="num">1</span>
-    <span class="kw">return</span> y_one_hot
-
-y_train_prob = <span class="fn">one_hot</span>(y_train)
-y_valid_prob = <span class="fn">one_hot</span>(y_valid)
-y_test_prob  = <span class="fn">one_hot</span>(y_test)
-
-<span class="kw">def</span> <span class="fn">softmax</span>(sk_x):
-    top    = np.<span class="fn">exp</span>(sk_x)
-    bottom = np.<span class="fn">sum</span>(top, axis=<span class="num">1</span>, keepdims=<span class="kw">True</span>)
-    <span class="kw">return</span> top / bottom
-
-n_inputs  = x_train.shape[<span class="num">1</span>]  <span class="cmt"># 5 (4 features + bias)</span>
-n_outputs = <span class="fn">len</span>(np.<span class="fn">unique</span>(y_train))  <span class="cmt"># 3 (Iris classes)</span>
-
-eta          = <span class="num">0.01</span>
-n_iterations = <span class="num">5001</span>
-m            = <span class="fn">len</span>(x_train)
-epsilon      = <span class="num">1e-7</span>
-best_loss    = np.infty
-Theta        = np.random.<span class="fn">randn</span>(n_inputs, n_outputs)
-
-<span class="kw">for</span> iteration <span class="kw">in</span> <span class="fn">range</span>(n_iterations):
-    logits      = x_train.dot(Theta)
-    Y_proba     = <span class="fn">softmax</span>(logits)
-    xentropy    = -np.<span class="fn">mean</span>(np.<span class="fn">sum</span>(y_train_prob * np.<span class="fn">log</span>(Y_proba + epsilon), axis=<span class="num">1</span>))
-    gradients   = (<span class="num">1</span> / m) * x_train.T.dot(Y_proba - y_train_prob)
-    Theta      -= eta * gradients
-
-    logits_val  = x_valid.dot(Theta)
-    Y_proba_val = <span class="fn">softmax</span>(logits_val)
-    val_loss    = -np.<span class="fn">mean</span>(np.<span class="fn">sum</span>(y_valid_prob * np.<span class="fn">log</span>(Y_proba_val + epsilon), axis=<span class="num">1</span>))
-
-    <span class="kw">if</span> iteration % <span class="num">500</span> == <span class="num">0</span>:
-        <span class="fn">print</span>(iteration, xentropy, val_loss)
-
-    <span class="kw">if</span> val_loss &lt; best_loss:
-        best_loss  = val_loss
-        best_Theta = Theta.<span class="fn">copy</span>()
-
-logits_test  = x_test.dot(best_Theta)
-Y_proba_test = <span class="fn">softmax</span>(logits_test)
-y_predict    = np.<span class="fn">argmax</span>(Y_proba_test, axis=<span class="num">1</span>)
-accuracy     = np.<span class="fn">mean</span>(y_predict == y_test)
-<span class="fn">print</span>(<span class="str">"Test Accuracy:"</span>, accuracy)
+lex filename.l          # Generate lex.yy.c
+gcc lex.yy.c            # Compile
+./a.out                 # Execute
 </pre>
-    </div>
-  </div>
 
-  <!-- ══════════════════════════════════
-       PRACTICAL 8  –  id: practical-8
-  ══════════════════════════════════ -->
-  <div id="practical-8" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-08</span>
-      <h2>MLP – MNIST Handwritten Digits Classification</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        A Multilayer Perceptron (MLP) is a type of Artificial Neural Network used for classification tasks. In the MNIST Dataset, an MLP is trained to recognize handwritten digits from 0 to 9. The network consists of an input layer, one or more hidden layers, and an output layer. Each pixel of the digit image is used as an input feature, and the model learns patterns in the data to correctly classify the handwritten digits.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
+<h3>YACC Compilation</h3>
 <pre>
-<span class="cmt"># Import libraries</span>
-<span class="kw">import</span> tensorflow <span class="kw">as</span> tf
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-<span class="kw">from</span> tensorflow.keras.datasets <span class="kw">import</span> mnist
-<span class="kw">from</span> tensorflow.keras.models <span class="kw">import</span> <span class="cls">Sequential</span>
-<span class="kw">from</span> tensorflow.keras.layers <span class="kw">import</span> <span class="cls">Dense</span>, <span class="cls">Flatten</span>
-<span class="kw">from</span> PIL <span class="kw">import</span> Image
-
-<span class="cmt"># Load dataset</span>
-(train_img, train_lab), (test_img, test_lab) = mnist.<span class="fn">load_data</span>()
-
-<span class="cmt"># Show sample images</span>
-plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">4</span>))
-<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
-    plt.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">5</span>, i+<span class="num">1</span>)
-    plt.<span class="fn">imshow</span>(train_img[i], cmap=<span class="str">'gray'</span>)
-    plt.<span class="fn">title</span>(f<span class="str">"Digit: {train_lab[i]}"</span>)
-    plt.<span class="fn">axis</span>(<span class="str">'off'</span>)
-plt.<span class="fn">show</span>()
-
-<span class="cmt"># Normalize data</span>
-train_img = train_img / <span class="num">255.0</span>
-test_img  = test_img  / <span class="num">255.0</span>
-
-<span class="cmt"># Build model</span>
-model = <span class="cls">Sequential</span>()
-model.<span class="fn">add</span>(<span class="cls">Flatten</span>(input_shape=(<span class="num">28</span>, <span class="num">28</span>)))
-model.<span class="fn">add</span>(<span class="cls">Dense</span>(<span class="num">512</span>, activation=<span class="str">'relu'</span>))
-model.<span class="fn">add</span>(<span class="cls">Dense</span>(<span class="num">512</span>, activation=<span class="str">'relu'</span>))
-model.<span class="fn">add</span>(<span class="cls">Dense</span>(<span class="num">10</span>,  activation=<span class="str">'softmax'</span>))
-
-<span class="cmt"># Compile model</span>
-model.<span class="fn">compile</span>(optimizer=<span class="str">'adam'</span>,
-              loss=<span class="str">'sparse_categorical_crossentropy'</span>,
-              metrics=[<span class="str">'accuracy'</span>])
-
-<span class="cmt"># Train model</span>
-history = model.<span class="fn">fit</span>(train_img, train_lab, epochs=<span class="num">5</span>, validation_split=<span class="num">0.1</span>)
-
-<span class="cmt"># Save model</span>
-model.<span class="fn">save</span>(<span class="str">"project.h5"</span>)
-
-<span class="cmt"># Evaluate model</span>
-loss, acc = model.<span class="fn">evaluate</span>(test_img, test_lab)
-<span class="fn">print</span>(<span class="str">"Test Accuracy:"</span>, acc)
-
-<span class="cmt"># Predict on test data</span>
-predictions      = model.<span class="fn">predict</span>(test_img)
-predicted_labels = np.<span class="fn">argmax</span>(predictions, axis=<span class="num">1</span>)
-
-<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
-    <span class="fn">print</span>(<span class="str">"Actual:"</span>, test_lab[i], <span class="str">" Predicted:"</span>, predicted_labels[i])
-
-<span class="cmt"># Visualize predictions</span>
-<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
-    plt.<span class="fn">imshow</span>(test_img[i], cmap=<span class="str">'gray'</span>)
-    plt.<span class="fn">title</span>(f<span class="str">"Actual: {test_lab[i]} | Predicted: {predicted_labels[i]}"</span>)
-    plt.<span class="fn">axis</span>(<span class="str">'off'</span>)
-    plt.<span class="fn">show</span>()
-
-<span class="kw">def</span> <span class="fn">load_image</span>(path):
-    img = Image.<span class="fn">open</span>(path).<span class="fn">convert</span>(<span class="str">'L'</span>)
-    img = img.<span class="fn">resize</span>((<span class="num">28</span>, <span class="num">28</span>))
-    img = np.<span class="fn">array</span>(img)
-    img = img / <span class="num">255.0</span>
-    img = img.<span class="fn">reshape</span>(<span class="num">1</span>, <span class="num">28</span>, <span class="num">28</span>)
-    <span class="kw">return</span> img
+yacc -d filename.y      # Generate y.tab.c and y.tab.h
+lex filename.l          # Generate lex.yy.c
+gcc lex.yy.c y.tab.c    # Compile both files
+./a.out                 # Execute
 </pre>
-    </div>
-  </div>
 
-  <!-- ══════════════════════════════════
-       PRACTICAL 9  –  id: practical-9
-  ══════════════════════════════════ -->
-  <div id="practical-9" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-09</span>
-      <h2>Customer Segmentation – Unsupervised Learning (K-Means)</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        Customer segmentation using Unsupervised Learning is a technique used to divide customers into different groups based on similar characteristics such as purchasing behavior, preferences, or demographics. Since the data has no labeled output, algorithms like K-Means Clustering are used to automatically find patterns and form clusters of similar customers. This helps businesses understand customer behavior and create targeted marketing strategies for different customer groups.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
+<h3>LEX Regular Expressions</h3>
 <pre>
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">import</span> pandas <span class="kw">as</span> pd
-<span class="kw">import</span> warnings
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-<span class="kw">import</span> seaborn <span class="kw">as</span> sns
-<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> <span class="cls">StandardScaler</span>
-<span class="kw">from</span> sklearn.decomposition <span class="kw">import</span> <span class="cls">PCA</span>
-<span class="kw">from</span> sklearn.cluster <span class="kw">import</span> <span class="cls">KMeans</span>
-<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> adjusted_rand_score
-
-warnings.<span class="fn">filterwarnings</span>(<span class="str">"ignore"</span>)
-pd.<span class="fn">set_option</span>(<span class="str">'display.max_columns'</span>, <span class="num">100</span>)
-
-df = pd.<span class="fn">read_csv</span>(<span class="str">'int_online_tx.csv'</span>)
-df = df[df.CustomerID.<span class="fn">notnull</span>()]
-df[<span class="str">'CustomerID'</span>] = df.CustomerID.<span class="fn">astype</span>(<span class="fn">int</span>)
-df[<span class="str">'Sales'</span>] = df.Quantity * df.UnitPrice
-
-invoice_data = df.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>)[<span class="str">'InvoiceNo'</span>].<span class="fn">agg</span>(total_transactions=<span class="str">'nunique'</span>)
-product_data = df.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>)[<span class="str">'StockCode'</span>].<span class="fn">agg</span>(
-    total_products=<span class="str">'count'</span>, total_unique_products=<span class="str">'nunique'</span>)
-sales_data    = df.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>)[<span class="str">'Sales'</span>].<span class="fn">agg</span>(total_sales=<span class="str">'sum'</span>, avg_product_value=<span class="str">'mean'</span>)
-cart_data     = df.<span class="fn">groupby</span>([<span class="str">'CustomerID'</span>, <span class="str">'InvoiceNo'</span>])[<span class="str">'Sales'</span>].<span class="fn">agg</span>(cart_value=<span class="str">'sum'</span>)
-cart_data.<span class="fn">reset_index</span>(inplace=<span class="kw">True</span>)
-agg_cart_data = cart_data.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>)[<span class="str">'cart_value'</span>].<span class="fn">agg</span>(
-    avg_cart_value=<span class="str">'mean'</span>, min_cart_value=<span class="str">'min'</span>, max_cart_value=<span class="str">'max'</span>)
-
-customer_df = invoice_data.<span class="fn">join</span>([product_data, sales_data, agg_cart_data])
-
-<span class="cmt">#Item one-hot encoding (StockCode vector)</span>
-item_dummies = pd.<span class="fn">get_dummies</span>(df.StockCode)
-item_dummies[<span class="str">'CustomerID'</span>] = df.CustomerID
-item_data = item_dummies.<span class="fn">groupby</span>(<span class="str">'CustomerID'</span>).<span class="fn">sum</span>()
-
-<span class="cmt">#PCA for dimensionality reduction</span>
-scaler = <span class="cls">StandardScaler</span>()
-item_data_scaled = scaler.<span class="fn">fit_transform</span>(item_data)
-pca = <span class="cls">PCA</span>()
-pca.<span class="fn">fit</span>(item_data_scaled)
-cumulative_explained_variance = np.<span class="fn">cumsum</span>(pca.explained_variance_ratio_)
-
-pca = <span class="cls">PCA</span>(n_components=<span class="num">300</span>)
-PC_items = pca.<span class="fn">fit_transform</span>(item_data_scaled)
-
-<span class="cmt">#K-Means Clustering</span>
-base_df   = pd.<span class="fn">read_csv</span>(<span class="str">'Files/analytical_base_table.csv'</span>, index_col=<span class="num">0</span>)
-pca_df    = base_df.<span class="fn">join</span>(pd.<span class="fn">read_csv</span>(<span class="str">'Files/pca_item_data.csv'</span>, index_col=<span class="num">0</span>))
-p_scaler  = <span class="cls">StandardScaler</span>()
-pca_df_scaled = p_scaler.<span class="fn">fit_transform</span>(pca_df)
-
-p_kmeans  = <span class="cls">KMeans</span>(n_clusters=<span class="num">3</span>, init=<span class="str">'k-means++'</span>, random_state=<span class="num">123</span>)
-p_kmeans.<span class="fn">fit</span>(pca_df_scaled)
-pca_df[<span class="str">'cluster'</span>] = p_kmeans.<span class="fn">fit_predict</span>(pca_df_scaled)
-
-sns.<span class="fn">lmplot</span>(x=<span class="str">'total_sales'</span>, y=<span class="str">'avg_cart_value'</span>,
-           hue=<span class="str">'cluster'</span>, data=pca_df, fit_reg=<span class="kw">False</span>)
-plt.<span class="fn">show</span>()
-
-<span class="fn">print</span>(<span class="fn">adjusted_rand_score</span>(pca_df.cluster, pca_df.cluster))
+[a-z]       Match any lowercase letter
+[A-Z]       Match any uppercase letter
+[0-9]       Match any digit
+[a-zA-Z]    Match any letter
+.           Match any character except newline
+*           Match 0 or more occurrences
++           Match 1 or more occurrences
+?           Match 0 or 1 occurrence
+^           Beginning of line
+$           End of line
 </pre>
-    </div>
-  </div>
 
-  <!-- ══════════════════════════════════
-       PRACTICAL 10  –  id: practical-10
-  ══════════════════════════════════ -->
-  <div id="practical-10" class="practical">
-    <div class="practical-header">
-      <span class="prac-num">P-10</span>
-      <h2>Association Rules – Frequent Itemsets (Apriori)</h2>
-    </div>
-    <div class="practical-body">
-      <p class="section-label">Theory</p>
-      <p class="theory">
-        Association Rule Learning generates rules from Frequent Itemsets to find relationships between items in a dataset. The rules are evaluated using two key metrics — <strong>Support</strong>: the frequency of the itemset in the dataset, and <strong>Confidence</strong>: the likelihood that item B is purchased when item A is purchased. The Apriori algorithm is used to mine frequent itemsets efficiently.
-      </p>
-      <hr class="divider"/>
-      <p class="section-label">Code</p>
+<h3>YACC Grammar Notation</h3>
 <pre>
-<span class="kw">import</span> pandas <span class="kw">as</span> pd
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">from</span> mlxtend.frequent_patterns <span class="kw">import</span> apriori, association_rules
-<span class="kw">from</span> mlxtend.preprocessing <span class="kw">import</span> <span class="cls">TransactionEncoder</span>
-
-<span class="cmt"># Read dataset</span>
-df = pd.<span class="fn">read_csv</span>(<span class="str">'/content/Groceries_dataset.csv'</span>, names=[<span class="str">'itemDescription'</span>], sep=<span class="str">','</span>)
-<span class="fn">print</span>(df.<span class="fn">head</span>())
-<span class="fn">print</span>(df.shape)
-
-<span class="cmt"># Group transactions by Member + Date, collect items as lists</span>
-data = pd.<span class="fn">read_csv</span>(<span class="str">'Groceries_dataset.csv'</span>).<span class="fn">groupby</span>(
-    [<span class="str">'Member_number'</span>, <span class="str">'Date'</span>])[<span class="str">'itemDescription'</span>].<span class="fn">apply</span>(<span class="fn">list</span>)
-
-<span class="cmt"># TransactionEncoder → boolean DataFrame</span>
-te = <span class="cls">TransactionEncoder</span>()
-df_encoded = pd.<span class="fn">DataFrame</span>(te.<span class="fn">fit_transform</span>(data), columns=te.columns_)
-
-<span class="cmt"># Run Apriori</span>
-frequent_itemsets = <span class="fn">apriori</span>(df_encoded, min_support=<span class="num">0.01</span>, use_colnames=<span class="kw">True</span>)
-<span class="fn">print</span>(frequent_itemsets)
-
-<span class="cmt"># Generate association rules</span>
-rules = <span class="fn">association_rules</span>(frequent_itemsets, metric=<span class="str">"confidence"</span>, min_threshold=<span class="num">0.1</span>)
-<span class="fn">print</span>(rules[[<span class="str">'antecedents'</span>, <span class="str">'consequents'</span>, <span class="str">'support'</span>, <span class="str">'confidence'</span>, <span class="str">'lift'</span>]])
-
-<span class="cmt"># Sort by confidence descending</span>
-rules_sorted = rules.<span class="fn">sort_values</span>(by=<span class="str">'confidence'</span>, ascending=<span class="kw">False</span>)
-<span class="fn">print</span>(rules_sorted.<span class="fn">head</span>(<span class="num">10</span>))
+%token      Define tokens
+%left       Left associative operators
+%right      Right associative operators
+%%          Grammar rules section
+$$          Semantic value of LHS
+$1, $2      Semantic values of RHS symbols
 </pre>
-    </div>
-  </div>
 
-</div><!-- end practical-wrapper -->
+<hr>
+
+<p style="text-align: center;">
+<strong>Compiler Design Practicals</strong><br>
+Complete LEX and YACC Programming Guide<br>
+MSc CS Part 1 - All 15 Practicals Included
+</p>
 
 </body>
 </html>
