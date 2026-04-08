@@ -1,1002 +1,671 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Compiler Design Practicals</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IoT Practical Journal</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 960px; margin: 0 auto; padding: 20px; background: #f9f9f9; color: #222; }
+    h1 { text-align: center; }
+    #info { background: #eef4ff; border: 1px solid #aac; border-radius: 8px; padding: 16px; margin-bottom: 30px; }
+    #info h2 { margin-top: 0; }
+    #info table { border-collapse: collapse; width: 100%; }
+    #info th, #info td { border: 1px solid #aac; padding: 8px 12px; text-align: left; }
+    #info th { background: #cde; }
+    .practical { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 24px; margin-bottom: 30px; }
+    .practical h2 { color: #1a4a8a; border-bottom: 2px solid #1a4a8a; padding-bottom: 6px; }
+    .practical h3 { color: #2a6aaa; }
+    .practical h4, .practical h5 { color: #444; }
+    pre { background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; padding: 12px; overflow-x: auto; font-size: 0.88em; white-space: pre-wrap; }
+    .step { margin: 8px 0; padding: 6px 10px; background: #fafafa; border-left: 3px solid #1a4a8a; }
+    ul { margin: 8px 0; padding-left: 24px; }
+    .tag { display: inline-block; background: #1a4a8a; color: #fff; border-radius: 4px; padding: 2px 8px; font-size: 0.8em; margin-left: 8px; vertical-align: middle; }
+    .subpractical { border-top: 1px dashed #ccc; margin-top: 20px; padding-top: 16px; }
+  </style>
 </head>
 <body>
 
-<h1>Compiler Design Practicals</h1>
-<h3>LEX & YACC Programming Lab Manual</h3>
-<p><strong>Submitted by:</strong> Darshan Jadhav | <strong>Roll No:</strong> MCS.25.06</p>
-<p><strong>Course:</strong> MSc CS Part 1 | <strong>Academic Year:</strong> 2025-2026</p>
-<p><strong>Guide:</strong> Prof. Aditya Jinturkar</p>
+<h1>IoT Practical Journal</h1>
 
-<hr>
-
-<h2>Setup Instructions</h2>
-<p><strong>Software Required:</strong> EditPlus Portable (or any text editor with LEX/YACC support)</p>
-<ol>
-<li>Open EditPlus → File → New → Configure Terminal → Select LEX/YACC</li>
-<li>Save files with appropriate extensions (.l for LEX, .y for YACC)</li>
-<li>Compile using Tools → CMD</li>
-</ol>
-
-<hr>
-
-<h2>Practical 1: Count Vowels and Consonants</h2>
-<p><strong>Aim:</strong> Write a LEX program to count the number of vowels and consonants in a given string.</p>
-
-<div id="practical1">%{
-#include<stdio.h>
-int vowel_count = 0;
-int consonant_count = 0;
-%}
-
-%%
-[aeiouAEIOU] { vowel_count++; }
-[a-zA-Z] { consonant_count++; }
-. { ; }
-\n { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{
-    printf("Enter a string: ");
-    yylex();
-    printf("Number of vowels: %d\n", vowel_count);
-    printf("Number of consonants: %d\n", consonant_count);
-    return 0;
-}
-
-/* Compilation & Execution:
-   lex filename.l
-   gcc lex.yy.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 2: Count Characters, Words, Spaces, Lines</h2>
-<p><strong>Aim:</strong> Program to calculate the number of characters, words, spaces, and end of lines in a given input file.</p>
-
-<p><strong>Steps:</strong></p>
-<ol>
-<li>Save LEX program as prac2.l</li>
-<li>Create input file sample.txt with test data</li>
-<li>Compile and run</li>
-</ol>
-
-<div id="practical2">%{
-#include<stdio.h>
-int char_count = 0;
-int word_count = 0;
-int space_count = 0;
-int line_count = 0;
-%}
-
-%%
-[^ \t\n]+ { word_count++; char_count += yyleng; }
-[ ] { space_count++; }
-\t { space_count++; }
-\n { line_count++; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main(int argc, char *argv[])
-{
-    if(argc != 2)
-    {
-        printf("Usage: ./a.out <filename>\n");
-        return 1;
-    }
-    
-    yyin = fopen(argv[1], "r");
-    if(!yyin)
-    {
-        printf("Error opening file\n");
-        return 1;
-    }
-    
-    yylex();
-    
-    printf("Number of characters: %d\n", char_count);
-    printf("Number of words: %d\n", word_count);
-    printf("Number of spaces: %d\n", space_count);
-    printf("Number of lines: %d\n", line_count);
-    
-    fclose(yyin);
-    return 0;
-}
-
-/* Compilation & Execution:
-   lex prac2.l
-   gcc lex.yy.c
-   ./a.out sample.txt
-*/</div>
-
-<hr>
-
-<h2>Practical 3: Count Positive/Negative Integers and Fractions</h2>
-<p><strong>Aim:</strong> Count the number of positive and negative integers and fractions.</p>
-
-<div id="practical3">%{
-#include<stdio.h>
-int positive_int = 0;
-int negative_int = 0;
-int positive_frac = 0;
-int negative_frac = 0;
-%}
-
-%%
-\+?[0-9]+ { positive_int++; printf("Positive Integer: %s\n", yytext); }
--[0-9]+ { negative_int++; printf("Negative Integer: %s\n", yytext); }
-\+?[0-9]+\.[0-9]+ { positive_frac++; printf("Positive Fraction: %s\n", yytext); }
--[0-9]+\.[0-9]+ { negative_frac++; printf("Negative Fraction: %s\n", yytext); }
-. { ; }
-\n { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{
-    printf("Enter numbers (press Ctrl+D to end):\n");
-    yylex();
-    printf("\nPositive Integers: %d\n", positive_int);
-    printf("Negative Integers: %d\n", negative_int);
-    printf("Positive Fractions: %d\n", positive_frac);
-    printf("Negative Fractions: %d\n", negative_frac);
-    return 0;
-}
-
-/* Compilation & Execution:
-   lex prac3.l
-   gcc lex.yy.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 4: Count and Remove Comments from C Program</h2>
-<p><strong>Aim:</strong> Count the number of comment lines in a C program, eliminate them, and copy the program to a separate file.</p>
-
-<p><strong>Steps:</strong></p>
-<ol>
-<li>Save LEX program as prac4.l</li>
-<li>Create input C file: comment.c</li>
-<li>Output will be saved to output.c</li>
-</ol>
-
-<div id="practical4">%{
-#include<stdio.h>
-int comment_count = 0;
-FILE *output_file;
-%}
-
-%%
-"//".*  { comment_count++; }
-"/*"([^*]|\*+[^*/])*\*+"/" { comment_count++; }
-.       { fprintf(output_file, "%s", yytext); }
-\n      { fprintf(output_file, "\n"); }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main(int argc, char *argv[])
-{
-    if(argc != 2)
-    {
-        printf("Usage: ./a.out <source.c>\n");
-        return 1;
-    }
-    
-    yyin = fopen(argv[1], "r");
-    if(!yyin)
-    {
-        printf("Error opening input file\n");
-        return 1;
-    }
-    
-    output_file = fopen("output.c", "w");
-    if(!output_file)
-    {
-        printf("Error creating output file\n");
-        return 1;
-    }
-    
-    yylex();
-    
-    printf("Number of comment lines: %d\n", comment_count);
-    printf("Program without comments saved to output.c\n");
-    
-    fclose(yyin);
-    fclose(output_file);
-    return 0;
-}
-
-/* Compilation & Execution:
-   lex prac4.l
-   gcc lex.yy.c
-   ./a.out comment.c
-*/</div>
-
-<hr>
-
-<h2>Practical 5: Replace scanf/printf with readf/writef</h2>
-<p><strong>Aim:</strong> Count the number of 'scanf' and 'printf' statements in a C program and replace them with 'readf' and 'writef' respectively.</p>
-
-<div id="practical5">%{
-#include<stdio.h>
-int scanf_count = 0;
-int printf_count = 0;
-FILE *output_file;
-%}
-
-%%
-"scanf"  { scanf_count++; fprintf(output_file, "readf"); }
-"printf" { printf_count++; fprintf(output_file, "writef"); }
-.        { fprintf(output_file, "%s", yytext); }
-\n       { fprintf(output_file, "\n"); }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main(int argc, char *argv[])
-{
-    if(argc != 2)
-    {
-        printf("Usage: ./a.out <source.c>\n");
-        return 1;
-    }
-    
-    yyin = fopen(argv[1], "r");
-    if(!yyin)
-    {
-        printf("Error opening input file\n");
-        return 1;
-    }
-    
-    output_file = fopen("modified.c", "w");
-    if(!output_file)
-    {
-        printf("Error creating output file\n");
-        return 1;
-    }
-    
-    yylex();
-    
-    printf("Number of scanf statements: %d\n", scanf_count);
-    printf("Number of printf statements: %d\n", printf_count);
-    printf("Modified program saved to modified.c\n");
-    
-    fclose(yyin);
-    fclose(output_file);
-    return 0;
-}
-
-/* Compilation & Execution:
-   lex prac5.l
-   gcc lex.yy.c
-   ./a.out arithmetic.c
-*/</div>
-
-<hr>
-
-<h2>Practical 6: Recognize Arithmetic Expression</h2>
-<p><strong>Aim:</strong> Recognize a valid arithmetic expression and identify the identifiers and operators present.</p>
-
-<div id="practical6">%{
-#include<stdio.h>
-%}
-
-%%
-[a-zA-Z][a-zA-Z0-9]* { printf("Identifier: %s\n", yytext); }
-[0-9]+ { printf("Number: %s\n", yytext); }
-\+ { printf("Operator: +\n"); }
-- { printf("Operator: -\n"); }
-\* { printf("Operator: *\n"); }
-\/ { printf("Operator: /\n"); }
-= { printf("Operator: =\n"); }
-\( { printf("Left Parenthesis\n"); }
-\) { printf("Right Parenthesis\n"); }
-; { printf("Semicolon\n"); }
-[ \t\n] { ; }
-. { printf("Invalid character: %s\n", yytext); }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{
-    printf("Enter an arithmetic expression:\n");
-    yylex();
-    return 0;
-}
-
-/* Compilation & Execution:
-   lex prac6.l
-   gcc lex.yy.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 7: Recognize Simple or Compound Sentence</h2>
-<p><strong>Aim:</strong> Recognize whether a given sentence is simple or compound.</p>
-
-<div id="practical7">%{
-#include<stdio.h>
-int is_simple = 1;
-%}
-
-%%
-[ \t\n]+[aA][nN][dD][ \t\n]+ { is_simple = 0; }
-[ \t\n]+[oO][rR][ \t\n]+ { is_simple = 0; }
-[ \t\n]+[bB][uU][tT][ \t\n]+ { is_simple = 0; }
-. { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{
-    printf("Enter the sentence (press Ctrl+D to end):\n");
-    yylex();
-    
-    if(is_simple == 1)
-    {
-        printf("The given sentence is SIMPLE\n");
-    }
-    else
-    {
-        printf("The given sentence is COMPOUND\n");
-    }
-    
-    return 0;
-}
-
-/* Compilation & Execution:
-   lex prac7.l
-   gcc lex.yy.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 8: Count Identifiers in File</h2>
-<p><strong>Aim:</strong> Recognize and count the number of identifiers in a given input file.</p>
-
-<p><strong>Steps:</strong></p>
-<ol>
-<li>Save LEX program as prac8.l</li>
-<li>Create input file identifier.txt with sample code</li>
-</ol>
-
-<div id="practical8">%{
-#include<stdio.h>
-int id = 0;
-%}
-
-%%
-[a-zA-Z][a-zA-Z0-9_]* { id++; ECHO; printf("\n"); }
-.+ { ; }
-\n { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main(int argc, char *argv[])
-{
-    if(argc != 2)
-    {
-        printf("Usage: ./a.out <sourcefile>\n");
-        exit(0);
-    }
-    
-    yyin = fopen(argv[1], "r");
-    if(!yyin)
-    {
-        printf("Error opening file\n");
-        exit(0);
-    }
-    
-    printf("Valid identifiers are:\n");
-    yylex();
-    printf("\nNumber of identifiers = %d\n", id);
-    
-    fclose(yyin);
-    return 0;
-}
-
-/* Compilation & Execution:
-   lex prac8.l
-   gcc lex.yy.c
-   ./a.out identifier.txt
-*/</div>
-
-<hr>
-
-<h2>Practical 9: Validate Simple Expression</h2>
-<p><strong>Aim:</strong> Test the validity of a simple expression involving operators +, -, *, /.</p>
-
-<div id="practical9">%{
-#include<stdio.h>
-int valid = 1;
-%}
-
-%%
-[a-zA-Z][a-zA-Z0-9]* { ; }
-[0-9]+ { ; }
-[\+\-\*\/] { ; }
-[\(\)] { ; }
-[ \t] { ; }
-\n { return 0; }
-. { valid = 0; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{
-    printf("Enter an arithmetic expression:\n");
-    yylex();
-    
-    if(valid == 1)
-    {
-        printf("Valid expression\n");
-    }
-    else
-    {
-        printf("Invalid expression\n");
-    }
-    
-    return 0;
-}
-
-/* Compilation & Execution:
-   lex prac9.l
-   gcc lex.yy.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 10: Recognize Nested IF Statements</h2>
-<p><strong>Aim:</strong> Recognize nested IF control statements and display the level of nesting.</p>
-
-<p><strong>Files Required:</strong></p>
-<ul>
-<li>work.y (YACC file)</li>
-<li>work.l (LEX file)</li>
-</ul>
-
-<h3>YACC File (work.y)</h3>
-<div id="practical10a">%{
-#include<stdio.h>
-int level = 0;
-int max_level = 0;
-%}
-
-%token IF ELSE NUM ID
-
-%%
-stmt: if_stmt { printf("Maximum nesting level: %d\n", max_level); }
-    ;
-
-if_stmt: IF '(' condition ')' 
-         { 
-             level++; 
-             if(level > max_level) 
-                 max_level = level; 
-         }
-         stmt_block 
-         { level--; }
-       | IF '(' condition ')' stmt_block ELSE 
-         { 
-             level++; 
-             if(level > max_level) 
-                 max_level = level; 
-         }
-         stmt_block 
-         { level--; }
-       | other_stmt
-       ;
-
-stmt_block: '{' stmt_list '}'
-          | stmt
-          ;
-
-stmt_list: stmt_list stmt
-         | stmt
-         ;
-
-condition: ID
-         | NUM
-         ;
-
-other_stmt: ID ';'
-          | /* empty */
-          ;
-%%
-
-int yyerror(char *s)
-{
-    printf("Error: %s\n", s);
-    return 0;
-}
-
-int main()
-{
-    printf("Enter nested IF statements:\n");
-    yyparse();
-    return 0;
-}
-</div>
-
-<h3>LEX File (work.l)</h3>
-<div id="practical10b">%{
-#include "y.tab.h"
-%}
-
-%%
-"if"        { return IF; }
-"else"      { return ELSE; }
-[a-zA-Z][a-zA-Z0-9]* { return ID; }
-[0-9]+      { return NUM; }
-[\(\)\{\};] { return yytext[0]; }
-[ \t\n]     { ; }
-.           { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-/* Compilation & Execution:
-   yacc -d work.y
-   lex work.l
-   gcc lex.yy.c y.tab.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 11: Check Expression Syntax</h2>
-<p><strong>Aim:</strong> Check the syntax of simple expression involving the operators +, -, *, /.</p>
-
-<h3>YACC File (prac11.y)</h3>
-<div id="practical11a">%{
-#include<stdio.h>
-#include<stdlib.h>
-%}
-
-%token NUM ID
-
-%%
-expr: expr '+' term { printf("Valid expression\n"); }
-    | expr '-' term { printf("Valid expression\n"); }
-    | term
-    ;
-
-term: term '*' factor { printf("Valid expression\n"); }
-    | term '/' factor { printf("Valid expression\n"); }
-    | factor
-    ;
-
-factor: '(' expr ')'
-      | NUM
-      | ID
-      ;
-%%
-
-int yyerror(char *s)
-{
-    printf("Syntax Error: %s\n", s);
-    exit(0);
-}
-
-int main()
-{
-    printf("Enter an arithmetic expression:\n");
-    yyparse();
-    printf("Expression is syntactically correct\n");
-    return 0;
-}
-</div>
-
-<h3>LEX File (prac11.l)</h3>
-<div id="practical11b">%{
-#include "y.tab.h"
-%}
-
-%%
-[0-9]+      { return NUM; }
-[a-zA-Z][a-zA-Z0-9]* { return ID; }
-[\+\-\*\/\(\)] { return yytext[0]; }
-[ \t\n]     { ; }
-.           { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-/* Compilation & Execution:
-   yacc -d prac11.y
-   lex prac11.l
-   gcc lex.yy.c y.tab.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 12: Recognize Valid Variable</h2>
-<p><strong>Aim:</strong> Recognize a valid variable which starts with a letter, followed by any number of letters or digits.</p>
-
-<h3>YACC File (prac12.y)</h3>
-<div id="practical12a">%{
-#include<stdio.h>
-%}
-
-%token LETTER DIGIT
-
-%%
-variable: LETTER alphanumeric { printf("Valid variable\n"); }
-        ;
-
-alphanumeric: alphanumeric LETTER
-            | alphanumeric DIGIT
-            | /* empty */
-            ;
-%%
-
-int yyerror(char *s)
-{
-    printf("Invalid variable\n");
-    return 0;
-}
-
-int main()
-{
-    printf("Enter a variable name:\n");
-    yyparse();
-    return 0;
-}
-</div>
-
-<h3>LEX File (prac12.l)</h3>
-<div id="practical12b">%{
-#include "y.tab.h"
-%}
-
-%%
-[a-zA-Z]    { return LETTER; }
-[0-9]       { return DIGIT; }
-\n          { return 0; }
-.           { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-/* Compilation & Execution:
-   yacc -d prac12.y
-   lex prac12.l
-   gcc lex.yy.c y.tab.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 13: Evaluate Arithmetic Expression</h2>
-<p><strong>Aim:</strong> Evaluate an arithmetic expression involving operators +, -, *, /.</p>
-
-<h3>YACC File (prac13.y)</h3>
-<div id="practical13a">%{
-#include<stdio.h>
-int result;
-%}
-
-%token NUM
-%left '+' '-'
-%left '*' '/'
-
-%%
-expr: expr '+' expr { $$ = $1 + $3; }
-    | expr '-' expr { $$ = $1 - $3; }
-    | expr '*' expr { $$ = $1 * $3; }
-    | expr '/' expr { $$ = $1 / $3; }
-    | '(' expr ')' { $$ = $2; }
-    | NUM { $$ = $1; }
-    ;
-%%
-
-int yyerror(char *s)
-{
-    printf("Error: %s\n", s);
-    return 0;
-}
-
-int main()
-{
-    printf("Enter an arithmetic expression:\n");
-    yyparse();
-    printf("Result: %d\n", result);
-    return 0;
-}
-</div>
-
-<h3>LEX File (prac13.l)</h3>
-<div id="practical13b">%{
-#include "y.tab.h"
-extern int yylval;
-%}
-
-%%
-[0-9]+      { yylval = atoi(yytext); return NUM; }
-[\+\-\*\/\(\)] { return yytext[0]; }
-[ \t\n]     { ; }
-.           { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-/* Compilation & Execution:
-   yacc -d prac13.y
-   lex prac13.l
-   gcc lex.yy.c y.tab.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 14: Recognize Grammar (aⁿbⁿ, n>=0)</h2>
-<p><strong>Aim:</strong> Recognize strings 'aaab', 'abbb', 'ab' and 'a' using grammar (aⁿbⁿ, n>=0).</p>
-
-<h3>YACC File (prac14.y)</h3>
-<div id="practical14a">%{
-#include<stdio.h>
-%}
-
-%token A B
-
-%%
-S: A S B { printf("Valid string\n"); }
- | /* empty */ { printf("Valid string\n"); }
- ;
-%%
-
-int yyerror(char *s)
-{
-    printf("Invalid string\n");
-    return 0;
-}
-
-int main()
-{
-    printf("Enter a string (format: a^n b^n, n>=0):\n");
-    yyparse();
-    return 0;
-}
-</div>
-
-<h3>LEX File (prac14.l)</h3>
-<div id="practical14b">%{
-#include "y.tab.h"
-%}
-
-%%
-"a"     { return A; }
-"b"     { return B; }
-\n      { return 0; }
-.       { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-/* Compilation & Execution:
-   yacc -d prac14.y
-   lex prac14.l
-   gcc lex.yy.c y.tab.c
-   ./a.out
-*/</div>
-
-<hr>
-
-<h2>Practical 15: Recognize Grammar (aⁿb, n>=10)</h2>
-<p><strong>Aim:</strong> Recognize the grammar (aⁿb, n>=10).</p>
-
-<h3>YACC File (prac15.y)</h3>
-<div id="practical15a">%{
-#include<stdio.h>
-int count = 0;
-%}
-
-%token A B
-
-%%
-S: A A A A A A A A A A Alist B 
-   { 
-       if(count >= 10) 
-           printf("Valid string\n"); 
-       else 
-           printf("Invalid string\n"); 
-   }
- ;
-
-Alist: Alist A { count++; }
-     | /* empty */
-     ;
-%%
-
-int yyerror(char *s)
-{
-    printf("Invalid string\n");
-    return 0;
-}
-
-int main()
-{
-    printf("Enter a string (format: a^n b, n>=10):\n");
-    yyparse();
-    return 0;
-}
-</div>
-
-<h3>LEX File (prac15.l)</h3>
-<div id="practical15b">%{
-#include "y.tab.h"
-%}
-
-%%
-"a"     { return A; }
-"b"     { return B; }
-\n      { return 0; }
-.       { ; }
-%%
-
-int yywrap()
-{
-    return 1;
-}
-
-/* Compilation & Execution:
-   yacc -d prac15.y
-   lex prac15.l
-   gcc lex.yy.c y.tab.c
-   ./a.out
-*/</div>
-
-<hr>
-
+<!-- ===================== INFO DIV ===================== -->
 <div id="info">
-<h2>Practical IDs for Scraping</h2>
-<p>Use these IDs to scrape individual practicals:</p>
-<ul>
-<li><strong>practical1</strong> - Count Vowels and Consonants</li>
-<li><strong>practical2</strong> - Count Characters, Words, Spaces, Lines</li>
-<li><strong>practical3</strong> - Count Positive/Negative Integers and Fractions</li>
-<li><strong>practical4</strong> - Count and Remove Comments</li>
-<li><strong>practical5</strong> - Replace scanf/printf</li>
-<li><strong>practical6</strong> - Recognize Arithmetic Expression</li>
-<li><strong>practical7</strong> - Simple or Compound Sentence</li>
-<li><strong>practical8</strong> - Count Identifiers</li>
-<li><strong>practical9</strong> - Validate Expression</li>
-<li><strong>practical10a</strong> - Nested IF (YACC)</li>
-<li><strong>practical10b</strong> - Nested IF (LEX)</li>
-<li><strong>practical11a</strong> - Expression Syntax (YACC)</li>
-<li><strong>practical11b</strong> - Expression Syntax (LEX)</li>
-<li><strong>practical12a</strong> - Valid Variable (YACC)</li>
-<li><strong>practical12b</strong> - Valid Variable (LEX)</li>
-<li><strong>practical13a</strong> - Evaluate Expression (YACC)</li>
-<li><strong>practical13b</strong> - Evaluate Expression (LEX)</li>
-<li><strong>practical14a</strong> - Grammar aⁿbⁿ (YACC)</li>
-<li><strong>practical14b</strong> - Grammar aⁿbⁿ (LEX)</li>
-<li><strong>practical15a</strong> - Grammar aⁿb (YACC)</li>
-<li><strong>practical15b</strong> - Grammar aⁿb (LEX)</li>
-</ul>
-
-<p><strong>Example Python scraping code:</strong></p>
-<pre>
-import requests
-from bs4 import BeautifulSoup
-
-response = requests.get('YOUR_URL')
-code = BeautifulSoup(response.text, 'html.parser').find('div', id='practical1').text
-print(code)
-</pre>
+  <h2>Practical Index</h2>
+  <table>
+    <tr><th>Div ID</th><th>Practical No.</th><th>Topic</th><th>Tool</th></tr>
+    <tr><td>practical1</td><td>1</td><td>Design and implement basics embedded circuits (Alarm, Timer Buzzer, Sensor Counter)</td><td>PROTEUS + Keil</td></tr>
+    <tr><td>practical2</td><td>2</td><td>Demonstrate communication between two embedded devices using UART port</td><td>PROTEUS + Keil</td></tr>
+    <tr><td>practical3</td><td>3</td><td>Built an IoT system to send ticket before entering the bus</td><td>PROTEUS + Arduino IDE</td></tr>
+    <tr><td>practical4</td><td>4</td><td>Develop a IoT application which will record the movement and orientation of your phone and give the data back to the PC</td><td>MIT App Inventor</td></tr>
+    <tr><td>practical5</td><td>5</td><td>Develop an IoT application that will raise an alarm whenever going to rain outside based on weather prediction data</td><td>CISCO Packet Tracer</td></tr>
+    <tr><td>practical6</td><td>6</td><td>Deploy an IoT application which will alert you by beeping or vibrating your phone whenever you get someone call your name</td><td>MIT App Inventor</td></tr>
+    <tr><td>practical7</td><td>7</td><td>Develop an IoT application for monitoring water levels in tanks and automatically start the motor to fill the tank if the level goes below the critical level</td><td>PROTEUS</td></tr>
+    <tr><td>practical8</td><td>8</td><td>Develop an IoT module to measure the intensity of light and send the same to your PC/Phone</td><td>MIT App Inventor</td></tr>
+    <tr><td>practical9</td><td>9</td><td>Develop an IoT application for Motion detection</td><td>CISCO Packet Tracer</td></tr>
+  </table>
 </div>
 
-<hr>
+<!-- ===================== PRACTICAL 1 ===================== -->
+<div id="practical1" class="practical">
+  <h2>Practical 1 — Design and Implement Basics Embedded Circuits</h2>
+  <p>Design and implement basics embedded circuits covering three sub-practicals: Automatic Alarm System, Timer Based Buzzer, and Sensor Based Counting Device. <span class="tag">PROTEUS</span></p>
 
-<h2>Important LEX & YACC Commands</h2>
+  <!-- 1.1 -->
+  <div class="subpractical" id="practical1_1">
+    <h3>Practical 1.1 — Automatic Alarm System</h3>
+    <p>Alarm should get triggered by sensor.</p>
 
-<h3>LEX Compilation</h3>
-<pre>
-lex filename.l          # Generate lex.yy.c
-gcc lex.yy.c            # Compile
-./a.out                 # Execute
-</pre>
+    <h4>Part 1: Writing C Program in Keil Software and creating Hex file</h4>
 
-<h3>YACC Compilation</h3>
-<pre>
-yacc -d filename.y      # Generate y.tab.c and y.tab.h
-lex filename.l          # Generate lex.yy.c
-gcc lex.yy.c y.tab.c    # Compile both files
-./a.out                 # Execute
-</pre>
+    <div class="step"><strong>Step 1:</strong> Project → New Project → Search your Folder → Give name to project → Select Atmel → AT89C51 → Click Ok.</div>
+    <div class="step"><strong>Step 2:</strong> File → New file → Text Window is open → Type program → Save file by .c extension</div>
 
-<h3>LEX Regular Expressions</h3>
-<pre>
-[a-z]       Match any lowercase letter
-[A-Z]       Match any uppercase letter
-[0-9]       Match any digit
-[a-zA-Z]    Match any letter
-.           Match any character except newline
-*           Match 0 or more occurrences
-+           Match 1 or more occurrences
-?           Match 0 or 1 occurrence
-^           Beginning of line
-$           End of line
-</pre>
+    <h5>Code:</h5>
+    <pre>
+#include&lt;reg51.h&gt;
+sbit sensor=P1^0;
+sbit rs=P1^1;
+sbit rw=P1^2;
+sbit en=P1^3;
+sbit buzzer=P3^0;
 
-<h3>YACC Grammar Notation</h3>
-<pre>
-%token      Define tokens
-%left       Left associative operators
-%right      Right associative operators
-%%          Grammar rules section
-$$          Semantic value of LHS
-$1, $2      Semantic values of RHS symbols
-</pre>
+void lcdinit();
+void lcddat(unsigned char);
+void lcdcmd(unsigned char);
+void lcddis(unsigned char *);
+void delay();
 
-<hr>
+void main()
+{
+    buzzer=0; sensor=0;
+    back: lcdinit();
+    lcddis("FIRE ALERT");
+    lcdcmd(0xc0);
+    lcddis("SYSTEM");
+    delay();
+    while(1)
+    {
+        if(sensor==1)
+        {
+            lcdcmd(0x01);
+            lcddis("FIRE OCCURED");
+            buzzer=1;
+        }
+        goto back;
+    }
+}
 
-<p style="text-align: center;">
-<strong>Compiler Design Practicals</strong><br>
-Complete LEX and YACC Programming Guide<br>
-MSc CS Part 1 - All 15 Practicals Included
-</p>
+void lcdinit()
+{
+    lcdcmd(0x38); lcdcmd(0x01); lcdcmd(0x10); lcdcmd(0x0c); lcdcmd(0x80);
+}
+
+void lcdcmd(unsigned char val)
+{
+    P2=val; rs=0; rw=0; en=1; delay(); en=0;
+}
+
+void lcddat(unsigned char dat)
+{
+    P2=dat; rs=1; rw=0; en=1; delay(); en=0;
+}
+
+void lcddis(unsigned char *s)
+{
+    unsigned char w;
+    for(w=0;s[w]!='\0';w++)
+    {
+        lcddat(s[w]);
+    }
+}
+
+void delay()
+{
+    unsigned int v1;
+    for(v1=0;v1&lt;10000;v1++);
+}
+    </pre>
+
+    <div class="step"><strong>Step 3:</strong> Click on target → Source group → right click → Add existing file → select program file → Click on Add.</div>
+    <div class="step"><strong>Step 4:</strong> Right click on target → Option for target → Change frequency to 11.0592 MHz → Click on use on-chip ROM → Go to output label → Click on Create Hex file → Ok.</div>
+    <div class="step"><strong>Step 5:</strong> Project → Click on Build target.</div>
+
+    <h4>Part 2: Designing circuit for Alarm system in Proteus</h4>
+    <div class="step"><strong>Step 1:</strong> Proteus 8 professional → New project → name for project → Finish.</div>
+    <div class="step"><strong>Step 2:</strong> From P (Device selector) search and add the components:
+      <ul>
+        <li>AT89C51</li>
+        <li>Buzzer — active DC Operated Buzzer Output Via Sound Card</li>
+        <li>LCD: LM016L 16x2 Alphanumeric LCD</li>
+        <li>Button (SPST Push button)</li>
+      </ul>
+    </div>
+    <div class="step"><strong>Step 3:</strong> Design the Circuit → Connect ground and power from terminals.</div>
+    <div class="step"><strong>Step 4:</strong> Double click on Micro controller → Select HEX file from program file → Change Clock frequency to 11.0592MHz → Click Ok.</div>
+
+    <h4>Output</h4>
+    <ul>
+      <li>When Fire sensor is OFF (fire not detected) — LCD shows "FIRE ALERT SYSTEM".</li>
+      <li>When fire is detected (Fire sensor ON) — LCD shows "FIRE OCCURED" and buzzer is activated.</li>
+    </ul>
+  </div>
+
+  <!-- 1.2 -->
+  <div class="subpractical" id="practical1_2">
+    <h3>Practical 1.2 — Timer Based Buzzer</h3>
+
+    <h4>Part 1: Writing C Program in Keil Software and creating Hex file</h4>
+    <div class="step"><strong>Step 1:</strong> Project → New Project → Search your Folder → Give name to project → Select Atmel → AT89C51 → Click Ok.</div>
+    <div class="step"><strong>Step 2:</strong> File → New file → Text Window is open → Type program → Save file by .c extension</div>
+
+    <h5>Code:</h5>
+    <pre>
+#include&lt;REG51.h&gt;
+#include&lt;stdio.h&gt;
+
+// buzzer
+sbit buzzer1=P3^0;
+void delay(int count);
+
+void main()
+{
+    P3=0x00;
+    while(1)
+    {
+        delay(100);
+        buzzer1=1;
+    }
+}
+
+void delay(int count)
+{
+    int i,j;
+    for(i=0;i&lt;count;i++);
+    for(j=0;j&lt;113;j++);
+}
+    </pre>
+
+    <div class="step"><strong>Step 3:</strong> Click on target → Source group → right click → Add existing file → select program file → Click on Add.</div>
+    <div class="step"><strong>Step 4:</strong> Right click on target → Option for target → Change frequency to 11.0592 MHz → Click on use on-chip ROM → Go to output label → Click on Create Hex file → Ok.</div>
+    <div class="step"><strong>Step 5:</strong> Project → Click on Build target.</div>
+
+    <h4>Part 2: Designing circuit for Timer Based Buzzer in Proteus</h4>
+    <div class="step"><strong>Step 1:</strong> Proteus 8 professional → New project → name for project → Finish.</div>
+    <div class="step"><strong>Step 2:</strong> From P (Device selector) search and add the components:
+      <ul>
+        <li>AT89C51</li>
+        <li>Buzzer — active DC Operated Buzzer Output Via Sound Card</li>
+        <li>Speaker — loudspeaker model (analog) — output via sound card</li>
+        <li>Potentiometer — POT-HG</li>
+        <li>Low-frequency low-power silicon NPN Transistor</li>
+        <li>DC voltmeter from instruments</li>
+      </ul>
+    </div>
+    <div class="step"><strong>Step 3:</strong> Design the Circuit.</div>
+    <div class="step"><strong>Step 4:</strong> Double click on Micro controller → Select HEX file from program file → Change Clock frequency to 11.0592MHz → Click Ok.</div>
+
+    <h4>Output</h4>
+    <p>Start the simulation — the buzzer activates based on the timer delay.</p>
+  </div>
+
+  <!-- 1.3 -->
+  <div class="subpractical" id="practical1_3">
+    <h3>Practical 1.3 — Sensor Based Counting Device</h3>
+
+    <h4>Part 1: Writing C Program in Keil Software and creating Hex file</h4>
+    <div class="step"><strong>Step 1:</strong> Project → New Project → Search your Folder → Give name to project → Select Atmel → AT89C51 → Click Ok.</div>
+    <div class="step"><strong>Step 2:</strong> File → New file → Text Window is open → Type program → Save file by .c extension</div>
+
+    <h5>Code:</h5>
+    <pre>
+#include&lt;reg51.h&gt;
+
+sbit sen1=P1^0; // entry
+sbit sen2=P1^1; // exit
+sbit rs=P1^2;
+sbit rw=P1^3;
+sbit en=P1^4;
+
+void lcdcmd(unsigned char);
+void lcddat(unsigned char);
+void delay();
+void lcddis(unsigned char *s, unsigned char r);
+void lcdconv(unsigned char);
+
+void main()
+{
+    unsigned char x,y;
+    lcdcmd(0x38); delay();
+    lcdcmd(0x01); delay();
+    lcdcmd(0x10); delay();
+    lcdcmd(0x0c); delay();
+    lcddis("WELCOME",7);
+    lcdcmd(0xc0);
+    delay();
+    lcddis("VISITOR COUNTER",15);
+    delay();
+    lcdcmd(0x01); delay();
+    while(1)
+    {
+        if(sen1==0)
+        {
+            lcdcmd(0x80); delay();
+            lcddis("ENTRY:",6);
+            lcdcmd(0x87); delay();
+            x=x+1;
+            lcdconv(x); delay();
+        }
+        if(sen2==0)
+        {
+            lcdcmd(0xc0); delay();
+            lcddis("EXIT:",5);
+            lcdcmd(0xc6); delay();
+            y=y+1;
+            lcdconv(y); delay();
+        }
+    }
+}
+
+void lcdcmd(unsigned char val)
+{
+    P2=val; rs=0; rw=0; en=1; delay(); en=0;
+}
+
+void lcddat(unsigned char dat)
+{
+    P2=dat; rs=1; rw=0; en=1; delay(); en=0;
+}
+
+void lcddis(unsigned char *s, unsigned char r)
+{
+    unsigned char w;
+    for(w=0;w&lt;r;w++)
+    {
+        lcddat(s[w]); delay();
+    }
+}
+
+void lcdconv(unsigned char num)
+{
+    unsigned char p,n;
+    p=num/10; n=num%10;
+    p=num+0x30; n=n+0x30;
+    lcddat(p); lcddat(n);
+}
+
+void delay()
+{
+    unsigned int k,l;
+    for(k=0;k&lt;1000;k++);
+    for(l=0;l&lt;100;l++);
+}
+    </pre>
+
+    <div class="step"><strong>Step 3:</strong> Click on target → Source group → right click → Add existing file → select program file → Click on Add.</div>
+    <div class="step"><strong>Step 4:</strong> Right click on target → Option for target → Change frequency to 11.0592 MHz → Click on use on-chip ROM → Go to output label → Click on Create Hex file → Ok.</div>
+    <div class="step"><strong>Step 5:</strong> Project → Click on Build target.</div>
+
+    <h4>Part 2: Designing circuit for Sensor Based Counting Device in Proteus</h4>
+    <div class="step"><strong>Step 1:</strong> Proteus 8 professional → New project → name for project → Finish.</div>
+    <div class="step"><strong>Step 2:</strong> From P (Device selector) search and add the components:
+      <ul>
+        <li>AT89C51</li>
+        <li>LCD: LM016L 16x2 Alphanumeric LCD</li>
+        <li>Button (SPST Push button)</li>
+      </ul>
+    </div>
+    <div class="step"><strong>Step 3:</strong> Design the Circuit.</div>
+    <div class="step"><strong>Step 4:</strong> Double click on Micro controller → Select HEX file from program file → Change Clock frequency to 11.0592MHz → Click Ok.</div>
+
+    <h4>Output</h4>
+    <ul>
+      <li>When entry button is pressed (visitor enters) — the entry count on LCD increments.</li>
+      <li>When exit button is pressed — the exit count increments.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===================== PRACTICAL 2 ===================== -->
+<div id="practical2" class="practical">
+  <h2>Practical 2 — UART Communication Between Two Embedded Devices</h2>
+  <p>Demonstrate communication between two embedded devices using UART port. <span class="tag">PROTEUS</span></p>
+
+  <h3>Part 1: Writing C Program in Keil Software and creating Hex file</h3>
+  <div class="step"><strong>Step 1:</strong> Project → New Project → Search your Folder → Give name to project → Select Atmel → AT89C51 → Click Ok.</div>
+  <div class="step"><strong>Step 2:</strong> File → New file → Text Window is open → Type program → Save file by .c extension</div>
+
+  <h4>Code 1:</h4>
+  <pre>
+#include&lt;reg51.h&gt;
+
+void main()
+{
+    /* Mode 1, reception enable */
+    SCON=0X50;
+    /* Timer 1, 8-bit auto reload mode */
+    TMOD=0X20;
+    TH1=-3;       /* Load value baud rate */
+    TR1=1;        /* Start timer 1 */
+    SBUF='I';     /* Load char in buffer */
+    while(TI==0);
+    TI=0;
+}
+  </pre>
+
+  <h4>Code 2:</h4>
+  <pre>
+#include &lt;reg51.h&gt;
+
+void UART_Init()
+{
+    TMOD = 0x20;   /* Timer 1, 8-bit auto reload mode */
+    TH1 = 0xFD;   /* Load value for 9600 baud rate */
+    SCON = 0x50;  /* Mode 1, reception enable */
+    TR1 = 1;      /* Start timer 1 */
+}
+
+void Transmit_data(char tx_data)
+{
+    SBUF = tx_data;    /* Load char in SBUF register */
+    while (TI==0);     /* Wait until stop bit transmit */
+    TI = 0;            /* Clear TI flag */
+}
+
+void String(char *str)
+{
+    int i;
+    for(i=0; str[i]!=0; i++)   /* Send each char of string till NULL */
+    {
+        Transmit_data(str[i]);  /* Call transmit data function */
+    }
+}
+
+void main()
+{
+    UART_Init();       /* UART initialize function */
+    String("test");    /* Transmit 'test' */
+    while(1);
+}
+  </pre>
+
+  <div class="step"><strong>Step 3:</strong> Click on target → Source group → right click → Add existing file → select program file → Click on Add.</div>
+  <div class="step"><strong>Step 4:</strong> Right click on target → Option for target → Change frequency to 11.0592 MHz → Click on use on-chip ROM → Go to output label → Click on Create Hex file → Ok.</div>
+  <div class="step"><strong>Step 5:</strong> Project → Click on Build target.</div>
+
+  <h3>Part 2: Designing circuit for Serial Communication using UART in Proteus</h3>
+  <div class="step"><strong>Step 1:</strong> Proteus 8 professional → New project → name for project → Finish.</div>
+  <div class="step"><strong>Step 2:</strong> From P (Device selector) search and add the components:
+    <ul>
+      <li>AT89C51</li>
+      <li>Virtual Terminal from instruments</li>
+    </ul>
+  </div>
+  <div class="step"><strong>Step 3:</strong> Design the Circuit.</div>
+  <div class="step"><strong>Step 4:</strong> Double click on Micro controller → Select HEX file from program file → Change Clock frequency to 11.0592MHz → Click Ok.</div>
+
+  <h3>Output</h3>
+  <p>Start the simulation — the Virtual Terminal displays the transmitted string from the microcontroller via UART.</p>
+</div>
+
+<!-- ===================== PRACTICAL 3 ===================== -->
+<div id="practical3" class="practical">
+  <h2>Practical 3 — IoT Bus Ticketing System</h2>
+  <p>Build an IoT system to send ticket before entering the bus. <span class="tag">PROTEUS</span> <span class="tag">Arduino IDE</span></p>
+
+  <h3>Part 1: Writing C Program in Arduino IDE and creating Hex file</h3>
+  <div class="step"><strong>Step 1:</strong> Open Arduino → New file → Write program → Save file.</div>
+
+  <h4>Code:</h4>
+  <pre>
+#include &lt;Servo.h&gt;
+
+int count = 0;
+char c;
+String id;
+Servo myservo;
+
+void setup()
+{
+    Serial.begin(9600);
+    myservo.attach(9);
+    myservo.write(0);
+    pinMode(13, OUTPUT);
+    Serial.println("Please scan your RFID TAG");
+}
+
+void loop()
+{
+    while(Serial.available() &gt; 0)
+    {
+        c = Serial.read();
+        count++;
+        id += c;
+        if(count == 12)
+        {
+            Serial.print(id);
+            if(id == "AB123456789A")  // Define valid tag id here
+            {
+                Serial.println("Valid TAG");
+                digitalWrite(13, HIGH);
+                myservo.write(180);
+                delay(4000);
+                myservo.write(0);
+            }
+            else
+            {
+                digitalWrite(13, LOW);
+                Serial.println("Invalid TAG");
+                myservo.write(0);
+            }
+        }
+    }
+    count = 0;
+    id = "";
+    delay(500);
+}
+  </pre>
+
+  <div class="step"><strong>Step 2:</strong> Click on Verify option and verify/compile the code.</div>
+  <div class="step"><strong>Step 3:</strong> After verifying the program, select path of the hex file, copy that path and paste it in the Proteus file.</div>
+
+  <h3>Part 2: Designing circuit in Proteus</h3>
+  <p><strong>Note:</strong> If Arduino is not added in Proteus, download Arduino library. Right click C drive and choose show hidden folder. Open Program Data and copy the .lib files in the library folder.</p>
+  <p>Valid tag ID: <code>AB123456789A</code> | Test tag: <code>1234567</code></p>
+
+  <div class="step"><strong>Step 1:</strong> Proteus 8 professional → New project → name for project → Finish.</div>
+  <div class="step"><strong>Step 2:</strong> From P (Device selector) search and add the components:
+    <ul>
+      <li>SIMULINO UNO controller</li>
+      <li>MOTOR-PWMSERVO — Animated PWM Controlled Servo motor</li>
+      <li>Virtual Terminal from instruments</li>
+    </ul>
+  </div>
+  <div class="step"><strong>Step 3:</strong> Design the Circuit.</div>
+  <div class="step"><strong>Step 4:</strong> Double click on controller → Select HEX file from program file → Click Ok.</div>
+
+  <h3>Output</h3>
+  <ul>
+    <li>When simulation starts, the servo motor is at -90 degrees (door closed).</li>
+    <li>When a valid ticket code is entered in the Virtual Terminal, the door opens (servo motor angle changes to +90 degrees) and returns to initial position after a delay.</li>
+    <li>Invalid codes show "Invalid TAG" and the door stays closed.</li>
+  </ul>
+</div>
+
+<!-- ===================== PRACTICAL 4 ===================== -->
+<div id="practical4" class="practical">
+  <h2>Practical 4 — Phone Movement and Orientation Tracker</h2>
+  <p>Develop an IoT application which will record the movement and orientation of your phone and give the data back to the PC. <span class="tag">MIT App Inventor</span></p>
+
+  <div class="step"><strong>Step 1:</strong> Go to your Browser → Search MIT App Inventor → Create apps → new project → click on continue → my project → start new project → give project name → click ok.</div>
+
+  <h3>Step 2: Designer Part</h3>
+  <p>From palette → go to sensor → select orientation sensor → go to drawing and animation → select canvas → take a ball and put it in canvas.</p>
+
+  <h3>Step 3: Block Part</h3>
+  <p>Click on orientation sensor → select 1st option i.e. <em>When orientation change</em>.</p>
+  <p>ball → select <em>call. move to x to y</em> → Then in x put math function: <code>Ball.x + (-1) * orientation.sensor.roll / 2</code></p>
+  <p>Similarly for y: <code>Ball.y + (-1) * orientation.sensor.pitch / 2</code></p>
+
+  <h3>Step 4: Run Part</h3>
+  <div class="step">Project → save project</div>
+  <div class="step">Download MIT app (MIT AI2 Companion) on your phone. Build → Android app ".apk" then scan the code and get output.</div>
+
+  <h3>Output</h3>
+  <ul>
+    <li>The orientation of the phone is visible with the help of the ball moving on the canvas based on phone tilt (roll and pitch).</li>
+  </ul>
+</div>
+
+<!-- ===================== PRACTICAL 5 ===================== -->
+<div id="practical5" class="practical">
+  <h2>Practical 5 — Rain Alarm IoT Application</h2>
+  <p>Develop an IoT application that will raise an alarm whenever it is going to rain outside based on weather prediction data. <span class="tag">CISCO Packet Tracer</span></p>
+
+  <div class="step"><strong>Step 1:</strong> Open Cisco Packet Tracer.</div>
+  <div class="step"><strong>Step 2:</strong> Design the circuit.</div>
+  <div class="step"><strong>Step 3:</strong> Search and take components: Humidity sensor, MCU-PT, and Alarm. Connect <strong>A0 pin of MCU</strong> with <strong>A0 pin of Humidity sensor</strong> and <strong>D1 pin of MCU</strong> with <strong>D0 pin of Alarm</strong> using IoT custom cable.</div>
+  <div class="step"><strong>Step 4:</strong> Select MCU-PT → right click on it → Programming → New button → Create a new file (motion detection.js) → Write the motion detection program.</div>
+
+  <h4>Code (motion detection.js):</h4>
+  <pre>
+function setup()
+{
+    pinMode(0, INPUT);
+    pinMode(1, OUTPUT);
+}
+
+function loop()
+{
+    var humid = analogRead(0);
+    Serial.println(humid);
+
+    if(humid &gt;= 500)
+    {
+        digitalWrite(1, HIGH);
+    }
+    else
+    {
+        digitalWrite(1, LOW);
+    }
+}
+  </pre>
+
+  <div class="step"><strong>Step 5:</strong> Click on run button and run the program.</div>
+
+  <h3>Output</h3>
+  <ul>
+    <li>When humidity level is greater than 500 (i.e., when it is raining outside), the Alarm is turned ON.</li>
+  </ul>
+</div>
+
+<!-- ===================== PRACTICAL 6 ===================== -->
+<div id="practical6" class="practical">
+  <h2>Practical 6 — Name Recognition Alert App</h2>
+  <p>Deploy an IoT application which will alert you by beeping or vibrating your phone whenever someone calls your name. <span class="tag">MIT App Inventor</span></p>
+
+  <div class="step"><strong>Step 1:</strong> Go to your Browser → Search MIT App Inventor → Create apps → new project → click on continue → my project → start new project → give project name → click ok.</div>
+
+  <h3>Step 2: Designer Part</h3>
+  <p>From palette → go to user interface → select button (change properties: button text as "speak") → select label (change properties: label text as "click on speak button")</p>
+  <p>Go to media → select speech recognition → select sound.</p>
+
+  <h3>Step 3: Block Part</h3>
+  <ol>
+    <li>Click on button → select <em>When do. Click</em> option.</li>
+    <li>Speech recognition → select <em>call. Get text</em>.</li>
+    <li>Sound recognition → select 1st option i.e. <em>After getting text</em>.</li>
+    <li>Control → select <em>if and then</em> option.</li>
+  </ol>
+  <p>In <strong>if</strong> condition:
+    <ul>
+      <li>Select math (3rd option with = condition)</li>
+      <li>Select speech (speech.Result) and put in if condition 1st part</li>
+      <li>Select text (1st option of text) and put in if condition 2nd part (as your name)</li>
+    </ul>
+  </p>
+  <p>In <strong>then</strong> part → select sound → vibrate → add math 1st option and add value as 2000.</p>
+
+  <h3>Step 4: Run Part</h3>
+  <div class="step">Project → save project.</div>
+  <div class="step">Download MIT app (MIT AI2 Companion) on your phone. Build → Android app apk → scan the code and get output.</div>
+  <p>As you speak your name, your phone vibrates.</p>
+
+  <h3>Output</h3>
+  <ul>
+    <li>When the button is pressed on the phone, the microphone starts recording voice.</li>
+    <li>If it recognizes the audio as the configured name (e.g., "Avinash"), the phone vibrates.</li>
+  </ul>
+</div>
+
+<!-- ===================== PRACTICAL 7 ===================== -->
+<div id="practical7" class="practical">
+  <h2>Practical 7 — Water Level Monitoring System</h2>
+  <p>Develop an IoT application for monitoring water levels in tanks and automatically start the motor to fill the tank if the level goes below the critical level. <span class="tag">PROTEUS</span></p>
+
+  <h3>Designing Circuit in Proteus</h3>
+  <div class="step"><strong>Step 1:</strong> Proteus 8 professional → New project → name for project → Finish.</div>
+  <div class="step"><strong>Step 2:</strong> From P (Device selector) search and add the components:
+    <ul>
+      <li>2N3904 — 4 placed (Silicon NPN Low Power High Frequency Bipolar Transistor)</li>
+      <li>LED GREEN — 4 placed (Animated LED model — Green)</li>
+      <li>LOGICTOGGLE — 4 placed (Logic State Source — Momentary Action)</li>
+    </ul>
+  </div>
+  <div class="step"><strong>Step 3:</strong> Create a water tank device using components in graphics → right click on it → make device → give name of device (water level tank) → Next → Device category: Mechanics → Click on the water level tank → go to edit properties → click on it → attach hierarchy module → ok → again right click on it → select go to child sheet → In the child sheet take 4 input terminals and 4 output terminals and connect it.</div>
+  <div class="step"><strong>Step 4:</strong> Design other circuit as shown below.</div>
+  <div class="step"><strong>Step 5:</strong> Right click on Water Tank → go to child sheet → design the logic.</div>
+
+  <h3>Output</h3>
+  <ul>
+    <li>When the water level is at 2, the bottom 2 LEDs are ON.</li>
+    <li>When the water level is full, all LEDs are ON.</li>
+  </ul>
+</div>
+
+<!-- ===================== PRACTICAL 8 ===================== -->
+<div id="practical8" class="practical">
+  <h2>Practical 8 — Light Intensity Measurement App</h2>
+  <p>Develop an IoT module to measure the intensity of light and send the same to your PC/Phone. <span class="tag">MIT App Inventor</span></p>
+
+  <div class="step"><strong>Step 1:</strong> Go to your Browser → Search MIT App Inventor → Create apps → new project → click on continue → my project → start new project → give project name → click ok.</div>
+
+  <h3>Step 2: Designer Part</h3>
+  <p>From palette → go to layout → select vertical arrangement (change properties: height and width should be parent) → go to user interface → select label (change properties: font bold, font italics tick checkbox, font size, text alignment should be center) → go to sensor → drag and drop light sensor.</p>
+
+  <h3>Step 3: Block Part</h3>
+  <ol>
+    <li>Click on light sensor → drag and drop 1st option <em>when. Light changed</em>.</li>
+    <li>Label → drag and drop <em>label1. Text to</em>.</li>
+    <li>Click on lux → select <em>get lux</em> → connect to <em>label1. Text to</em>.</li>
+  </ol>
+
+  <h3>Step 4: Run Part</h3>
+  <div class="step">Project → save project.</div>
+  <div class="step">Download MIT app (MIT AI2 Companion) on your phone. Build → Android app apk → scan the code and get output.</div>
+
+  <h3>Output</h3>
+  <ul>
+    <li>When in a dark place, light intensity reads as 0.</li>
+    <li>When in a lit place, the app shows the light intensity value in lux at that location.</li>
+  </ul>
+</div>
+
+<!-- ===================== PRACTICAL 9 ===================== -->
+<div id="practical9" class="practical">
+  <h2>Practical 9 — Motion Detection IoT Application</h2>
+  <p>Develop an IoT application for Motion detection. <span class="tag">CISCO Packet Tracer</span></p>
+
+  <div class="step"><strong>Step 1:</strong> Open Cisco Packet Tracer.</div>
+  <div class="step"><strong>Step 2:</strong> Design the circuit.</div>
+  <div class="step"><strong>Step 3:</strong> Search and take components: Motion sensor, MCU-PT, and Light. Connect <strong>D0 pin of MCU</strong> with <strong>D0 pin of Motion sensor</strong> and <strong>D1 pin of MCU</strong> with <strong>D0 pin of Light</strong> using IoT custom cable.</div>
+  <div class="step"><strong>Step 4:</strong> Select MCU-PT → right click on it → Programming → Select Blockly (visual) → Create a new file and use blocks to write the code.</div>
+  <div class="step"><strong>Step 5:</strong> Click on run button and run the program.</div>
+  <div class="step"><strong>Step 6:</strong> Click Alt and move mouse on the motion sensor and view the output of Light.</div>
+
+  <h3>Output</h3>
+  <ul>
+    <li>When the motion detector detects motion, the light is turned ON.</li>
+  </ul>
+</div>
 
 </body>
 </html>
